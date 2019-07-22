@@ -1,0 +1,10 @@
+{
+  "name": "@v2pass/app",
+  "version": "0.1.0",
+  "description": "",
+  "author": "Emi Wang",
+  "license": "MIT",
+  "dependencies": {
+    "tslib": "^1.10.0"
+  }
+}
