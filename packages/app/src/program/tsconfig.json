@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2018",
     "module": "commonjs",
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom"],
     "types": [],
     "importHelpers": true,
     "esModuleInterop": true,
@@ -17,6 +17,7 @@
     "noFallthroughCasesInSwitch": true,
     "newLine": "LF",
     "rootDir": ".",
-    "outDir": "../../bld/program"
+    "outDir": "../../bld/program",
+    "jsx": "react"
   }
 }
