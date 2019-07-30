@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom';
 
 import {Router, RouteMatch} from 'boring-router';
 import {Route, Link} from 'boring-router-react';
-import {createBrowserHistory} from 'history';
+import {createHashHistory} from 'history';
 
-let history = createBrowserHistory();
+let history = createHashHistory();
 
 let router = Router.create(
   {

@@ -5,10 +5,13 @@
   "author": "Emi Wang",
   "license": "MIT",
   "scripts": {
-    "serve": "parcel serve --out-dir bld/program src/program/index.html",
-    "build": "parcel build --out-dir bld/program src/program/index.html"
+    "serve:program": "parcel serve --out-dir bld/program src/program/index.html",
+    "build:program": "parcel build --out-dir bld/program --public-url /bld/program src/program/index.html",
+    "watch:program": "parcel watch --out-dir bld/program --public-url /bld/program src/program/index.html",
+    "build:background": "parcel build --out-dir bld/background src/background/background.ts"
   },
   "dependencies": {
+    "antd": "^3.20.7",
     "boring-router": "^0.3.0-alpha.33",
     "boring-router-react": "^0.3.0-alpha.33",
     "history": "^4.9.0",
@@ -19,6 +22,7 @@
     "tslib": "^1.10.0"
   },
   "devDependencies": {
+    "@types/chrome": "^0.0.86",
     "@types/history": "^4.7.2",
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.5"

@@ -1,0 +1,14 @@
+{
+  "name": "v2pass",
+  "version": "1.0",
+  "description": "a password management tool",
+  "permissions": ["storage", "declarativeContent"],
+  "background": {
+    "scripts": ["./bld/background/background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "./bld/program/index.html"
+  },
+  "manifest_version": 2
+}
