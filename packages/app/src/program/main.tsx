@@ -1,11 +1,12 @@
+import {Router} from 'boring-router';
+import {Route} from 'boring-router-react';
+import {createHashHistory} from 'history';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import {Router, RouteMatch} from 'boring-router';
-import {Route, Link} from 'boring-router-react';
-import {createHashHistory} from 'history';
+import './main.less';
 
-import {Button} from 'antd';
+import LoginPage from './views/login/login';
 
 let history = createHashHistory();
 
@@ -14,20 +15,6 @@ let router = Router.create(
     default: {
       $match: '',
     },
-    test: {
-      $exact: true,
-      $children: {
-        testId: {
-          $match: /\d+/,
-          $query: {
-            xxx: true,
-          },
-        },
-      },
-    },
-    rest: {
-      $match: RouteMatch.rest,
-    },
   },
   history,
 );
@@ -35,28 +22,8 @@ let router = Router.create(
 ReactDOM.render(
   <div>
     <Route match={router.default}>
-      <Button type="primary">btn test</Button>
-      default page
-      <Link to={router.test}>test</Link>
+      <LoginPage />
     </Route>
-    <Route match={router.test}>
-      {match => (
-        <div>
-          <h1>test page</h1>
-          <Link to={match.testId} params={{testId: '123'}}>
-            test id xxx
-          </Link>
-          <Route match={match.testId}>
-            {match => (
-              <div>
-                id: {match.$params.testId} {match.$params.yyy}
-              </div>
-            )}
-          </Route>
-        </div>
-      )}
-    </Route>
-    <Route match={router.rest}>not found</Route>
   </div>,
   document.getElementById('app'),
 );
