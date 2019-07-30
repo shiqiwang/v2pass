@@ -5,6 +5,8 @@ import {Router, RouteMatch} from 'boring-router';
 import {Route, Link} from 'boring-router-react';
 import {createHashHistory} from 'history';
 
+import {Button} from 'antd';
+
 let history = createHashHistory();
 
 let router = Router.create(
@@ -33,6 +35,7 @@ let router = Router.create(
 ReactDOM.render(
   <div>
     <Route match={router.default}>
+      <Button type="primary">btn test</Button>
       default page
       <Link to={router.test}>test</Link>
     </Route>
