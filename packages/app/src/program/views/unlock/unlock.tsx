@@ -11,7 +11,8 @@ import React, {
 import './unlock.less';
 
 class UnlockPage extends Component<FormProps> {
-  @observable password: string = '';
+  @observable
+  private password = '';
 
   render(): ReactNode {
     const {getFieldDecorator} = this.props.form!;
