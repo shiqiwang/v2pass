@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 
 import './main.less';
 
+import GenerateRandomPassword from './components/public/generateRandomPassword';
 import HomePage from './views/homepage/homepage';
 import UnlockPage from './views/unlock/unlock';
 
@@ -25,6 +26,7 @@ ReactDOM.render(
     <Route match={router.default}>
       <UnlockPage />
       <HomePage />
+      <GenerateRandomPassword />
     </Route>
   </div>,
   document.getElementById('app'),

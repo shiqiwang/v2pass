@@ -1,9 +1,9 @@
 import React, {Component, ReactNode} from 'react';
 
-import FolderDetail from '../../components/folderDetail/folderDetail';
-import PasswordDetail from '../../components/passwordDetail/passwordDetail';
-import PasswordList from '../../components/passwordList/passwordList';
-import PasswordSearch from '../../components/passwordSearch/passwordSearch';
+import FolderDetail from '../../components/folderDetail';
+import PasswordDetail from '../../components/passwordDetail';
+import PasswordList from '../../components/passwordList';
+import PasswordSearch from '../../components/passwordSearch';
 
 class HomePage extends Component {
   render(): ReactNode {
