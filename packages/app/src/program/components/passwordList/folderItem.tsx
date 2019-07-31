@@ -6,7 +6,6 @@ import React, {Component, ReactNode} from 'react';
 import './index.less';
 
 interface FolderItemProps {
-  iconType: string;
   folderName: string;
 }
 
@@ -20,7 +19,7 @@ class FolderItem extends Component<FolderItemProps> {
       <div className="folderItem">
         <Row onClick={this.onFoldedChange}>
           <Col span={2}>
-            <Icon type={this.props.iconType} />
+            <Icon type={this.folded ? 'folder' : 'folder-open'} />
           </Col>
           <Col span={20} className="folderName">
             {this.props.folderName}
@@ -44,7 +43,6 @@ class FolderItem extends Component<FolderItemProps> {
   }
 
   static defaultProps = {
-    iconType: 'folder',
     folderName: 'New folder',
   };
 }
