@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 
 import './main.less';
 
-import LoginPage from './views/login/login';
+import UnlockPage from './views/unlock/unlock';
 import HomePage from './views/homepage/homepage';
 
 let history = createHashHistory();
@@ -23,7 +23,7 @@ let router = Router.create(
 ReactDOM.render(
   <div>
     <Route match={router.default}>
-      <LoginPage />
+      <UnlockPage />
       <HomePage />
     </Route>
   </div>,

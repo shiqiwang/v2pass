@@ -2,9 +2,9 @@ import {Button, Form, Icon, Input} from 'antd';
 import {FormProps} from 'antd/lib/form';
 import React, {Component, ReactNode} from 'react';
 
-import './login.less';
+import './unlock.less';
 
-class LoginPage extends Component<FormProps> {
+class UnlockPage extends Component<FormProps> {
   handleSubmit = (event: any): void => {
     event.preventDefault();
     this.props.form!.validateFields((error, values) => {
@@ -46,4 +46,4 @@ class LoginPage extends Component<FormProps> {
   }
 }
 
-export default Form.create({name: 'login_page'})(LoginPage);
+export default Form.create({name: 'unlock_page'})(UnlockPage);
