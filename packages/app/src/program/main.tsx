@@ -6,8 +6,8 @@ import ReactDOM from 'react-dom';
 
 import './main.less';
 
-import UnlockPage from './views/unlock/unlock';
 import HomePage from './views/homepage/homepage';
+import UnlockPage from './views/unlock/unlock';
 
 let history = createHashHistory();
 
