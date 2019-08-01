@@ -12,7 +12,7 @@ class HomePage extends Component {
         <PasswordSearch />
         <PasswordList />
         <PasswordDetail />
-        <FolderDetail />
+        <FolderDetail folderName="folderName" folderDetail="folder detail" />
       </div>
     );
   }

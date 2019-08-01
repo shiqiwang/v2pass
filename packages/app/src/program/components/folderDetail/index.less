@@ -1,0 +1,31 @@
+@import '../../const/style.less';
+.folderDetail {
+  width: 400px;
+  background-color: @background-color-grey;
+  padding: 10px;
+  .header {
+    h4 {
+      margin: 0;
+      text-align: center;
+    }
+  }
+  .operations {
+    text-align: end;
+    .setting {
+      margin-right: 5px;
+    }
+    .setting,
+    .delete {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+  .detail {
+    background-color: @background-color-white;
+    padding: 5px;
+    margin-top: 10px;
+    border-radius: @border-radius-small;
+    min-height: 100px;
+  }
+}
