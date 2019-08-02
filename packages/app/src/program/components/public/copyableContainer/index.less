@@ -1,0 +1,30 @@
+@import '../../../const/style.less';
+
+.copyableContainer {
+  border: @border-normal;
+  border-radius: @border-radius-small;
+  position: relative;
+  height: 40px;
+  width: 400px;
+  .label {
+    font-size: @font-size-small;
+    padding-left: 10px;
+    color: @color-blue;
+  }
+  .value {
+    padding-left: 10px;
+  }
+  .operations {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    display: none;
+  }
+}
+.copyableContainer:hover {
+  background-color: @background-color-blue;
+  border: @border-blue;
+  .operations {
+    display: block;
+  }
+}

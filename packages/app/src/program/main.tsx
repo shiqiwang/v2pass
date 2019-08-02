@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 
 import './main.less';
 
+import CopyableContainer from './components/public/copyableContainer';
 import GenerateRandomPassword from './components/public/generateRandomPassword';
 import HomePage from './views/homepage/homepage';
 import UnlockPage from './views/unlock/unlock';
@@ -24,6 +25,7 @@ let router = Router.create(
 ReactDOM.render(
   <div>
     <Route match={router.default}>
+      <CopyableContainer label="userName" value="emi wang" password />
       <UnlockPage />
       <HomePage />
       <GenerateRandomPassword />
