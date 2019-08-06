@@ -67,7 +67,6 @@ class NewItem extends Component<NewItemProps> {
     const formButtonLayout = {
       wrapperCol: {span: 18, offset: 6},
     };
-    const selt = this;
 
     return (
       <Drawer

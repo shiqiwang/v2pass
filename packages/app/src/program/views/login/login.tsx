@@ -1,9 +1,11 @@
 import {Button, Col, Form, Icon, Input, Row} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
+import Password from 'antd/lib/input/Password';
 import {Link, RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {
+  ChangeEvent,
   ChangeEventHandler,
   Component,
   FormEventHandler,
@@ -18,12 +20,20 @@ export interface LoginPageProps
   extends FormComponentProps,
     RouteComponentProps<Router['login']> {}
 
+interface FormData {
+  userName: string;
+  password: string;
+}
+
+type FormDataLabelType = keyof FormData;
+
 @observer
 class Login extends Component<LoginPageProps> {
   @observable
-  private userName = '';
-  @observable
-  private password = '';
+  private data: FormData = {
+    userName: '',
+    password: '',
+  };
 
   render(): ReactNode {
     const {getFieldDecorator} = this.props.form!;
@@ -34,6 +44,7 @@ class Login extends Component<LoginPageProps> {
     const buttonLayout = {
       wrapperCol: {span: 2, offset: 4},
     };
+    const {password, userName} = this.data;
 
     return (
       <div className="loginPage">
@@ -45,16 +56,28 @@ class Login extends Component<LoginPageProps> {
                   rules: [
                     {required: true, message: 'Please input your user name!'},
                   ],
-                  initialValue: this.userName,
-                })(<Input type="text" placeholder="user name" />)}
+                  initialValue: userName,
+                })(
+                  <Input
+                    type="text"
+                    placeholder="user name"
+                    onChange={event => this.onInputChange('userName', event)}
+                  />,
+                )}
               </Form.Item>
               <Form.Item label="password" {...itemLayout}>
                 {getFieldDecorator('password', {
                   rules: [
                     {required: true, message: 'Please input your password!'},
                   ],
-                  initialValue: this.password,
-                })(<Input type="password" placeholder="password" />)}
+                  initialValue: password,
+                })(
+                  <Input
+                    type="password"
+                    placeholder="password"
+                    onChange={event => this.onInputChange('password', event)}
+                  />,
+                )}
               </Form.Item>
               <Form.Item {...buttonLayout}>
                 <Button type="primary" htmlType="submit">
@@ -68,7 +91,43 @@ class Login extends Component<LoginPageProps> {
     );
   }
 
-  private onFormSubmit: FormEventHandler<HTMLFormElement> = event => {};
+  private onFormSubmit: FormEventHandler<HTMLFormElement> = event => {
+    event.preventDefault();
+    const {validateFields, setFields} = this.props.form!;
+    validateFields((error, values) => {
+      const {password, userName} = values;
+
+      if (!error && userName === 'emi' && password === '123') {
+        router.unlock.$push();
+      }
+
+      setFields({
+        password: {
+          value: '',
+          errors: [new Error('user name or password error!')],
+        },
+        userName: {
+          value: '',
+          errors: [new Error('user name or password error!')],
+        },
+      });
+    });
+  };
+
+  private onInputChange(
+    label: FormDataLabelType,
+    event: ChangeEvent<HTMLInputElement>,
+  ): void {
+    this.updateData(label, event.target.value);
+  }
+
+  @action
+  private updateData<TLabel extends FormDataLabelType>(
+    label: TLabel,
+    value: FormData[TLabel],
+  ): void {
+    this.data[label] = value;
+  }
 }
 
 export default Form.create<LoginPageProps>({name: 'login'})(Login);
