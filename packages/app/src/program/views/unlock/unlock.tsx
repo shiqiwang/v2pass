@@ -27,13 +27,13 @@ class UnlockPage extends Component<UnlockPageProps> {
     const {getFieldDecorator} = this.props.form!;
 
     return (
-      <div className="loginPage">
+      <div className="unlockPage">
         {/* <Link to={router.homepage}>home</Link> */}
-        <Row type="flex" justify="center" align="middle" className="loginPage">
+        <Row type="flex" justify="center" align="middle" className="unlockPage">
           <Col span={24}>
             <Form
               onSubmit={this.onFormSubmit}
-              className="loginForm"
+              className="unlockForm"
               layout="inline"
             >
               <Form.Item>
@@ -69,8 +69,8 @@ class UnlockPage extends Component<UnlockPageProps> {
 
   private onFormSubmit: FormEventHandler<HTMLFormElement> = event => {
     event.preventDefault();
-
-    this.props.form!.validateFields((error, values) => {
+    const {validateFields, setFields} = this.props.form!;
+    validateFields((error, values) => {
       // 假设密码为123
       if (!error && values.password === '123') {
         // 加密
@@ -78,7 +78,7 @@ class UnlockPage extends Component<UnlockPageProps> {
         router.homepage.$push();
       }
 
-      this.props.form!.setFields({
+      setFields({
         password: {
           value: '',
           errors: [new Error('password error!')],
