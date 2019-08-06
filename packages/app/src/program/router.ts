@@ -20,3 +20,12 @@ export const router = Router.create(
 );
 
 export type Router = typeof router;
+
+router.rest.$intercept(() => {
+  router.unlock.$push();
+});
+
+// 做访问前验证的钩子
+// router.homepage.$intercept(() => {
+//   router.unlock.$push();
+// });

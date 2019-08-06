@@ -1,6 +1,6 @@
-import {Button, Form, Icon, Input} from 'antd';
+import {Button, Col, Form, Icon, Input, Row} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
-import {Link, RouteComponentProps} from 'boring-router-react';
+import {RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {
@@ -29,30 +29,36 @@ class UnlockPage extends Component<UnlockPageProps> {
     return (
       <div className="loginPage">
         {/* <Link to={router.homepage}>home</Link> */}
-        <Form
-          onSubmit={this.onFormSubmit}
-          className="loginForm"
-          layout="inline"
-        >
-          <Form.Item>
-            {getFieldDecorator('password', {
-              rules: [{required: true, message: 'Please input your password!'}],
-              initialValue: this.password,
-            })(
-              <Input
-                prefix={<Icon type="lock" />}
-                type="password"
-                placeholder="password"
-                onChange={this.onInputChange}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Unlock
-            </Button>
-          </Form.Item>
-        </Form>
+        <Row type="flex" justify="center" align="middle" className="loginPage">
+          <Col span={24}>
+            <Form
+              onSubmit={this.onFormSubmit}
+              className="loginForm"
+              layout="inline"
+            >
+              <Form.Item>
+                {getFieldDecorator('password', {
+                  rules: [
+                    {required: true, message: 'Please input your password!'},
+                  ],
+                  initialValue: this.password,
+                })(
+                  <Input
+                    prefix={<Icon type="lock" />}
+                    type="password"
+                    placeholder="password"
+                    onChange={this.onInputChange}
+                  />,
+                )}
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Unlock
+                </Button>
+              </Form.Item>
+            </Form>
+          </Col>
+        </Row>
       </div>
     );
   }
@@ -65,13 +71,19 @@ class UnlockPage extends Component<UnlockPageProps> {
     event.preventDefault();
 
     this.props.form!.validateFields((error, values) => {
-      if (!error) {
+      // 假设密码为123
+      if (!error && values.password === '123') {
         // 加密
         // 测试
-        if (values.password === '123') {
-          router.homepage.$push();
-        }
+        router.homepage.$push();
       }
+
+      this.props.form!.setFields({
+        password: {
+          value: '',
+          errors: [new Error('password error!')],
+        },
+      });
     });
   };
 
