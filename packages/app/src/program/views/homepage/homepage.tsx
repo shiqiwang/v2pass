@@ -6,11 +6,11 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import FolderDetail from '../../components/folderDetail';
+import NewFolder from '../../components/newFolder';
+import NewItem from '../../components/newItem';
 import PasswordDetail from '../../components/passwordDetail';
 import PasswordList from '../../components/passwordList';
 import PasswordSearch from '../../components/passwordSearch';
-import NewFolder from '../../components/public/newFolder';
-import NewItem from '../../components/public/newItem';
 import {Router} from '../../router';
 
 const password = {
