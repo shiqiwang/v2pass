@@ -1,3 +1,5 @@
+import {Button, Col, Dropdown, Menu, Row} from 'antd';
+import {ClickParam} from 'antd/lib/menu';
 import {RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
@@ -32,14 +34,28 @@ class HomePage extends Component<HomePageProps> {
   private newItemDrawerVisible = false;
 
   render(): ReactNode {
-    let {match} = this.props;
-
-    console.log(match.$params.id);
+    // let {match} = this.props;
+    // console.log(match.$params.id); 如果有query等可以用该方式获取
+    const menu = (
+      <Menu onClick={(value): void => this.onAddButtonClick(value)}>
+        <Menu.Item key="newFolder">New Folder</Menu.Item>
+        <Menu.Item key="newItem">New Item</Menu.Item>
+        <Menu.Item key="newRandomPass">Generate Password</Menu.Item>
+      </Menu>
+    );
 
     return (
       <div className="homePage">
-        <button onClick={this.onNewFolderButtonClick}>show new folder</button>
-        <button onClick={this.onNewItemButtonClick}>show new Item</button>
+        <Row>
+          <Col span={20}>
+            <PasswordSearch />
+          </Col>
+          <Col span={4}>
+            <Dropdown overlay={menu}>
+              <Button type="primary" icon="plus" />
+            </Dropdown>
+          </Col>
+        </Row>
         <NewFolder
           drawer={{
             visible: this.newFolderDrawerVisible,
@@ -52,7 +68,6 @@ class HomePage extends Component<HomePageProps> {
             onClose: this.onNewItemDrawerClose,
           }}
         />
-        <PasswordSearch />
         <PasswordList />
         <PasswordDetail password={password} />
         <FolderDetail folderName="folderName" folderDetail="folder detail" />
@@ -64,16 +79,22 @@ class HomePage extends Component<HomePageProps> {
     this.toggleNewFolderDrawer(false);
   };
 
-  private onNewFolderButtonClick = (): void => {
-    this.toggleNewFolderDrawer(true);
-  };
-
   private onNewItemDrawerClose = (): void => {
     this.toggleNewItemDrawer(false);
   };
 
-  private onNewItemButtonClick = (): void => {
-    this.toggleNewItemDrawer(true);
+  private onAddButtonClick = (value: ClickParam): void => {
+    switch (value.key) {
+      case 'newFolder':
+        this.toggleNewFolderDrawer(true);
+        break;
+      case 'newItem':
+        this.toggleNewItemDrawer(true);
+        break;
+      case 'newRandomPass':
+        console.log('new random pass');
+        break;
+    }
   };
 
   @action

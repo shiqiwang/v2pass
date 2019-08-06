@@ -96,6 +96,8 @@ class Login extends Component<LoginPageProps> {
     const {validateFields, setFields} = this.props.form!;
     validateFields((error, values) => {
       const {password, userName} = values;
+      // 后面删除
+      router.unlock.$push();
 
       if (!error && userName === 'emi' && password === '123') {
         router.unlock.$push();

@@ -72,6 +72,9 @@ class UnlockPage extends Component<UnlockPageProps> {
     const {validateFields, setFields} = this.props.form!;
     validateFields((error, values) => {
       // 假设密码为123
+      // 后面删除
+      router.homepage.$push();
+
       if (!error && values.password === '123') {
         // 加密
         // 测试
