@@ -1,3 +1,4 @@
+import {RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
@@ -8,6 +9,7 @@ import PasswordList from '../../components/passwordList';
 import PasswordSearch from '../../components/passwordSearch';
 import NewFolder from '../../components/public/newFolder';
 import NewItem from '../../components/public/newItem';
+import {Router} from '../../router';
 
 const password = {
   title: 'password',
@@ -19,14 +21,21 @@ const password = {
   moreInfo: [{label: 'more', value: 'info'}],
 };
 
+export interface HomePageProps
+  extends RouteComponentProps<Router['homepage']> {}
+
 @observer
-class HomePage extends Component {
+class HomePage extends Component<HomePageProps> {
   @observable
   private newFolderDrawerVisible = false;
   @observable
   private newItemDrawerVisible = false;
 
   render(): ReactNode {
+    let {match} = this.props;
+
+    console.log(match.$params.id);
+
     return (
       <div className="homePage">
         <button onClick={this.onNewFolderButtonClick}>show new folder</button>

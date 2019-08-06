@@ -1,5 +1,5 @@
 import {Button, Drawer, Form, Input} from 'antd';
-import {FormProps} from 'antd/lib/form';
+import {FormComponentProps} from 'antd/lib/form';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {
@@ -18,7 +18,7 @@ interface NewItemDrawerOptionsInterface {
   onClose(): void;
 }
 
-interface NewItemPropsInterface extends FormProps {
+interface NewItemProps extends FormComponentProps {
   drawer: NewItemDrawerOptionsInterface;
 }
 
@@ -34,7 +34,7 @@ interface FormDataInterface {
 type FormDataLabelType = keyof FormDataInterface;
 
 @observer
-class NewItem extends Component<NewItemPropsInterface> {
+class NewItem extends Component<NewItemProps> {
   @observable
   private data: FormDataInterface = {
     title: '',
@@ -180,5 +180,5 @@ class NewItem extends Component<NewItemPropsInterface> {
   }
 }
 
-export default Form.create({name: 'new_item'})(NewItem);
+export default Form.create<NewItemProps>({name: 'new_item'})(NewItem);
 export * from './additionalSection';

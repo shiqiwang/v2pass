@@ -1,5 +1,5 @@
 import {Button, Drawer, Form, Input} from 'antd';
-import {FormProps} from 'antd/lib/form';
+import {FormComponentProps} from 'antd/lib/form';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {
@@ -16,7 +16,7 @@ interface NewFolderDrawerOptions {
   onClose(): void;
 }
 
-interface NewFolderProps extends FormProps {
+interface NewFolderProps extends FormComponentProps {
   drawer: NewFolderDrawerOptions;
 }
 
@@ -99,4 +99,4 @@ class NewFolder extends Component<NewFolderProps> {
   }
 }
 
-export default Form.create({name: 'new_folder'})(NewFolder);
+export default Form.create<NewFolderProps>({name: 'new_folder'})(NewFolder);

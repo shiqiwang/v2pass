@@ -1,6 +1,8 @@
 import {Button, Form, Icon, Input} from 'antd';
-import {FormProps} from 'antd/lib/form';
+import {FormComponentProps} from 'antd/lib/form';
+import {Link, RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
+import {observer} from 'mobx-react';
 import React, {
   ChangeEventHandler,
   Component,
@@ -8,9 +10,16 @@ import React, {
   ReactNode,
 } from 'react';
 
+import {Router, router} from '../../router';
+
 import './unlock.less';
 
-class UnlockPage extends Component<FormProps> {
+export interface UnlockPageProps
+  extends FormComponentProps,
+    RouteComponentProps<Router['unlock']> {}
+
+@observer
+class UnlockPage extends Component<UnlockPageProps> {
   @observable
   private password = '';
 
@@ -19,6 +28,7 @@ class UnlockPage extends Component<FormProps> {
 
     return (
       <div className="loginPage">
+        {/* <Link to={router.homepage}>home</Link> */}
         <Form
           onSubmit={this.onFormSubmit}
           className="loginForm"
@@ -57,7 +67,10 @@ class UnlockPage extends Component<FormProps> {
     this.props.form!.validateFields((error, values) => {
       if (!error) {
         // 加密
-        console.log('submit', values);
+        // 测试
+        if (values.password === '123') {
+          router.homepage.$push();
+        }
       }
     });
   };
@@ -68,4 +81,4 @@ class UnlockPage extends Component<FormProps> {
   }
 }
 
-export default Form.create({name: 'unlock_page'})(UnlockPage);
+export default Form.create<UnlockPageProps>({name: 'unlock_page'})(UnlockPage);
