@@ -5,8 +5,9 @@ import React, {Component, ReactNode} from 'react';
 
 import './index.less';
 
-interface FolderItemProps {
+export interface FolderItemProps {
   folderName: string;
+  folderId: number;
 }
 
 @observer
@@ -15,14 +16,16 @@ class FolderItem extends Component<FolderItemProps> {
   private folded = true;
 
   render(): ReactNode {
+    const {folderName, folderId} = this.props;
+
     return (
-      <div className="folderItem">
+      <div className="folderItem" data-folderId={folderId}>
         <Row onClick={this.onFoldedChange}>
           <Col span={2}>
             <Icon type={this.folded ? 'folder' : 'folder-open'} />
           </Col>
           <Col span={20} className="folderName">
-            {this.props.folderName}
+            {folderName}
           </Col>
           <Col span={2}>
             <Icon type={this.folded ? 'right' : 'down'} />

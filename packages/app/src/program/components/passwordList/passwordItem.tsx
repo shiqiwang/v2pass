@@ -9,9 +9,10 @@ import NewItem from '../public/newItem';
 
 import './index.less';
 
-interface PasswordItemProps {
+export interface PasswordItemProps {
   name: string;
   collect: boolean;
+  id: number;
 }
 
 @observer
@@ -30,6 +31,7 @@ class PasswordItem extends Component<PasswordItemProps> {
         <Menu.Item key={DELETE}>Delete</Menu.Item>
       </Menu>
     );
+    const {name, id} = this.props;
 
     return (
       <div className="passwordItem">
@@ -48,7 +50,7 @@ class PasswordItem extends Component<PasswordItemProps> {
         >
           <p>if delete, you will lost the data forever, continue?</p>
         </Modal>
-        <Row>
+        <Row data-itemId={id}>
           <Col span={2} offset={2}>
             {this.collectStatus ? (
               <Icon
@@ -65,7 +67,7 @@ class PasswordItem extends Component<PasswordItemProps> {
             )}
           </Col>
           <Col span={18} className="name">
-            {this.props.name}
+            {name}
           </Col>
           <Col span={2}>
             <Dropdown overlay={menu}>
