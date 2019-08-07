@@ -8,7 +8,7 @@ class PasswordList extends Component {
     return (
       <div>
         <FolderItem />
-        <PasswordItem />
+        <PasswordItem collect={true} name="hello" />
       </div>
     );
   }

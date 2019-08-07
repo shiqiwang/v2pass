@@ -15,6 +15,7 @@ import AdditionSection, {AdditionalSectionInterface} from './additionalSection';
 
 interface NewItemDrawerOptionsInterface {
   visible: boolean;
+  title?: string;
   onClose(): void;
 }
 
@@ -56,7 +57,6 @@ class NewItem extends Component<NewItemProps> {
     ],
   };
 
-  @observable
   render(): ReactNode {
     const {drawer: drawerOptions} = this.props;
     const {getFieldDecorator} = this.props.form!;
@@ -71,7 +71,7 @@ class NewItem extends Component<NewItemProps> {
     return (
       <Drawer
         width={400}
-        title="New Item"
+        title={drawerOptions.title ? drawerOptions.title : 'New Item'}
         placement="right"
         closable={false}
         onClose={drawerOptions.onClose}
