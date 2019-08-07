@@ -12,6 +12,7 @@ import NewRandomPass from '../../components/newRandomPass';
 import PasswordDetail from '../../components/passwordDetail';
 import PasswordList from '../../components/passwordList';
 import PasswordSearch from '../../components/passwordSearch';
+import {NEW_FOLDER, NEW_ITEM, NEW_RANDOM_PASS} from '../../const/const';
 import {Router} from '../../router';
 
 const password = {
@@ -41,9 +42,9 @@ class HomePage extends Component<HomePageProps> {
     // console.log(match.$params.id); 如果有query等可以用该方式获取
     const menu = (
       <Menu onClick={(value): void => this.onAddButtonClick(value)}>
-        <Menu.Item key="newFolder">New Folder</Menu.Item>
-        <Menu.Item key="newItem">New Item</Menu.Item>
-        <Menu.Item key="newRandomPass">Generate Password</Menu.Item>
+        <Menu.Item key={NEW_FOLDER}>New Folder</Menu.Item>
+        <Menu.Item key={NEW_ITEM}>New Item</Menu.Item>
+        <Menu.Item key={NEW_RANDOM_PASS}>Generate Password</Menu.Item>
       </Menu>
     );
 
@@ -62,19 +63,19 @@ class HomePage extends Component<HomePageProps> {
         <NewFolder
           drawer={{
             visible: this.newFolderDrawerVisible,
-            onClose: () => this.onClose('newFolder'),
+            onClose: () => this.onClose(NEW_FOLDER),
           }}
         />
         <NewItem
           drawer={{
             visible: this.newItemDrawerVisible,
-            onClose: () => this.onClose('newItem'),
+            onClose: () => this.onClose(NEW_ITEM),
           }}
         />
         <NewRandomPass
           drawer={{
             visible: this.newRandomPassDrawerVisible,
-            onClose: () => this.onClose('newRandomPass'),
+            onClose: () => this.onClose(NEW_RANDOM_PASS),
           }}
         />
         <PasswordList />
@@ -95,13 +96,13 @@ class HomePage extends Component<HomePageProps> {
   @action
   private toggleDrawer(type: string, visible: boolean): void {
     switch (type) {
-      case 'newFolder':
+      case NEW_FOLDER:
         this.newFolderDrawerVisible = visible;
         break;
-      case 'newItem':
+      case NEW_ITEM:
         this.newItemDrawerVisible = visible;
         break;
-      case 'newRandomPass':
+      case NEW_RANDOM_PASS:
         this.newRandomPassDrawerVisible = visible;
         break;
     }
