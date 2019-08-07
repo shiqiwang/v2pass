@@ -8,6 +8,7 @@ import React, {Component, ReactNode} from 'react';
 import FolderDetail from '../../components/folderDetail';
 import NewFolder from '../../components/newFolder';
 import NewItem from '../../components/newItem';
+import NewRandomPass from '../../components/newRandomPass';
 import PasswordDetail from '../../components/passwordDetail';
 import PasswordList from '../../components/passwordList';
 import PasswordSearch from '../../components/passwordSearch';
@@ -32,6 +33,8 @@ class HomePage extends Component<HomePageProps> {
   private newFolderDrawerVisible = false;
   @observable
   private newItemDrawerVisible = false;
+  @observable
+  private newRandomPassDrawerVisible = false;
 
   render(): ReactNode {
     // let {match} = this.props;
@@ -68,6 +71,12 @@ class HomePage extends Component<HomePageProps> {
             onClose: this.onNewItemDrawerClose,
           }}
         />
+        <NewRandomPass
+          drawer={{
+            visible: this.newRandomPassDrawerVisible,
+            onClose: this.onNewRandomPassDrawerClose,
+          }}
+        />
         <PasswordList />
         <PasswordDetail password={password} />
         <FolderDetail folderName="folderName" folderDetail="folder detail" />
@@ -83,6 +92,10 @@ class HomePage extends Component<HomePageProps> {
     this.toggleNewItemDrawer(false);
   };
 
+  private onNewRandomPassDrawerClose = (): void => {
+    this.toggleNewRandomPassDrawer(false);
+  };
+
   private onAddButtonClick = (value: ClickParam): void => {
     switch (value.key) {
       case 'newFolder':
@@ -92,7 +105,7 @@ class HomePage extends Component<HomePageProps> {
         this.toggleNewItemDrawer(true);
         break;
       case 'newRandomPass':
-        console.log('new random pass');
+        this.toggleNewRandomPassDrawer(true);
         break;
     }
   };
@@ -105,6 +118,11 @@ class HomePage extends Component<HomePageProps> {
   @action
   private toggleNewItemDrawer(visible: boolean): void {
     this.newItemDrawerVisible = visible;
+  }
+
+  @action
+  private toggleNewRandomPassDrawer(visible: boolean): void {
+    this.newRandomPassDrawerVisible = visible;
   }
 }
 
