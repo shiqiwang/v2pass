@@ -50,7 +50,7 @@ class PasswordItem extends Component<PasswordItemProps> {
         >
           <p>if delete, you will lost the data forever, continue?</p>
         </Modal>
-        <Row data-itemId={id}>
+        <Row data-item-id={id}>
           <Col span={2} offset={2}>
             {this.collectStatus ? (
               <Icon
