@@ -62,19 +62,19 @@ class HomePage extends Component<HomePageProps> {
         <NewFolder
           drawer={{
             visible: this.newFolderDrawerVisible,
-            onClose: this.onNewFolderDrawerClose,
+            onClose: () => this.onClose('newFolder'),
           }}
         />
         <NewItem
           drawer={{
             visible: this.newItemDrawerVisible,
-            onClose: this.onNewItemDrawerClose,
+            onClose: () => this.onClose('newItem'),
           }}
         />
         <NewRandomPass
           drawer={{
             visible: this.newRandomPassDrawerVisible,
-            onClose: this.onNewRandomPassDrawerClose,
+            onClose: () => this.onClose('newRandomPass'),
           }}
         />
         <PasswordList />
@@ -84,45 +84,27 @@ class HomePage extends Component<HomePageProps> {
     );
   }
 
-  private onNewFolderDrawerClose = (): void => {
-    this.toggleNewFolderDrawer(false);
-  };
-
-  private onNewItemDrawerClose = (): void => {
-    this.toggleNewItemDrawer(false);
-  };
-
-  private onNewRandomPassDrawerClose = (): void => {
-    this.toggleNewRandomPassDrawer(false);
+  private onClose = (type: string): void => {
+    this.toggleDrawer(type, false);
   };
 
   private onAddButtonClick = (value: ClickParam): void => {
-    switch (value.key) {
-      case 'newFolder':
-        this.toggleNewFolderDrawer(true);
-        break;
-      case 'newItem':
-        this.toggleNewItemDrawer(true);
-        break;
-      case 'newRandomPass':
-        this.toggleNewRandomPassDrawer(true);
-        break;
-    }
+    this.toggleDrawer(value.key, true);
   };
 
   @action
-  private toggleNewFolderDrawer(visible: boolean): void {
-    this.newFolderDrawerVisible = visible;
-  }
-
-  @action
-  private toggleNewItemDrawer(visible: boolean): void {
-    this.newItemDrawerVisible = visible;
-  }
-
-  @action
-  private toggleNewRandomPassDrawer(visible: boolean): void {
-    this.newRandomPassDrawerVisible = visible;
+  private toggleDrawer(type: string, visible: boolean): void {
+    switch (type) {
+      case 'newFolder':
+        this.newFolderDrawerVisible = visible;
+        break;
+      case 'newItem':
+        this.newItemDrawerVisible = visible;
+        break;
+      case 'newRandomPass':
+        this.newRandomPassDrawerVisible = visible;
+        break;
+    }
   }
 }
 
