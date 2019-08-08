@@ -9,10 +9,16 @@ import NewItem from '../public/newItem';
 
 import './index.less';
 
-export interface PasswordItemProps {
+export interface PasswordItemData {
   name: string;
   collect: boolean;
   id: number;
+  parentId: number;
+}
+
+interface PasswordItemProps extends PasswordItemData {
+  style: {backgroundColor: string; border: string} | undefined;
+  onItemClick(id: number, parentId: number): void;
 }
 
 @observer
@@ -31,10 +37,10 @@ class PasswordItem extends Component<PasswordItemProps> {
         <Menu.Item key={DELETE}>Delete</Menu.Item>
       </Menu>
     );
-    const {name, id} = this.props;
+    const {name, id, parentId, onItemClick, style} = this.props;
 
     return (
-      <div className="passwordItem">
+      <div className="passwordItem" style={style}>
         <NewItem
           drawer={{
             visible: this.editItemDrawerVisible,
@@ -50,7 +56,11 @@ class PasswordItem extends Component<PasswordItemProps> {
         >
           <p>if delete, you will lost the data forever, continue?</p>
         </Modal>
-        <Row data-item-id={id}>
+        <Row
+          data-item-id={id}
+          data-parent-id={parentId}
+          onClick={() => onItemClick(id, parentId)}
+        >
           <Col span={2} offset={2}>
             {this.collectStatus ? (
               <Icon

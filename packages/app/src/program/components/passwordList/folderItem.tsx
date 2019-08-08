@@ -11,16 +11,17 @@ export interface FolderData {
 
 interface FolderItemProps extends FolderData {
   folded: boolean;
+  style: {backgroundColor: string; border: string} | undefined;
   changeFoldedStatus(folded: boolean, folderId: number): void;
 }
 
 @observer
 class FolderItem extends Component<FolderItemProps> {
   render(): ReactNode {
-    const {folderName, folderId, folded} = this.props;
+    const {folderName, folderId, folded, style} = this.props;
 
     return (
-      <div className="folderItem" data-folder-id={folderId}>
+      <div className="folderItem" data-folder-id={folderId} style={style}>
         <Row onClick={this.onFoldedChange}>
           <Col span={2}>
             <Icon type={folded ? 'folder' : 'folder-open'} />
