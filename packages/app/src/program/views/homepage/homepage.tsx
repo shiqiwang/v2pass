@@ -1,6 +1,5 @@
 import {Col, Row} from 'antd';
 import {RouteComponentProps} from 'boring-router-react';
-import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
@@ -46,6 +45,7 @@ class HomePage extends Component<HomePageProps> {
             <FolderDetail
               folderName="folderName"
               folderDetail="folder detail"
+              folderId={0}
             />
           </Col>
         </Row>

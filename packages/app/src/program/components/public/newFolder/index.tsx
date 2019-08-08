@@ -13,6 +13,7 @@ import './index.less';
 
 interface NewFolderDrawerOptions {
   visible: boolean;
+  title?: string;
   onClose(): void;
 }
 
@@ -32,15 +33,16 @@ class NewFolder extends Component<NewFolderProps> {
     const {drawer: drawerOptions} = this.props;
     const {getFieldDecorator} = this.props.form!;
     const {TextArea} = Input;
+    const {onClose, visible, title} = drawerOptions;
 
     return (
       <Drawer
         width={400}
-        title="New Folder"
+        title={title ? title : 'New Folder'}
         placement="right"
         closable={false}
-        onClose={drawerOptions.onClose}
-        visible={drawerOptions.visible}
+        onClose={onClose}
+        visible={visible}
       >
         <Form onSubmit={this.onFormSubmit} className="newFolderForm">
           <Form.Item label="folder name">
