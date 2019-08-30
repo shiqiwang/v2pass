@@ -7,7 +7,6 @@ import Vault from './vault';
 export default interface User {
   _id: string;
   username: string;
-  avatar: any; // 用户头像文件
   email: string; // 前后端应该验证email格式
   unlockKey: string; // 登录 解锁密钥，应当是master password和 secret key的衍生物
   data: {

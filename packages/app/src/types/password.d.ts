@@ -4,7 +4,6 @@ interface Password {
   _id: string;
   items: PasswordItem[];
   collect: boolean;
-  avatar: any;
   pass_name: string;
 }
 

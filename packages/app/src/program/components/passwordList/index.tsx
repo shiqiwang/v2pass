@@ -176,3 +176,4 @@ class PasswordList extends Component {
 export default PasswordList;
 export * from './folderItem';
 export * from './passwordItem';
+export * from './vaultItem';
