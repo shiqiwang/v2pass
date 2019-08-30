@@ -5,5 +5,5 @@
 export default interface Folder {
   name: string;
   describe: string;
-  avatar: File;
+  avatar: any;
 }

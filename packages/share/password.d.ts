@@ -6,7 +6,7 @@ export default Password;
 interface Password {
   items: PasswordItem[];
   collect: boolean; // 是否被收藏
-  avatar: File; // 密码项头像文件
+  avatar: any; // 密码项头像文件
   pass_name: string; // 整个密码项的名字
 } // 这好像不对吧...???
 

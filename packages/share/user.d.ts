@@ -6,7 +6,9 @@ import Vault from './vault';
  */
 export default interface User {
   username: string;
-  avatar: File; // 用户头像文件
+  avatar: any; // 用户头像文件
+  email: string;
+  unlockKey: string; // 登录 解锁密钥，应当是master password和 secret key的衍生物
   data: {
     // 这种把folder存在user下的方式是否不大好，有shared后不还扩展。存folderIds[]是否更好
     // 同理targetIds[]和passwordIds[]呢？
@@ -14,13 +16,13 @@ export default interface User {
     vaults: Vault[];
     passwords: Password[];
   };
-  keySet: null; // 暂时folder只做private，有shared后keySet: KeySet
+  keySet: undefined; // 暂时folder只做private，有shared后keySet: KeySet
 }
 
 interface KeySet {
   uuid: string;
-  encSymmetricKey: JsonWebKey;
+  encSymmetricKey: JSON; // 为什么一开始可以用JsonWebKey？？？
   encryptedBy: string;
-  publicKey: JsonWebKey;
-  encPrivateKey: JsonWebKey;
+  publicKey: JSON;
+  encPrivateKey: JSON;
 } // 1password是这些，可能还会有具体区别，比如个人的，作为管理员的，等等
