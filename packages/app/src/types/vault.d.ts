@@ -1,7 +1,3 @@
-/**
- * 使用Vault接口时，前后端都需要引入_id
- */
-
 import {Nominal} from 'tslang';
 type UserId = Nominal<string, 'user-id'>;
 import Folder from './folder';
@@ -9,6 +5,7 @@ import Folder from './folder';
 type Vault = SharedVault | PrivateVault;
 
 interface SharedVault {
+  _id: string;
   name: string;
   type: 'shared';
   describe: string;
@@ -19,6 +16,7 @@ interface SharedVault {
 }
 
 interface PrivateVault {
+  _id: string;
   name: string;
   type: 'private';
   describe: string;

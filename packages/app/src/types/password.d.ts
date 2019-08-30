@@ -1,14 +1,12 @@
-/**
- * 使用Password接口时，前端和后端都需要引入_id，folderId, targetId
- */
 export default Password;
 
 interface Password {
+  _id: string;
   items: PasswordItem[];
-  collect: boolean; // 是否被收藏
-  avatar: any; // 密码项头像文件
-  pass_name: string; // 整个密码项的名字
-} // 这好像不对吧...???
+  collect: boolean;
+  avatar: any;
+  pass_name: string;
+}
 
 type PasswordItem =
   | NameInfoItem

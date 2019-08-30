@@ -1,7 +1,5 @@
-/**
- * 使用Target接口时，前端和后端都需要引入_id，user
- */
 export default interface Target {
+  _id: string;
   displayName: string;
   entries: TargetEntry[];
 }

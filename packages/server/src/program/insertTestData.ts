@@ -13,6 +13,7 @@ const userDocument: User[] = [
     email: 'shiqi.wang@live.com',
     avatar: undefined,
     unlockKey: '123',
+    // 这里data后面应当是加密后的数据
     data: {
       targets: [
         {
