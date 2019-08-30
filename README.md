@@ -1,5 +1,10 @@
 # v2pass
 
+## app
+
+1. 启动 app，类似命令：`yarn workspace @v2pass/app watch:program`
+2. 启动 app 命令结构：`yarn workspace workspaceName packageJsonScriptsCommand`
+
 ## server
 
 1. server 部分代码编译：`yarn tsc`或`yarn tsc -p .`

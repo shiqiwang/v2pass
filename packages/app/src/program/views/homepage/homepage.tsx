@@ -11,6 +11,8 @@ import PasswordSearch from '../../components/passwordSearch';
 import {Router} from '../../router';
 
 import './homepage.less';
+
+import {userData} from './testData';
 const password = {
   title: 'password',
   iconType: 'file',

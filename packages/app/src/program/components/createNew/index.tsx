@@ -4,10 +4,16 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {NEW_FOLDER, NEW_ITEM, NEW_RANDOM_PASS} from '../../const/const';
+import {
+  NEW_FOLDER,
+  NEW_ITEM,
+  NEW_RANDOM_PASS,
+  NEW_VAULT,
+} from '../../const/const';
 import NewFolder from '../public/newFolder';
 import NewItem from '../public/newItem';
 import NewRandomPass from '../public/newRandomPass';
+import NewVault from '../public/newVault';
 
 @observer
 class CreateNew extends Component {
@@ -17,10 +23,13 @@ class CreateNew extends Component {
   private newItemDrawerVisible = false;
   @observable
   private newRandomPassDrawerVisible = false;
+  @observable
+  private newVaultDrawerVisible = false;
 
   render(): ReactNode {
     const menu = (
       <Menu onClick={(value): void => this.onAddButtonClick(value)}>
+        <Menu.Item key={NEW_VAULT}>New Vault</Menu.Item>
         <Menu.Item key={NEW_FOLDER}>New Folder</Menu.Item>
         <Menu.Item key={NEW_ITEM}>New Item</Menu.Item>
         <Menu.Item key={NEW_RANDOM_PASS}>Generate Password</Menu.Item>
@@ -29,6 +38,12 @@ class CreateNew extends Component {
 
     return (
       <div className="createNew">
+        <NewVault
+          drawer={{
+            visible: this.newVaultDrawerVisible,
+            onClose: () => this.onClose(NEW_VAULT),
+          }}
+        />
         <NewFolder
           drawer={{
             visible: this.newFolderDrawerVisible,
@@ -67,6 +82,9 @@ class CreateNew extends Component {
   @action
   private toggleDrawer(type: string, visible: boolean): void {
     switch (type) {
+      case NEW_VAULT:
+        this.newVaultDrawerVisible = visible;
+        break;
       case NEW_FOLDER:
         this.newFolderDrawerVisible = visible;
         break;
