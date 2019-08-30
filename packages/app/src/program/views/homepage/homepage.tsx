@@ -13,15 +13,7 @@ import {Router} from '../../router';
 import './homepage.less';
 
 import {userData} from './testData';
-const password = {
-  title: 'password',
-  iconType: 'file',
-  note: 'note',
-  pass: '1234567',
-  userName: 'emi',
-  target: ['taobao.com', 'tianmao.com'],
-  moreInfo: [{label: 'more', value: 'info'}],
-};
+const {passwords, targets, folders, vaults} = userData.data;
 
 export interface HomePageProps
   extends RouteComponentProps<Router['homepage']> {}
@@ -43,7 +35,7 @@ class HomePage extends Component<HomePageProps> {
             <PasswordList />
           </Col>
           <Col span={16}>
-            <PasswordDetail password={password} />
+            <PasswordDetail password={passwords[0]} />
             <FolderDetail
               folderName="folderName"
               folderDetail="folder detail"

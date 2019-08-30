@@ -1,13 +1,15 @@
 export default Password;
-
 interface Password {
   _id: string;
+  folderId: string;
+  vaultId: string;
   items: PasswordItem[];
   collect: boolean;
   pass_name: string;
+  targetId: string;
 }
 
-type PasswordItem =
+export type PasswordItem =
   | NameInfoItem
   | PhoneNumberInfoItem
   | EmailInfoItem

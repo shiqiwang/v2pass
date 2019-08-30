@@ -1,6 +1,7 @@
 import Target from './target';
 import Password from './password';
 import Vault from './vault';
+import Folder from './folder';
 /**
  * 使用Target接口时，前端和后端都需引入_id
  */
@@ -15,6 +16,7 @@ export default interface User {
     targets: Target[];
     vaults: Vault[];
     passwords: Password[];
+    folders: Folder[];
   };
   // keySet: undefined; 暂时folder只做private，有shared后keySet: KeySet
 }

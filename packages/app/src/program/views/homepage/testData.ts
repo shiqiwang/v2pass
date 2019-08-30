@@ -13,6 +13,11 @@ export const userData: User = {
         displayName: '阿里云',
         entries: [{type: 'website', url: 'https://aliyun.com'}],
       },
+      {
+        _id: '2',
+        displayName: '腾讯系',
+        entries: [{type: 'website', url: 'https://qq.com'}],
+      },
     ],
     vaults: [
       {
@@ -20,21 +25,41 @@ export const userData: User = {
         name: 'vault',
         type: 'private',
         describe: 'test vault',
-        folders: [
-          {
-            _id: '1',
-            name: 'test folder',
-            describe: 'test folder',
-          },
-        ],
       },
     ],
     passwords: [
       {
         _id: '1',
-        items: [],
+        folderId: '1',
+        targetId: '2',
+        vaultId: '1',
+        items: [
+          {
+            type: 'userName',
+            label: 'name',
+            value: 'emi wang',
+          },
+          {
+            type: 'password',
+            label: 'password',
+            value: '123',
+          },
+          {
+            type: 'text',
+            label: 'describe',
+            value: 'for test',
+          },
+        ],
         collect: true,
         pass_name: 'test item',
+      },
+    ],
+    folders: [
+      {
+        _id: '1',
+        vaultId: '1',
+        name: 'test folder',
+        describe: 'test folder',
       },
     ],
   },

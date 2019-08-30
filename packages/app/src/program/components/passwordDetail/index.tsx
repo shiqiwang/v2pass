@@ -2,71 +2,36 @@ import {Col, Empty, Icon, Row} from 'antd';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import Password from '../../../types/password';
+import CopyableContainer from '../public/copyableContainer';
+
 import './index.less';
 
-interface MoreInfo {
-  label: string;
-  value: string;
-}
-
-interface Password {
-  title: string;
-  iconType: string;
-  note?: string;
-  pass: string;
-  userName: string;
-  target: string[];
-  moreInfo?: MoreInfo[];
-}
-
-interface PasswordDetailProps {
+interface PasswordProps {
   password: Password;
 }
 
 @observer
-class PasswordDetail extends Component<PasswordDetailProps> {
+class PasswordDetail extends Component<PasswordProps> {
   render(): ReactNode {
-    const {
-      title,
-      note,
-      iconType,
-      pass,
-      userName,
-      target,
-      moreInfo,
-    } = this.props.password;
+    const {password} = this.props;
 
     return (
       <div className="passwordDetail">
         <div className="header">
           <Row>
             <Col span={2}>
-              <Icon type={iconType} />
+              <Icon type="book" />
             </Col>
             <Col span={22}>
-              <h4>{title}</h4>
+              <h4>{password.pass_name}</h4>
             </Col>
           </Row>
-        </div>
-        {note && <div className="note">{note}</div>}
-        <div className="main">
-          <div>{userName}</div>
-          <div>{pass}</div>
-        </div>
-        <div className="matchTarget">
-          <h4>匹配目标</h4>
-          {target.map((item, index) => (
-            <div key={String(index)}>{item}</div>
-          ))}
-        </div>
-        <div className="moreInfo">
-          {moreInfo &&
-            moreInfo.map((item, index) => (
-              <div key={String(index)}>
-                <h4>{item.label}</h4>
-                <div>{item.value}</div>
-              </div>
+          <div className="main">
+            {password.items.map((item, index) => (
+              <CopyableContainer key={String(index)} data={item} />
             ))}
+          </div>
         </div>
       </div>
     );
