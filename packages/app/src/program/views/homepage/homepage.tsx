@@ -6,14 +6,15 @@ import React, {Component, ReactNode} from 'react';
 import CreateNew from '../../components/createNew';
 import FolderDetail from '../../components/folderDetail';
 import PasswordDetail from '../../components/passwordDetail';
-import PasswordList from '../../components/passwordList';
+import PasswordList from '../../components/passwordList/passwordList';
 import PasswordSearch from '../../components/passwordSearch';
+import VaultDetail from '../../components/vaultDetail';
 import {Router} from '../../router';
 
 import './homepage.less';
 
 import {userData} from './testData';
-const {passwords, targets, folders, vaults} = userData.data;
+const {vaults, targets} = userData.data;
 
 export interface HomePageProps
   extends RouteComponentProps<Router['homepage']> {}
@@ -32,20 +33,22 @@ class HomePage extends Component<HomePageProps> {
         </div>
         <Row className="mainBody">
           <Col span={8}>
-            <PasswordList />
+            <PasswordList vaults={vaults} select={this.contentChange} />
           </Col>
           <Col span={16}>
-            <PasswordDetail password={passwords[0]} />
+            {/* <PasswordDetail password={} />
             <FolderDetail
               folderName="folderName"
               folderDetail="folder detail"
               folderId={0}
-            />
+            /> */}
           </Col>
         </Row>
       </div>
     );
   }
+
+  private contentChange(): void {}
 }
 
 export default HomePage;

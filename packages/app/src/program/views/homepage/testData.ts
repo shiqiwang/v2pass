@@ -1,4 +1,7 @@
 // 测试数据
+// 这种数据结构真的合理吗？
+// 如果是嵌套的password -> folder -> vault这样存储有什么弊端呢？
+// 试试嵌套的数据
 import User from '../../../types/user';
 export const userData: User = {
   _id: '1',
@@ -25,41 +28,63 @@ export const userData: User = {
         name: 'vault',
         type: 'private',
         describe: 'test vault',
-      },
-    ],
-    passwords: [
-      {
-        _id: '1',
-        folderId: '1',
-        targetId: '2',
-        vaultId: '1',
-        items: [
+        folders: [
           {
-            type: 'userName',
-            label: 'name',
-            value: 'emi wang',
-          },
-          {
-            type: 'password',
-            label: 'password',
-            value: '123',
-          },
-          {
-            type: 'text',
-            label: 'describe',
-            value: 'for test',
+            _id: '1',
+            vaultId: '1',
+            name: 'test folder',
+            describe: 'test folder',
+            passwords: [
+              {
+                _id: '1',
+                folderId: '1',
+                targetId: '2',
+                vaultId: '1',
+                items: [
+                  {
+                    type: 'userName',
+                    label: 'name',
+                    value: 'emi wang',
+                  },
+                  {
+                    type: 'password',
+                    label: 'password',
+                    value: '123',
+                  },
+                  {
+                    type: 'text',
+                    label: 'describe',
+                    value: 'for test',
+                  },
+                ],
+                collect: true,
+                pass_name: 'test item',
+              },
+            ],
           },
         ],
-        collect: true,
-        pass_name: 'test item',
       },
-    ],
-    folders: [
       {
-        _id: '1',
-        vaultId: '1',
-        name: 'test folder',
-        describe: 'test folder',
+        _id: '2',
+        name: 'makeflow',
+        type: 'private',
+        describe: 'makeflow vault',
+        folders: [],
+      },
+      {
+        _id: '3',
+        name: 'tencent',
+        type: 'private',
+        describe: 'for tencent company product',
+        folders: [
+          {
+            _id: '1',
+            name: 'folder',
+            describe: 'a folder',
+            vaultId: '3',
+            passwords: [],
+          },
+        ],
       },
     ],
   },

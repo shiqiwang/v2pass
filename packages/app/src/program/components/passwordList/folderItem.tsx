@@ -2,48 +2,38 @@ import {Col, Icon, Row} from 'antd';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import './index.less';
+import Folder from '../../../types/folder';
 
-export interface FolderData {
-  folderName: string;
-  folderId: number;
-}
+import './passwordList.less';
 
-interface FolderItemProps extends FolderData {
-  folded: boolean;
+interface FolderItemProps {
+  folder: Folder;
+  isActive: boolean;
   style: {backgroundColor: string; border: string} | undefined;
-  changeFoldedStatus(folded: boolean, folderId: number): void;
+  clickFolder(folderId: Folder['_id'], vaultId: Folder['vaultId']): void;
 }
 
 @observer
 class FolderItem extends Component<FolderItemProps> {
   render(): ReactNode {
-    const {folderName, folderId, folded, style} = this.props;
+    const {isActive, style, clickFolder, folder} = this.props;
 
     return (
-      <div className="folderItem" data-folder-id={folderId} style={style}>
-        <Row onClick={this.onFoldedChange}>
+      <div className="folderItem" style={style}>
+        <Row onClick={() => clickFolder(folder._id, folder.vaultId)}>
           <Col span={2}>
-            <Icon type={folded ? 'folder' : 'folder-open'} />
+            <Icon type={isActive ? 'folder-open' : 'folder'} />
           </Col>
           <Col span={20} className="folderName">
-            {folderName}
+            {folder.name}
           </Col>
           <Col span={2}>
-            <Icon type={folded ? 'right' : 'down'} />
+            <Icon type={isActive ? 'down' : 'right'} />
           </Col>
         </Row>
       </div>
     );
   }
-
-  private onFoldedChange = (): void => {
-    this.props.changeFoldedStatus(!this.props.folded, this.props.folderId);
-  };
-
-  static defaultProps = {
-    folderName: 'New folder',
-  };
 }
 
 export default FolderItem;

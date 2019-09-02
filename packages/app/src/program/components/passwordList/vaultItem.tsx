@@ -4,44 +4,37 @@ import React, {Component, ReactNode} from 'react';
 
 import Vault from '../../../types/vault';
 
-import './index.less';
+import './passwordList.less';
 
 interface VaultItemProps {
-  folded: boolean;
+  isActive: boolean;
   style: {backgroundColor: string; border: string} | undefined;
-  vault: {
-    name: Vault['name'];
-    _id: Vault['_id'];
-  };
-  changeVaultStatus(folded: boolean, _id: string): void;
+  vault: Vault;
+  clickVault(_id: Vault['_id']): void;
 }
 
 @observer
 class VaultItem extends Component<VaultItemProps> {
   render(): ReactNode {
-    const {name} = this.props.vault;
-    const {folded, style} = this.props;
+    const {name, _id} = this.props.vault;
+    const {isActive, style, clickVault} = this.props;
 
     return (
       <div className="vaultItem" style={style}>
-        <Row onClick={this.onFoldedChange}>
+        <Row onClick={() => clickVault(_id)}>
           <Col span={2}>
-            <Icon type={folded ? 'menu-fold' : 'menu-unfold'} />
+            <Icon type={isActive ? 'menu-unfold' : 'menu-fold'} />
           </Col>
           <Col span={20} className="name">
             {name}
           </Col>
           <Col span={2}>
-            <Icon type={folded ? 'right' : 'down'} />
+            <Icon type={isActive ? 'down' : 'right'} />
           </Col>
         </Row>
       </div>
     );
   }
-
-  private onFoldedChange = (): void => {
-    this.props.changeVaultStatus(!this.props.folded, this.props.vault._id);
-  };
 }
 
 export default VaultItem;

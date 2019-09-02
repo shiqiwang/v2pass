@@ -15,8 +15,6 @@ export default interface User {
     // 同理targetIds[]和passwordIds[]呢？
     targets: Target[];
     vaults: Vault[];
-    passwords: Password[];
-    folders: Folder[];
   };
   // keySet: undefined; 暂时folder只做private，有shared后keySet: KeySet
 }

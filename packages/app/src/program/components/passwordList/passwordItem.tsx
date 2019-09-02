@@ -4,21 +4,20 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import Password from '../../../types/password';
 import {DELETE, EDIT} from '../../const/const';
 import NewItem from '../public/newItem';
 
-import './index.less';
+import './passwordList.less';
 
-export interface PasswordItemData {
-  name: string;
-  collect: boolean;
-  id: number;
-  parentId: number;
-}
-
-interface PasswordItemProps extends PasswordItemData {
+interface PasswordItemProps {
   style: {backgroundColor: string; border: string} | undefined;
-  onItemClick(id: number, parentId: number): void;
+  password: Password;
+  clickPassword(
+    id: Password['_id'],
+    folderId: Password['folderId'],
+    vaultId: Password['vaultId'],
+  ): void;
 }
 
 @observer
@@ -26,7 +25,7 @@ class PasswordItem extends Component<PasswordItemProps> {
   @observable
   private editItemDrawerVisible = false;
   @observable
-  private collectStatus = this.props.collect;
+  private collectStatus = this.props.password.collect;
   @observable
   private showDeleteModal = false;
 
@@ -37,7 +36,8 @@ class PasswordItem extends Component<PasswordItemProps> {
         <Menu.Item key={DELETE}>Delete</Menu.Item>
       </Menu>
     );
-    const {name, id, parentId, onItemClick, style} = this.props;
+    const {clickPassword, style} = this.props;
+    const {pass_name, _id, folderId, vaultId} = this.props.password;
 
     return (
       <div className="passwordItem" style={style}>
@@ -56,11 +56,7 @@ class PasswordItem extends Component<PasswordItemProps> {
         >
           <p>if delete, you will lost the data forever, continue?</p>
         </Modal>
-        <Row
-          data-item-id={id}
-          data-parent-id={parentId}
-          onClick={() => onItemClick(id, parentId)}
-        >
+        <Row onClick={() => clickPassword(_id, folderId, vaultId)}>
           <Col span={2} offset={2}>
             {this.collectStatus ? (
               <Icon
@@ -77,7 +73,7 @@ class PasswordItem extends Component<PasswordItemProps> {
             )}
           </Col>
           <Col span={18} className="name">
-            {name}
+            {pass_name}
           </Col>
           <Col span={2}>
             <Dropdown overlay={menu}>
