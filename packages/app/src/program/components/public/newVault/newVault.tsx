@@ -11,7 +11,7 @@ import React, {
 
 import Vault from '../../../../types/vault';
 
-import './index.less';
+import './newVault.less';
 
 interface NewVaultDrawerOptions {
   visible: boolean;

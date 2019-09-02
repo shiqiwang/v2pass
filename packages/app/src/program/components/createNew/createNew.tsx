@@ -10,10 +10,10 @@ import {
   NEW_RANDOM_PASS,
   NEW_VAULT,
 } from '../../const/const';
-import NewFolder from '../public/newFolder';
-import NewItem from '../public/newItem';
-import NewRandomPass from '../public/newRandomPass';
-import NewVault from '../public/newVault';
+import NewFolder from '../public/newFolder/newFolder';
+import NewItem from '../public/newItem/newItem';
+import NewRandomPass from '../public/newRandomPass/newRandomPass';
+import NewVault from '../public/newVault/newVault';
 
 @observer
 class CreateNew extends Component {

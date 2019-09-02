@@ -6,7 +6,7 @@ import React, {Component, ReactNode} from 'react';
 
 import Password from '../../../types/password';
 import {DELETE, EDIT} from '../../const/const';
-import NewItem from '../public/newItem';
+import NewItem from '../public/newItem/newItem';
 
 import './passwordList.less';
 

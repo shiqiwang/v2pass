@@ -3,12 +3,12 @@ import {RouteComponentProps} from 'boring-router-react';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import CreateNew from '../../components/createNew';
-import FolderDetail from '../../components/folderDetail';
-import PasswordDetail from '../../components/passwordDetail';
+import CreateNew from '../../components/createNew/createNew';
+import FolderDetail from '../../components/folderDetail/folderDetail';
+import PasswordDetail from '../../components/passwordDetail/passwordDetail';
 import PasswordList from '../../components/passwordList/passwordList';
-import PasswordSearch from '../../components/passwordSearch';
-import VaultDetail from '../../components/vaultDetail';
+import PasswordSearch from '../../components/passwordSearch/passwordSearch';
+import VaultDetail from '../../components/vaultDetail/vaultDetail';
 import {Router} from '../../router';
 
 import './homepage.less';

@@ -5,7 +5,7 @@ import React, {Component, ReactNode} from 'react';
 
 import Vault from '../../../types/vault';
 
-import './index.less';
+import './vaultDetail.less';
 
 // 目前只有private的vault，暂时不考虑权限问题，好难思考
 // 例如：shared文件有些人没有删除和编辑权限等
@@ -17,7 +17,7 @@ class VaultDetail extends Component<Vault> {
   private modalVisible = false;
 
   render(): ReactNode {
-    const {_id, name, type, describe, avatar, folders} = this.props;
+    const {_id, name, type, describe, folders} = this.props;
 
     return (
       <div className="vaultDetail">

@@ -3,9 +3,9 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import NewFolder from '../public/newFolder';
+import NewFolder from '../public/newFolder/newFolder';
 
-import './index.less';
+import './folderDetail.less';
 
 interface FolderDetailProps {
   folderName: string;

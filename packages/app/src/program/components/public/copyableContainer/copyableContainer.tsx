@@ -5,7 +5,7 @@ import React, {Component, ReactNode} from 'react';
 
 import {PasswordItem} from '../../../../types/password';
 
-import './index.less';
+import './copyableContainer.less';
 
 interface CopyableContainerProps {
   data: {

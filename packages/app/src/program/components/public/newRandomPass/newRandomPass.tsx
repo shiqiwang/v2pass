@@ -3,9 +3,9 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import GenerateRandomPassword from '../../generateRandomPassword';
+import GenerateRandomPassword from '../../generateRandomPassword/generateRandomPassword';
 
-import './index.less';
+import './newRandomPass.less';
 
 interface NewRandomPassDrawerOptions {
   visible: boolean;

@@ -2,7 +2,7 @@ import {Card, Icon, InputNumber, Rate, Switch} from 'antd';
 import {observable} from 'mobx';
 import React, {Component, ReactNode} from 'react';
 
-import './index.less';
+import './generateRandomPassword.less';
 
 class GenerateRandomPassword extends Component {
   @observable passwordComplexity = 0;

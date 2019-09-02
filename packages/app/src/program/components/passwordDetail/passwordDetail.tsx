@@ -3,9 +3,9 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import Password from '../../../types/password';
-import CopyableContainer from '../public/copyableContainer';
+import CopyableContainer from '../public/copyableContainer/copyableContainer';
 
-import './index.less';
+import './passwordDetail.less';
 
 interface PasswordProps {
   password: Password;

@@ -9,7 +9,7 @@ import React, {
   ReactNode,
 } from 'react';
 
-import './index.less';
+import './newItem.less';
 
 import AdditionSection, {AdditionalSectionInterface} from './additionalSection';
 
