@@ -9,7 +9,7 @@ import React, {
   ReactNode,
 } from 'react';
 
-import './index.less';
+import './newFolder.less';
 
 interface NewFolderDrawerOptions {
   visible: boolean;

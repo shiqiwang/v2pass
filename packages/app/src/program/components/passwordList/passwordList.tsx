@@ -15,7 +15,7 @@ const activeStyle = {
   border: '1px solid rgb(24, 144, 255)',
 };
 
-interface ActiveItem {
+export interface ActiveItem {
   activePassword: Password['_id'];
   activeFolder: Password['folderId'];
   activeVault: Password['vaultId'];
@@ -23,7 +23,7 @@ interface ActiveItem {
 
 interface VaultProps {
   vaults: Vault[];
-  select(): void;
+  select(activeItem: ActiveItem): void;
 }
 
 @observer
@@ -105,19 +105,23 @@ class PasswordList extends Component<VaultProps> {
   }
 
   private onVaultClick(_id: Vault['_id']): void {
-    this.updateActiveItem({
+    const activeItem = {
       activePassword: '',
       activeFolder: '',
       activeVault: _id,
-    });
+    };
+    this.updateActiveItem(activeItem);
+    this.props.select(activeItem);
   }
 
   private onFolderClick(_id: Folder['_id'], vaultId: Folder['vaultId']): void {
-    this.updateActiveItem({
+    const activeItem = {
       activePassword: '',
       activeFolder: _id,
       activeVault: vaultId,
-    });
+    };
+    this.updateActiveItem(activeItem);
+    this.props.select(activeItem);
   }
 
   private onPasswordClick(
@@ -125,11 +129,13 @@ class PasswordList extends Component<VaultProps> {
     vaultId: Password['vaultId'],
     folderId: Password['folderId'],
   ): void {
-    this.updateActiveItem({
+    const activeItem = {
       activePassword: _id,
       activeFolder: folderId,
       activeVault: vaultId,
-    });
+    };
+    this.updateActiveItem(activeItem);
+    this.props.select(activeItem);
   }
 
   @action

@@ -1,12 +1,16 @@
 import {Col, Row} from 'antd';
 import {RouteComponentProps} from 'boring-router-react';
+import {observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import {findFolder, findPassword, findVault} from '../../../util/util';
 import CreateNew from '../../components/createNew/createNew';
 import FolderDetail from '../../components/folderDetail/folderDetail';
 import PasswordDetail from '../../components/passwordDetail/passwordDetail';
-import PasswordList from '../../components/passwordList/passwordList';
+import PasswordList, {
+  ActiveItem,
+} from '../../components/passwordList/passwordList';
 import PasswordSearch from '../../components/passwordSearch/passwordSearch';
 import VaultDetail from '../../components/vaultDetail/vaultDetail';
 import {Router} from '../../router';
@@ -21,9 +25,20 @@ export interface HomePageProps
 
 @observer
 class HomePage extends Component<HomePageProps> {
+  @observable
+  private activeItem: ActiveItem = {
+    activePassword: '',
+    activeFolder: '',
+    activeVault: '',
+  };
+
   render(): ReactNode {
     // let {match} = this.props;
     // console.log(match.$params.id); 如果有query等可以用该方式获取
+    const {activeFolder, activePassword, activeVault} = this.activeItem;
+    const vaultSelect = activeVault && !activeFolder && !activePassword;
+    const folderSelect = activeFolder && activeVault && !activePassword;
+    const passwordSelect = activePassword && activeFolder && activeVault;
 
     return (
       <div className="homePage">
@@ -33,22 +48,26 @@ class HomePage extends Component<HomePageProps> {
         </div>
         <Row className="mainBody">
           <Col span={8}>
-            <PasswordList vaults={vaults} select={this.contentChange} />
+            <PasswordList
+              vaults={vaults}
+              select={activeItem => (this.activeItem = activeItem)}
+            />
           </Col>
           <Col span={16}>
-            {/* <PasswordDetail password={} />
-            <FolderDetail
-              folderName="folderName"
-              folderDetail="folder detail"
-              folderId={0}
-            /> */}
+            {vaultSelect ? (
+              <VaultDetail
+                {...findVault(vaults, this.activeItem.activeVault)}
+              />
+            ) : (
+              undefined
+            )}
+            {/* {folderSelect || <FolderDetail />}
+            {passwordSelect || <PasswordDetail />} */}
           </Col>
         </Row>
       </div>
     );
   }
-
-  private contentChange(): void {}
 }
 
 export default HomePage;
