@@ -35,11 +35,6 @@ class PasswordList extends Component<VaultProps> {
     activeVault: '',
   };
 
-  @observable
-  private vaultFoldedMap = new Map(
-    this.props.vaults.map(vault => [vault._id, true]),
-  );
-
   render(): ReactNode {
     const {vaults} = this.props;
     const {activePassword, activeFolder, activeVault} = this.activeItem;
