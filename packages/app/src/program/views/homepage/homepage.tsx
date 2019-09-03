@@ -43,18 +43,24 @@ class HomePage extends Component<HomePageProps> {
 
     return (
       <div className="homePage">
-        <div className="header">
-          <PasswordSearch />
-          <CreateNew />
-          <UserSetting
-            user={{
-              _id: userData._id,
-              username: userData.username,
-              unlockKey: userData.unlockKey,
-              email: userData.email,
-            }}
-          />
-        </div>
+        <Row className="header">
+          <Col span={18}>
+            <PasswordSearch />
+          </Col>
+          <Col span={4} className="options">
+            <CreateNew />
+          </Col>
+          <Col span={2} className="options">
+            <UserSetting
+              user={{
+                _id: userData._id,
+                username: userData.username,
+                unlockKey: userData.unlockKey,
+                email: userData.email,
+              }}
+            />
+          </Col>
+        </Row>
         <Row className="mainBody">
           <Col span={8}>
             <PasswordList

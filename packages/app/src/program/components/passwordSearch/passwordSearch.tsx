@@ -4,7 +4,7 @@ import React, {Component, ReactNode} from 'react';
 class PasswordSearch extends Component {
   render(): ReactNode {
     return (
-      <div className="passwordSearch" style={{width: '300px'}}>
+      <div className="passwordSearch">
         <Input placeholder="Search" suffix={<Icon type="search" />} />
       </div>
     );
