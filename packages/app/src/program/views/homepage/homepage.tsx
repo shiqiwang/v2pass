@@ -12,6 +12,7 @@ import PasswordList, {
   ActiveItem,
 } from '../../components/passwordList/passwordList';
 import PasswordSearch from '../../components/passwordSearch/passwordSearch';
+import UserSetting from '../../components/userSetting/userSetting';
 import VaultDetail from '../../components/vaultDetail/vaultDetail';
 import {Router} from '../../router';
 
@@ -45,6 +46,14 @@ class HomePage extends Component<HomePageProps> {
         <div className="header">
           <PasswordSearch />
           <CreateNew />
+          <UserSetting
+            user={{
+              _id: userData._id,
+              username: userData.username,
+              unlockKey: userData.unlockKey,
+              email: userData.email,
+            }}
+          />
         </div>
         <Row className="mainBody">
           <Col span={8}>
@@ -55,20 +64,20 @@ class HomePage extends Component<HomePageProps> {
           </Col>
           <Col span={16}>
             {vaultSelect ? (
-              <VaultDetail vault={findVault(vaults, activeVault)} />
+              <VaultDetail vault={findVault(vaults, activeVault)!} />
             ) : (
               undefined
             )}
             {folderSelect ? (
               <FolderDetail
-                folder={findFolder(vaults, activeFolder, activeVault)}
+                folder={findFolder(vaults, activeFolder, activeVault)!}
               />
             ) : (
               undefined
             )}
             {passwordSelect ? (
               <PasswordDetail
-                password={findPassword(vaults, this.activeItem)}
+                password={findPassword(vaults, this.activeItem)!}
               />
             ) : (
               undefined
