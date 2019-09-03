@@ -55,14 +55,24 @@ class HomePage extends Component<HomePageProps> {
           </Col>
           <Col span={16}>
             {vaultSelect ? (
-              <VaultDetail
-                {...findVault(vaults, this.activeItem.activeVault)}
+              <VaultDetail vault={findVault(vaults, activeVault)} />
+            ) : (
+              undefined
+            )}
+            {folderSelect ? (
+              <FolderDetail
+                folder={findFolder(vaults, activeFolder, activeVault)}
               />
             ) : (
               undefined
             )}
-            {/* {folderSelect || <FolderDetail />}
-            {passwordSelect || <PasswordDetail />} */}
+            {passwordSelect ? (
+              <PasswordDetail
+                password={findPassword(vaults, this.activeItem)}
+              />
+            ) : (
+              undefined
+            )}
           </Col>
         </Row>
       </div>
