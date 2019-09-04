@@ -1,11 +1,21 @@
-import {Icon, Input} from 'antd';
+import {Input} from 'antd';
 import React, {Component, ReactNode} from 'react';
 
-class PasswordSearch extends Component {
+interface PasswordSearchProps {
+  onSearch(value: string): void;
+}
+
+class PasswordSearch extends Component<PasswordSearchProps> {
   render(): ReactNode {
+    const {onSearch} = this.props;
+
     return (
       <div className="passwordSearch">
-        <Input placeholder="Search" suffix={<Icon type="search" />} />
+        <Input.Search
+          placeholder="search password item name"
+          onChange={event => onSearch(event.target.value)}
+          onSearch={value => onSearch(value)}
+        />
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import {Col, Row} from 'antd';
 import {RouteComponentProps} from 'boring-router-react';
-import {observable} from 'mobx';
+import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
@@ -32,6 +32,8 @@ class HomePage extends Component<HomePageProps> {
     activeFolder: '',
     activeVault: '',
   };
+  @observable
+  private search = '';
 
   render(): ReactNode {
     // let {match} = this.props;
@@ -40,12 +42,13 @@ class HomePage extends Component<HomePageProps> {
     const vaultSelect = activeVault && !activeFolder && !activePassword;
     const folderSelect = activeFolder && activeVault && !activePassword;
     const passwordSelect = activePassword && activeFolder && activeVault;
+    console.log('search', this.search);
 
     return (
       <div className="homePage">
         <Row className="header">
           <Col span={18}>
-            <PasswordSearch />
+            <PasswordSearch onSearch={value => this.updateSearch(value)} />
           </Col>
           <Col span={4} className="options">
             <CreateNew />
@@ -64,8 +67,9 @@ class HomePage extends Component<HomePageProps> {
         <Row className="mainBody">
           <Col span={8}>
             <PasswordList
+              search={this.search}
               vaults={vaults}
-              select={activeItem => (this.activeItem = activeItem)}
+              select={activeItem => this.updateActiveItem(activeItem)}
             />
           </Col>
           <Col span={16}>
@@ -93,6 +97,16 @@ class HomePage extends Component<HomePageProps> {
       </div>
     );
   }
+
+  @action
+  private updateSearch = (value: string): void => {
+    this.search = value;
+  };
+
+  @action
+  private updateActiveItem = (states: ActiveItem): void => {
+    this.activeItem = states;
+  };
 }
 
 export default HomePage;

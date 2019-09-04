@@ -3,6 +3,13 @@ import Folder from '../types/folder';
 import Password from '../types/password';
 import {ActiveItem} from '../program/components/passwordList/passwordList';
 
+export function findByName(name: string, vaults: Vault[]): Password[] {
+  return vaults
+    .map(vault => vault.folders.map(folder => folder.passwords))
+    .flat(2)
+    .filter(password => password.pass_name === name);
+}
+
 export function findVault(
   vaults: Vault[],
   _id: Vault['_id'],

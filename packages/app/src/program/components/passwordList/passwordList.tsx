@@ -5,6 +5,7 @@ import React, {Component, ReactNode} from 'react';
 import Folder from '../../../types/folder';
 import Password from '../../../types/password';
 import Vault from '../../../types/vault';
+import {findByName} from '../../../util/util';
 
 import FolderItem from './folderItem';
 import PasswordItem from './passwordItem';
@@ -23,6 +24,7 @@ export interface ActiveItem {
 
 interface VaultProps {
   vaults: Vault[];
+  search: string;
   select(activeItem: ActiveItem): void;
 }
 
@@ -35,71 +37,98 @@ class PasswordList extends Component<VaultProps> {
     activeVault: '',
   };
 
-  render(): ReactNode {
-    const {vaults} = this.props;
-    const {activePassword, activeFolder, activeVault} = this.activeItem;
+  @observable
+  private searchResult = findByName(this.props.search, this.props.vaults);
 
+  render(): ReactNode {
+    const {vaults, search} = this.props;
+    const {activePassword, activeFolder, activeVault} = this.activeItem;
+    console.log(search, this.searchResult);
+
+    // 这个search还有问题，明天拆分看看 太挤了
     return (
       <div className="passwordList">
-        {vaults.map((vault, index) => {
-          const {_id, folders} = vault;
-          const isVaultActive = activeVault === _id;
+        {!!search
+          ? this.searchResult.map((password, index) => {
+              const {_id, vaultId, folderId} = password;
+              const isPasswordActive = activePassword === _id;
 
-          return (
-            <div className="singleVault" key={String(index)}>
-              <VaultItem
-                style={isVaultActive ? activeStyle : undefined}
-                vault={vault}
-                isActive={isVaultActive}
-                clickVault={() => this.onVaultClick(_id)}
-              />
-              {isVaultActive
-                ? folders.map((folder, index) => {
-                    const {_id, passwords, vaultId} = folder;
-                    const isFolderActive = activeFolder === _id;
+              return (
+                <div key={String(index)}>
+                  <PasswordItem
+                    style={isPasswordActive ? activeStyle : undefined}
+                    password={password}
+                    clickPassword={() =>
+                      this.onPasswordClick(_id, folderId, vaultId)
+                    }
+                  />
+                </div>
+              );
+            })
+          : vaults.map((vault, index) => {
+              const {_id, folders} = vault;
+              const isVaultActive = activeVault === _id;
 
-                    return (
-                      <div className="singleFolder" key={String(index)}>
-                        <FolderItem
-                          style={isFolderActive ? activeStyle : undefined}
-                          isActive={isFolderActive}
-                          folder={folder}
-                          clickFolder={() => this.onFolderClick(_id, vaultId)}
-                        />
-                        {isFolderActive
-                          ? passwords.map((password, index) => {
-                              const {_id, vaultId, folderId} = password;
-                              const isPasswordActive = activePassword === _id;
+              return (
+                <div className="singleVault" key={String(index)}>
+                  <VaultItem
+                    style={isVaultActive ? activeStyle : undefined}
+                    vault={vault}
+                    isActive={isVaultActive}
+                    clickVault={() => this.onVaultClick(_id)}
+                  />
+                  {isVaultActive
+                    ? folders.map((folder, index) => {
+                        const {_id, passwords, vaultId} = folder;
+                        const isFolderActive = activeFolder === _id;
 
-                              return (
-                                <div
-                                  className="singlePassword"
-                                  key={String(index)}
-                                >
-                                  <PasswordItem
-                                    style={
-                                      isPasswordActive ? activeStyle : undefined
-                                    }
-                                    password={password}
-                                    clickPassword={() =>
-                                      this.onPasswordClick(
-                                        _id,
-                                        folderId,
-                                        vaultId,
-                                      )
-                                    }
-                                  />
-                                </div>
-                              );
-                            })
-                          : undefined}
-                      </div>
-                    );
-                  })
-                : undefined}
-            </div>
-          );
-        })}
+                        return (
+                          <div className="singleFolder" key={String(index)}>
+                            <FolderItem
+                              style={isFolderActive ? activeStyle : undefined}
+                              isActive={isFolderActive}
+                              folder={folder}
+                              clickFolder={() =>
+                                this.onFolderClick(_id, vaultId)
+                              }
+                            />
+                            {isFolderActive
+                              ? passwords.map((password, index) => {
+                                  const {_id, vaultId, folderId} = password;
+                                  const isPasswordActive =
+                                    activePassword === _id;
+
+                                  return (
+                                    <div
+                                      className="singlePassword"
+                                      key={String(index)}
+                                    >
+                                      <PasswordItem
+                                        style={
+                                          isPasswordActive
+                                            ? activeStyle
+                                            : undefined
+                                        }
+                                        password={password}
+                                        clickPassword={() =>
+                                          this.onPasswordClick(
+                                            _id,
+                                            folderId,
+                                            vaultId,
+                                          )
+                                        }
+                                      />
+                                    </div>
+                                  );
+                                })
+                              : undefined}
+                          </div>
+                        );
+                      })
+                    : undefined}
+                </div>
+              );
+            })}
       </div>
     );
   }
