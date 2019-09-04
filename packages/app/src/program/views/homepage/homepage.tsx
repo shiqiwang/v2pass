@@ -7,12 +7,14 @@ import React, {Component, ReactNode} from 'react';
 import CreateNew from '../../components/createNew/createNew';
 import FolderDetail from '../../components/folderDetail/folderDetail';
 import PasswordDetail from '../../components/passwordDetail/passwordDetail';
-import PasswordList, {ActiveItem} from '../../components/passwordList/lists';
+import PasswordList from '../../components/passwordList/list';
+import {ActiveItem} from '../../components/passwordList/types/types';
 import PasswordSearch from '../../components/passwordSearch/passwordSearch';
 import UserSetting from '../../components/userSetting/userSetting';
 import VaultDetail from '../../components/vaultDetail/vaultDetail';
 import {Router} from '../../router';
-import {findFolder, findPassword, findVault} from '../../util/util';
+import Password from '../../types/password';
+import {findByName, findFolder, findPassword, findVault} from '../../util/util';
 
 import './homepage.less';
 
@@ -32,6 +34,8 @@ class HomePage extends Component<HomePageProps> {
   };
   @observable
   private search = '';
+  @observable
+  private searchResult: Password[] = [];
 
   render(): ReactNode {
     // let {match} = this.props;
@@ -40,7 +44,6 @@ class HomePage extends Component<HomePageProps> {
     const vaultSelect = activeVault && !activeFolder && !activePassword;
     const folderSelect = activeFolder && activeVault && !activePassword;
     const passwordSelect = activePassword && activeFolder && activeVault;
-    console.log('search', this.search);
 
     return (
       <div className="homePage">
@@ -68,6 +71,7 @@ class HomePage extends Component<HomePageProps> {
               search={this.search}
               vaults={vaults}
               select={activeItem => this.updateActiveItem(activeItem)}
+              searchResult={this.searchResult}
             />
           </Col>
           <Col span={16}>
@@ -99,6 +103,7 @@ class HomePage extends Component<HomePageProps> {
   @action
   private updateSearch = (value: string): void => {
     this.search = value;
+    this.searchResult = findByName(value, vaults);
   };
 
   @action

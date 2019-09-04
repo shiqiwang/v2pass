@@ -38,4 +38,5 @@ export interface ListProps {
   vaults: Vault[];
   search: string;
   select(activeItem: ActiveItem): void;
+  searchResult: Password[];
 }

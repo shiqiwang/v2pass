@@ -2,12 +2,14 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {findByName} from '../../util/util';
-
 import PasswordList from './list/passwordList';
 import VaultList from './list/vaultList';
 import {ActiveItem, ListProps} from './types/types';
 
+// 在search与否之间转换时，需要有一个初始化activeItem的机制
+// 明天需要把vault、folder、password的detail再抽一下
+// 看看是否能把clickItem放到InductionContainer上
+// 加入targets
 @observer
 class List extends Component<ListProps> {
   @observable
@@ -17,19 +19,24 @@ class List extends Component<ListProps> {
     activeVault: '',
   };
 
-  @observable
-  private searchResult = findByName(this.props.search, this.props.vaults);
-
   render(): ReactNode {
-    const {vaults, search} = this.props;
+    const {vaults, search, searchResult} = this.props;
 
     return (
       <div className="list">
-        <VaultList
-          vaults={vaults}
-          activeItem={this.activeItem}
-          clickItem={activeItem => this.onItemClick(activeItem)}
-        />
+        {!search ? (
+          <VaultList
+            vaults={vaults}
+            activeItem={this.activeItem}
+            clickItem={activeItem => this.onItemClick(activeItem)}
+          />
+        ) : (
+          <PasswordList
+            passwords={searchResult}
+            activeItem={this.activeItem}
+            clickItem={activeItem => this.onItemClick(activeItem)}
+          />
+        )}
       </div>
     );
   }
