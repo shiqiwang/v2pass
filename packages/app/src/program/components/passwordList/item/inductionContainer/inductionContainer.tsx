@@ -1,5 +1,5 @@
-import React, {ReactNode, Component} from 'react';
 import {observer} from 'mobx-react';
+import React, {Component, ReactNode} from 'react';
 
 import './inductionContainer.less';
 
@@ -16,6 +16,7 @@ interface InductionContainerProps {
 class InductionContainer extends Component<InductionContainerProps> {
   render(): ReactNode {
     const {isActive, children} = this.props;
+
     return (
       <div
         className="inductionContainer"

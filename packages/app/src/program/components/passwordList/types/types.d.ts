@@ -30,10 +30,6 @@ export interface PasswordListProps extends ItemUIProps {
   passwords: Password[];
 }
 
-export interface FolderListProps extends ItemUIProps {
-  folders: Folder[];
-}
-
 export interface VaultListProps extends ItemUIProps {
   vaults: Vault[];
 }

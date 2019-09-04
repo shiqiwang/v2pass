@@ -2,9 +2,6 @@ import {Col, Icon, Row} from 'antd';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import '../passwordList.less';
-
-import PasswordList from '../list/passwordLists';
 import {FolderProps} from '../types/types';
 
 import InductionContainer from './inductionContainer/inductionContainer';
@@ -38,11 +35,6 @@ class FolderItem extends Component<FolderProps> {
             <Icon type={isActive ? 'down' : 'right'} />
           </Col>
         </Row>
-        <PasswordList
-          passwords={folder.passwords}
-          activeItem={activeItem}
-          clickItem={clickItem}
-        />
       </InductionContainer>
     );
   }

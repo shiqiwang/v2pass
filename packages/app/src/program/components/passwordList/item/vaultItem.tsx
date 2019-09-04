@@ -2,9 +2,6 @@ import {Col, Icon, Row} from 'antd';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import '../passwordList.less';
-
-import FolderLists from '../list/folderLists';
 import {VaultProps} from '../types/types';
 
 import InductionContainer from './inductionContainer/inductionContainer';
@@ -33,11 +30,6 @@ class VaultItem extends Component<VaultProps> {
             <Icon type={isActive ? 'down' : 'right'} />
           </Col>
         </Row>
-        <FolderLists
-          folders={vault.folders}
-          clickItem={clickItem}
-          activeItem={activeItem}
-        />
       </InductionContainer>
     );
   }
