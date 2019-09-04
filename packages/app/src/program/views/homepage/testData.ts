@@ -2,7 +2,7 @@
 // 这种数据结构真的合理吗？
 // 如果是嵌套的password -> folder -> vault这样存储有什么弊端呢？
 // 试试嵌套的数据
-import User from '../../../types/user';
+import User from '../../types/user';
 export const userData: User = {
   _id: '1',
   username: 'emi wang',

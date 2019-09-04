@@ -4,8 +4,8 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import Password from '../../../types/password';
 import {DELETE, EDIT} from '../../const/const';
+import Password from '../../types/password';
 import NewItem from '../public/newItem/newItem';
 
 import './passwordList.less';

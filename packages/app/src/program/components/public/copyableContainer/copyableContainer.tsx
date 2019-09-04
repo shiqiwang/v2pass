@@ -3,7 +3,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {PasswordItem} from '../../../../types/password';
+import {PasswordItem} from '../../../types/password';
 
 import './copyableContainer.less';
 

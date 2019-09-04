@@ -9,7 +9,7 @@ import React, {
   ReactNode,
 } from 'react';
 
-import User from '../../../types/user';
+import User from '../../types/user';
 
 interface UserInfo {
   _id: User['_id'];

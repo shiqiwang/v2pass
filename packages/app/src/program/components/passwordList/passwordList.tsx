@@ -2,10 +2,10 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import Folder from '../../../types/folder';
-import Password from '../../../types/password';
-import Vault from '../../../types/vault';
-import {findByName} from '../../../util/util';
+import Folder from '../../types/folder';
+import Password from '../../types/password';
+import Vault from '../../types/vault';
+import {findByName} from '../../util/util';
 
 import FolderItem from './folderItem';
 import PasswordItem from './passwordItem';

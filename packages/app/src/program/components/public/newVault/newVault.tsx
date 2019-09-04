@@ -9,7 +9,7 @@ import React, {
   ReactNode,
 } from 'react';
 
-import Vault from '../../../../types/vault';
+import Vault from '../../../types/vault';
 
 import './newVault.less';
 

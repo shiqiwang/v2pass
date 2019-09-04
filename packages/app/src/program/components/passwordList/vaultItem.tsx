@@ -2,7 +2,7 @@ import {Col, Icon, Row} from 'antd';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import Vault from '../../../types/vault';
+import Vault from '../../types/vault';
 
 import './passwordList.less';
 

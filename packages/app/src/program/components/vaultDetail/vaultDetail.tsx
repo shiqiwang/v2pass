@@ -3,7 +3,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import Vault from '../../../types/vault';
+import Vault from '../../types/vault';
 import NewVault from '../public/newVault/newVault';
 
 import './vaultDetail.less';

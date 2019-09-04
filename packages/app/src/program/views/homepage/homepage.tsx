@@ -4,7 +4,6 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {findFolder, findPassword, findVault} from '../../../util/util';
 import CreateNew from '../../components/createNew/createNew';
 import FolderDetail from '../../components/folderDetail/folderDetail';
 import PasswordDetail from '../../components/passwordDetail/passwordDetail';
@@ -15,6 +14,7 @@ import PasswordSearch from '../../components/passwordSearch/passwordSearch';
 import UserSetting from '../../components/userSetting/userSetting';
 import VaultDetail from '../../components/vaultDetail/vaultDetail';
 import {Router} from '../../router';
+import {findFolder, findPassword, findVault} from '../../util/util';
 
 import './homepage.less';
 

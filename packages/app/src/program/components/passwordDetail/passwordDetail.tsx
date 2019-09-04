@@ -2,7 +2,7 @@ import {Col, Empty, Icon, Row} from 'antd';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import Password from '../../../types/password';
+import Password from '../../types/password';
 import CopyableContainer from '../public/copyableContainer/copyableContainer';
 
 import './passwordDetail.less';
