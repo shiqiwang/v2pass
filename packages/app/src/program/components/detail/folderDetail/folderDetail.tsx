@@ -3,8 +3,8 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import Folder from '../../types/folder';
-import NewFolder from '../public/newFolder/newFolder';
+import Folder from '../../../types/folder';
+import NewFolder from '../../public/newFolder/newFolder';
 
 import './folderDetail.less';
 

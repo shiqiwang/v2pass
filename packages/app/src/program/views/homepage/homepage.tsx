@@ -5,13 +5,13 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import CreateNew from '../../components/createNew/createNew';
-import FolderDetail from '../../components/folderDetail/folderDetail';
-import PasswordDetail from '../../components/passwordDetail/passwordDetail';
+import FolderDetail from '../../components/detail/folderDetail/folderDetail';
+import PasswordDetail from '../../components/detail/passwordDetail/passwordDetail';
+import VaultDetail from '../../components/detail/vaultDetail/vaultDetail';
 import PasswordList from '../../components/passwordList/list';
 import {ActiveItem} from '../../components/passwordList/types/types';
 import PasswordSearch from '../../components/passwordSearch/passwordSearch';
 import UserSetting from '../../components/userSetting/userSetting';
-import VaultDetail from '../../components/vaultDetail/vaultDetail';
 import {Router} from '../../router';
 import Password from '../../types/password';
 import {findByName, findFolder, findPassword, findVault} from '../../util/util';
