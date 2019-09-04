@@ -7,20 +7,24 @@ const activeStyle = {
   backgroundColor: 'rgba(24, 144, 255, 0.1)',
   border: '1px solid rgb(24, 144, 255)',
 };
+const displayNone = {
+  display: 'none',
+};
 
 interface InductionContainerProps {
   isActive: boolean;
+  isShow: boolean;
 }
 
 @observer
 class InductionContainer extends Component<InductionContainerProps> {
   render(): ReactNode {
-    const {isActive, children} = this.props;
+    const {isActive, children, isShow} = this.props;
 
     return (
       <div
         className="inductionContainer"
-        style={isActive ? activeStyle : undefined}
+        style={isShow ? (isActive ? activeStyle : undefined) : displayNone}
       >
         {children}
       </div>

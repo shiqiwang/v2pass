@@ -12,10 +12,11 @@ class FolderItem extends Component<FolderProps> {
     const {activeItem, clickItem, folder} = this.props;
     const {activeFolder, activeVault} = activeItem;
     const {_id, vaultId} = folder;
-    const isActive = _id === activeFolder && vaultId === activeVault;
+    const isShow = vaultId === activeVault;
+    const isActive = _id === activeFolder && isShow;
 
     return (
-      <InductionContainer isActive={isActive}>
+      <InductionContainer isActive={isActive} isShow={isShow}>
         <Row
           onClick={() =>
             clickItem({

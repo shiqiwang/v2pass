@@ -14,7 +14,7 @@ class VaultItem extends Component<VaultProps> {
     const isActive = activeItem.activeVault === vault._id;
 
     return (
-      <InductionContainer isActive={isActive}>
+      <InductionContainer isActive={isActive} isShow>
         <Row
           onClick={() =>
             clickItem({activeFolder: '', activePassword: '', activeVault: _id})

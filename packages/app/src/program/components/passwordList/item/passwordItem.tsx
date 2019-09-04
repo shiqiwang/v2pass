@@ -29,13 +29,11 @@ class PasswordItem extends Component<PasswordProps> {
     const {clickItem, activeItem} = this.props;
     const {activePassword, activeFolder, activeVault} = activeItem;
     const {pass_name, _id, folderId, vaultId} = this.props.password;
-    const isActive =
-      activePassword === _id &&
-      activeFolder === folderId &&
-      activeVault === vaultId;
+    const isShow = activeFolder === folderId && activeVault === vaultId;
+    const isActive = activePassword === _id && isShow;
 
     return (
-      <InductionContainer isActive={isActive}>
+      <InductionContainer isActive={isActive} isShow={isShow}>
         <NewItem
           drawer={{
             visible: this.editItemDrawerVisible,
