@@ -4,23 +4,30 @@ import React, {Component, ReactNode} from 'react';
 
 import '../passwordList.less';
 
-import Folder from '../../../types/folder';
+import PasswordList from '../list/passwordLists';
+import {FolderProps} from '../types/types';
 
-interface FolderItemProps {
-  folder: Folder;
-  isActive: boolean;
-  style: {backgroundColor: string; border: string} | undefined;
-  clickFolder(folderId: Folder['_id'], vaultId: Folder['vaultId']): void;
-}
+import InductionContainer from './inductionContainer/inductionContainer';
 
 @observer
-class FolderItem extends Component<FolderItemProps> {
+class FolderItem extends Component<FolderProps> {
   render(): ReactNode {
-    const {isActive, style, clickFolder, folder} = this.props;
+    const {activeItem, clickItem, folder} = this.props;
+    const {activeFolder, activeVault} = activeItem;
+    const {_id, vaultId} = folder;
+    const isActive = _id === activeFolder && vaultId === activeVault;
 
     return (
-      <div className="folderItem" style={style}>
-        <Row onClick={() => clickFolder(folder._id, folder.vaultId)}>
+      <InductionContainer isActive={isActive}>
+        <Row
+          onClick={() =>
+            clickItem({
+              activePassword: '',
+              activeFolder: folder._id,
+              activeVault: folder.vaultId,
+            })
+          }
+        >
           <Col span={2}>
             <Icon type={isActive ? 'folder-open' : 'folder'} />
           </Col>
@@ -31,7 +38,12 @@ class FolderItem extends Component<FolderItemProps> {
             <Icon type={isActive ? 'down' : 'right'} />
           </Col>
         </Row>
-      </div>
+        <PasswordList
+          passwords={folder.passwords}
+          activeItem={activeItem}
+          clickItem={clickItem}
+        />
+      </InductionContainer>
     );
   }
 }

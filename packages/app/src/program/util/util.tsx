@@ -1,4 +1,4 @@
-import {ActiveItem} from '../components/passwordList/normalPasswordList';
+import {ActiveItem} from '../components/passwordList/lists';
 import Folder from '../types/folder';
 import Password from '../types/password';
 import Vault from '../types/vault';

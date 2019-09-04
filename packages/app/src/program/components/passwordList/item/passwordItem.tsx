@@ -7,21 +7,13 @@ import React, {Component, ReactNode} from 'react';
 import '../passwordList.less';
 
 import {DELETE, EDIT} from '../../../const/const';
-import Password from '../../../types/password';
 import NewItem from '../../public/newItem/newItem';
+import {PasswordProps} from '../types/types';
 
-interface PasswordItemProps {
-  style: {backgroundColor: string; border: string} | undefined;
-  password: Password;
-  clickPassword(
-    id: Password['_id'],
-    folderId: Password['folderId'],
-    vaultId: Password['vaultId'],
-  ): void;
-}
+import InductionContainer from './inductionContainer/inductionContainer';
 
 @observer
-class PasswordItem extends Component<PasswordItemProps> {
+class PasswordItem extends Component<PasswordProps> {
   @observable
   private editItemDrawerVisible = false;
   @observable
@@ -36,11 +28,16 @@ class PasswordItem extends Component<PasswordItemProps> {
         <Menu.Item key={DELETE}>Delete</Menu.Item>
       </Menu>
     );
-    const {clickPassword, style} = this.props;
+    const {clickItem, activeItem} = this.props;
+    const {activePassword, activeFolder, activeVault} = activeItem;
     const {pass_name, _id, folderId, vaultId} = this.props.password;
+    const isActive =
+      activePassword === _id &&
+      activeFolder === folderId &&
+      activeVault === vaultId;
 
     return (
-      <div className="passwordItem" style={style}>
+      <InductionContainer isActive={isActive}>
         <NewItem
           drawer={{
             visible: this.editItemDrawerVisible,
@@ -56,7 +53,15 @@ class PasswordItem extends Component<PasswordItemProps> {
         >
           <p>if delete, you will lost the data forever, continue?</p>
         </Modal>
-        <Row onClick={() => clickPassword(_id, folderId, vaultId)}>
+        <Row
+          onClick={() =>
+            clickItem({
+              activeFolder: folderId,
+              activePassword: _id,
+              activeVault: vaultId,
+            })
+          }
+        >
           <Col span={2} offset={2}>
             {this.collectStatus ? (
               <Icon
@@ -81,7 +86,7 @@ class PasswordItem extends Component<PasswordItemProps> {
             </Dropdown>
           </Col>
         </Row>
-      </div>
+      </InductionContainer>
     );
   }
 

@@ -7,9 +7,7 @@ import React, {Component, ReactNode} from 'react';
 import CreateNew from '../../components/createNew/createNew';
 import FolderDetail from '../../components/folderDetail/folderDetail';
 import PasswordDetail from '../../components/passwordDetail/passwordDetail';
-import PasswordList, {
-  ActiveItem,
-} from '../../components/passwordList/normalPasswordList';
+import PasswordList, {ActiveItem} from '../../components/passwordList/lists';
 import PasswordSearch from '../../components/passwordSearch/passwordSearch';
 import UserSetting from '../../components/userSetting/userSetting';
 import VaultDetail from '../../components/vaultDetail/vaultDetail';
