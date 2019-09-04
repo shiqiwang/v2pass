@@ -7,9 +7,9 @@ import Password from '../../types/password';
 import Vault from '../../types/vault';
 import {findByName} from '../../util/util';
 
-import FolderItem from './folderItem';
-import PasswordItem from './passwordItem';
-import VaultItem from './vaultItem';
+import FolderItem from './item/folderItem';
+import PasswordItem from './item/passwordItem';
+import VaultItem from './item/vaultItem';
 
 const activeStyle = {
   backgroundColor: 'rgba(24, 144, 255, 0.1)',
@@ -174,6 +174,6 @@ class PasswordList extends Component<VaultProps> {
 }
 
 export default PasswordList;
-export * from './folderItem';
-export * from './passwordItem';
-export * from './vaultItem';
+export * from './item/folderItem';
+export * from './item/passwordItem';
+export * from './item/vaultItem';

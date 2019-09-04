@@ -2,9 +2,9 @@ import {Col, Icon, Row} from 'antd';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import Folder from '../../types/folder';
+import '../passwordList.less';
 
-import './passwordList.less';
+import Folder from '../../../types/folder';
 
 interface FolderItemProps {
   folder: Folder;
