@@ -4,7 +4,7 @@ import FolderItem from '../item/folderItem';
 import VaultItem from '../item/vaultItem';
 import {VaultListProps} from '../types/types';
 
-import PasswordList from './passwordLists';
+import PasswordList from './passwordList';
 
 class VaultLists extends Component<VaultListProps> {
   render(): ReactNode {

@@ -4,8 +4,8 @@ import React, {Component, ReactNode} from 'react';
 
 import {findByName} from '../../util/util';
 
-import PasswordList from './list/passwordLists';
-import VaultList from './list/vaultLists';
+import PasswordList from './list/passwordList';
+import VaultList from './list/vaultList';
 import {ActiveItem, ListProps} from './types/types';
 
 @observer
