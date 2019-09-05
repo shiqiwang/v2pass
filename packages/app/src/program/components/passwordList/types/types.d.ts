@@ -16,6 +16,7 @@ interface ItemUIProps {
 
 export interface PasswordProps extends ItemUIProps {
   password: Password;
+  asSearch: boolean;
 }
 
 export interface FolderProps extends ItemUIProps {
@@ -28,6 +29,7 @@ export interface VaultProps extends ItemUIProps {
 
 export interface PasswordListProps extends ItemUIProps {
   passwords: Password[];
+  asSearch: boolean;
 }
 
 export interface VaultListProps extends ItemUIProps {
@@ -36,7 +38,10 @@ export interface VaultListProps extends ItemUIProps {
 
 export interface ListProps {
   vaults: Vault[];
-  search: string;
   select(activeItem: ActiveItem): void;
-  searchResult: Password[];
+}
+
+export interface ForSearch {
+  text: string;
+  result: Password[];
 }

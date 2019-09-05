@@ -34,6 +34,7 @@ class VaultLists extends Component<VaultListProps> {
                       passwords={folder.passwords}
                       activeItem={activeItem}
                       clickItem={clickItem}
+                      asSearch={false}
                     />
                   </div>
                 );

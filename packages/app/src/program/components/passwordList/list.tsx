@@ -1,10 +1,13 @@
+import {Input} from 'antd';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import {findByName} from '../../util/util';
+
 import PasswordList from './list/passwordList';
 import VaultList from './list/vaultList';
-import {ActiveItem, ListProps} from './types/types';
+import {ActiveItem, ForSearch, ListProps} from './types/types';
 
 // 在search与否之间转换时，需要有一个初始化activeItem的机制
 // 明天需要把vault、folder、password的detail再抽一下
@@ -18,13 +21,23 @@ class List extends Component<ListProps> {
     activeFolder: '',
     activeVault: '',
   };
+  @observable
+  private search: ForSearch = {
+    text: '',
+    result: [],
+  };
 
   render(): ReactNode {
-    const {vaults, search, searchResult} = this.props;
+    const {vaults} = this.props;
+    const {text, result} = this.search;
 
     return (
       <div className="list">
-        {!search ? (
+        <Input.Search
+          type="text"
+          onSearch={value => this.onSearchPassword(value)}
+        />
+        {!text ? (
           <VaultList
             vaults={vaults}
             activeItem={this.activeItem}
@@ -32,9 +45,10 @@ class List extends Component<ListProps> {
           />
         ) : (
           <PasswordList
-            passwords={searchResult}
+            passwords={result}
             activeItem={this.activeItem}
             clickItem={activeItem => this.onItemClick(activeItem)}
+            asSearch={true}
           />
         )}
       </div>
@@ -43,12 +57,21 @@ class List extends Component<ListProps> {
 
   private onItemClick(activeItem: ActiveItem): void {
     this.updateActiveItem(activeItem);
-    this.props.select(activeItem);
+  }
+
+  private onSearchPassword(value: string): void {
+    const result = findByName(value, this.props.vaults);
+    this.updateSearch({text: value, result});
   }
 
   @action
   private updateActiveItem(states: ActiveItem): void {
     this.activeItem = states;
+  }
+
+  @action
+  private updateSearch(states: ForSearch): void {
+    this.search = states;
   }
 }
 

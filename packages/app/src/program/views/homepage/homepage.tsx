@@ -10,11 +10,9 @@ import PasswordDetail from '../../components/detail/passwordDetail/passwordDetai
 import VaultDetail from '../../components/detail/vaultDetail/vaultDetail';
 import PasswordList from '../../components/passwordList/list';
 import {ActiveItem} from '../../components/passwordList/types/types';
-import PasswordSearch from '../../components/passwordSearch/passwordSearch';
 import UserSetting from '../../components/userSetting/userSetting';
 import {Router} from '../../router';
-import Password from '../../types/password';
-import {findByName, findFolder, findPassword, findVault} from '../../util/util';
+import {findFolder, findPassword, findVault} from '../../util/util';
 
 import './homepage.less';
 
@@ -32,10 +30,6 @@ class HomePage extends Component<HomePageProps> {
     activeFolder: '',
     activeVault: '',
   };
-  @observable
-  private search = '';
-  @observable
-  private searchResult: Password[] = [];
 
   render(): ReactNode {
     // let {match} = this.props;
@@ -48,9 +42,6 @@ class HomePage extends Component<HomePageProps> {
     return (
       <div className="homePage">
         <Row className="header">
-          <Col span={18}>
-            <PasswordSearch onSearch={value => this.updateSearch(value)} />
-          </Col>
           <Col span={4} className="options">
             <CreateNew />
           </Col>
@@ -68,10 +59,8 @@ class HomePage extends Component<HomePageProps> {
         <Row className="mainBody">
           <Col span={8}>
             <PasswordList
-              search={this.search}
               vaults={vaults}
               select={activeItem => this.updateActiveItem(activeItem)}
-              searchResult={this.searchResult}
             />
           </Col>
           <Col span={16}>
@@ -99,12 +88,6 @@ class HomePage extends Component<HomePageProps> {
       </div>
     );
   }
-
-  @action
-  private updateSearch = (value: string): void => {
-    this.search = value;
-    this.searchResult = findByName(value, vaults);
-  };
 
   @action
   private updateActiveItem = (states: ActiveItem): void => {

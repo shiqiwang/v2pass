@@ -26,10 +26,11 @@ class PasswordItem extends Component<PasswordProps> {
         <Menu.Item key={DELETE}>Delete</Menu.Item>
       </Menu>
     );
-    const {clickItem, activeItem} = this.props;
+    const {clickItem, activeItem, asSearch} = this.props;
     const {activePassword, activeFolder, activeVault} = activeItem;
     const {pass_name, _id, folderId, vaultId} = this.props.password;
-    const isShow = activeFolder === folderId && activeVault === vaultId;
+    const isShow =
+      asSearch || (activeFolder === folderId && activeVault === vaultId);
     const isActive = activePassword === _id && isShow;
 
     return (
