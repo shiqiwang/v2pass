@@ -6,7 +6,7 @@ import {VaultListProps} from '../types/types';
 
 import PasswordList from './passwordList';
 
-class VaultLists extends Component<VaultListProps> {
+export default class VaultList extends Component<VaultListProps> {
   render(): ReactNode {
     const {vaults, activeItem, clickItem} = this.props;
 
@@ -46,5 +46,3 @@ class VaultLists extends Component<VaultListProps> {
     );
   }
 }
-
-export default VaultLists;
