@@ -6,7 +6,7 @@ import React, {Component, ReactNode} from 'react';
 import Password from '../../../types/password';
 import Target from '../../../types/target';
 import {findTarget} from '../../../util/util';
-import CopyableContainer from '../../public/copyableContainer/copyableContainer';
+import CopyableContainer from '../../copyableContainer/copyableContainer';
 
 import './passwordDetail.less';
 

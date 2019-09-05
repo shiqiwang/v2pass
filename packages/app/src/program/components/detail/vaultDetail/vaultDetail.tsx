@@ -4,7 +4,7 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import Vault from '../../../types/vault';
-import NewVault from '../../public/newVault/newVault';
+import NewVault from '../../createDrawer/newVault/newVault';
 
 import './vaultDetail.less';
 
