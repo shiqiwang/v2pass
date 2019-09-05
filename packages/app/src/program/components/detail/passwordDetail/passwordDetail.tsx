@@ -26,7 +26,6 @@ class PasswordDetail extends Component<PasswordProps> {
 
   render(): ReactNode {
     const {password} = this.props;
-    console.log(this.target.entries);
 
     return (
       <div className="passwordDetail">

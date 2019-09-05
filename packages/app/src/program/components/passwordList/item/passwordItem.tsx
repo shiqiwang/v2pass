@@ -31,7 +31,10 @@ class PasswordItem extends Component<PasswordProps> {
     const {pass_name, _id, folderId, vaultId} = this.props.password;
     const isShow =
       asSearch || (activeFolder === folderId && activeVault === vaultId);
-    const isActive = activePassword === _id && isShow;
+    const isActive =
+      activePassword === _id &&
+      activeFolder === folderId &&
+      activeVault === vaultId;
 
     return (
       <InductionContainer isActive={isActive} isShow={isShow}>
