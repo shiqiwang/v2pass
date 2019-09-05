@@ -1,17 +1,14 @@
 import {ActiveItem} from '../components/passwordList/types/types';
 import Folder from '../types/folder';
 import Password from '../types/password';
+import Target from '../types/target';
 import Vault from '../types/vault';
 
-export function findByName(name: string, vaults: Vault[]): Password[] {
-  console.log(
-    name,
-    vaults
-      .map(vault => vault.folders.map(folder => folder.passwords))
-      .flat(2)
-      .filter(password => password.pass_name.includes(name)),
-  );
+export function findTarget(targetId: string, targets: Target[]): Target {
+  return targets.filter(target => target._id === targetId)[0];
+}
 
+export function findByName(name: string, vaults: Vault[]): Password[] {
   return vaults
     .map(vault => vault.folders.map(folder => folder.passwords))
     .flat(2)

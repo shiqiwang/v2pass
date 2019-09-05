@@ -4,22 +4,22 @@ export default interface Target {
   entries: TargetEntry[];
 }
 
-type TargetEntry =
+export type TargetEntry =
   | WebsiteTargetEntry
   | AndroidAppTargetEntry
   | IOSAppTargetEntry;
 
 interface WebsiteTargetEntry {
-  type: 'website';
-  url: string;
+  type: 'website URL';
+  value: string;
 }
 
 interface AndroidAppTargetEntry {
-  type: 'android-app';
-  id: string;
+  type: 'android-app ID';
+  value: string;
 }
 
 interface IOSAppTargetEntry {
-  type: 'ios-app';
-  id: string;
+  type: 'ios-app ID';
+  value: string;
 }

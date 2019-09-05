@@ -1,20 +1,32 @@
-import {Col, Empty, Icon, Row} from 'antd';
+import {Col, Icon, Row} from 'antd';
+import {computed} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import Password from '../../../types/password';
+import Target from '../../../types/target';
+import {findTarget} from '../../../util/util';
 import CopyableContainer from '../../public/copyableContainer/copyableContainer';
 
 import './passwordDetail.less';
 
 interface PasswordProps {
   password: Password;
+  targets: Target[];
 }
 
 @observer
 class PasswordDetail extends Component<PasswordProps> {
+  @computed
+  private get target(): Target {
+    const {targetId} = this.props.password;
+    const target = findTarget(targetId, this.props.targets);
+    return target;
+  }
+
   render(): ReactNode {
     const {password} = this.props;
+    console.log(this.target.entries);
 
     return (
       <div className="passwordDetail">
@@ -28,8 +40,16 @@ class PasswordDetail extends Component<PasswordProps> {
             </Col>
           </Row>
           <div className="main">
+            <h5>Main Info</h5>
             {password.items.map((item, index) => (
               <CopyableContainer key={String(index)} data={item} />
+            ))}
+            <h5>Target：{this.target.displayName}</h5>
+            {this.target.entries.map((item, index) => (
+              <CopyableContainer
+                key={String(index)}
+                data={{label: item.type, value: item.value, type: 'target'}}
+              />
             ))}
           </div>
         </div>

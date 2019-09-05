@@ -3,15 +3,13 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {PasswordItem} from '../../../types/password';
-
 import './copyableContainer.less';
 
 interface CopyableContainerProps {
   data: {
-    label: PasswordItem['label'];
-    value: PasswordItem['value'];
-    type: PasswordItem['type'];
+    label: string;
+    value: string | number | Date;
+    type: string;
   };
 }
 

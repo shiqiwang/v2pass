@@ -2,6 +2,7 @@ import {computed} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import Target from '../../types/target';
 import Vault from '../../types/vault';
 import {findFolder, findPassword, findVault} from '../../util/util';
 import {ActiveItem} from '../passwordList/types/types';
@@ -13,6 +14,7 @@ import VaultDetail from './vaultDetail/vaultDetail';
 interface DetailProps {
   vaults: Vault[];
   activeItem: ActiveItem;
+  targets: Target[];
 }
 
 interface Select {
@@ -59,6 +61,7 @@ class Detail extends Component<DetailProps> {
         {passwordSelect ? (
           <PasswordDetail
             password={findPassword(vaults, this.props.activeItem)!}
+            targets={this.props.targets}
           />
         ) : (
           undefined

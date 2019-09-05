@@ -57,7 +57,11 @@ class HomePage extends Component<HomePageProps> {
             />
           </Col>
           <Col span={16}>
-            <Detail vaults={vaults} activeItem={this.activeItem} />
+            <Detail
+              vaults={vaults}
+              activeItem={this.activeItem}
+              targets={targets}
+            />
           </Col>
         </Row>
       </div>
