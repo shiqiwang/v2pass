@@ -1,4 +1,4 @@
-import {Button, Drawer, Form, Input, Radio} from 'antd';
+import {Button, Form, Input, Radio} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
@@ -9,96 +9,67 @@ import React, {
   ReactNode,
 } from 'react';
 
-import Vault from '../../../types/vault';
+import {VaultInfo} from '../../../types/vault';
 
-import './newVault.less';
-
-interface NewVaultDrawerOptions {
-  visible: boolean;
-  title?: string;
-  onClose(): void;
+interface VaultFormProps extends FormComponentProps {
+  vault: VaultInfo;
 }
 
-interface NewVaultProps extends FormComponentProps {
-  drawer: NewVaultDrawerOptions;
-  vault?: Vault;
-}
-
-interface NewVaultState {
-  name: Vault['name'];
-  type: Vault['type'];
-  describe: Vault['describe'];
-}
-
-type NewVaultStateKey = keyof NewVaultState;
+type VaultStateKey = keyof VaultInfo;
 
 @observer
-class NewVault extends Component<NewVaultProps> {
+class NewVault extends Component<VaultFormProps> {
   @observable
-  private data: NewVaultState = {
-    name: '',
-    type: 'private',
-    describe: '',
-  };
+  private data: VaultInfo = this.props.vault;
 
   render(): ReactNode {
-    const {drawer: drawerOptions} = this.props;
     const {getFieldDecorator} = this.props.form!;
     const {TextArea} = Input;
-    const {onClose, visible, title} = drawerOptions;
+    const {name, type, describe} = this.data;
 
     return (
-      <Drawer
-        width={400}
-        title={title ? title : 'New Vault'}
-        placement="right"
-        onClose={onClose}
-        visible={visible}
-        closable={false}
-      >
-        <Form onSubmit={this.onFormSubmit} className="newVaultForm">
-          <Form.Item label="vault name">
-            {getFieldDecorator('name', {
-              rules: [
-                {
-                  required: true,
-                  message: 'Please input your vault name!',
-                },
-              ],
-              initialValue: this.data.name,
-            })(
-              <Input
-                type="text"
-                placeholder="vault name"
-                onChange={event => this.onDataChange('name', event)}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item label="type">
-            <Radio.Group value={this.data.type}>
-              <Radio value="private">private</Radio>
-              <Radio value="shared" disabled>
-                shared
-              </Radio>
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item label="describe">
-            {getFieldDecorator('describe', {
-              initialValue: this.data.describe,
-            })(
-              <TextArea
-                placeholder="describe"
-                onChange={event => this.onDataChange('describe', event)}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              save
-            </Button>
-          </Form.Item>
-        </Form>
-      </Drawer>
+      <Form onSubmit={this.onFormSubmit} className="newVaultForm">
+        <Form.Item label="vault name">
+          {getFieldDecorator('name', {
+            rules: [
+              {
+                required: true,
+                message: 'Please input your vault name!',
+              },
+            ],
+            initialValue: name,
+          })(
+            <Input
+              type="text"
+              placeholder="vault name"
+              onChange={event => this.onDataChange('name', event)}
+            />,
+          )}
+        </Form.Item>
+        <Form.Item label="type">
+          <Radio.Group value={type}>
+            <Radio value="private">private</Radio>
+            <Radio value="shared" disabled>
+              shared
+            </Radio>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item label="describe">
+          {getFieldDecorator('describe', {
+            initialValue: describe,
+          })(
+            <TextArea
+              placeholder="describe"
+              onChange={event => this.onDataChange('describe', event)}
+            />,
+          )}
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            save
+          </Button>
+        </Form.Item>
+      </Form>
     );
   }
 
@@ -112,19 +83,19 @@ class NewVault extends Component<NewVaultProps> {
   };
 
   private onDataChange(
-    label: NewVaultStateKey,
+    label: VaultStateKey,
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ): void {
     this.updateData(label, event.target.value);
   }
 
   @action
-  private updateData<TLabel extends NewVaultStateKey>(
+  private updateData<TLabel extends VaultStateKey>(
     label: TLabel,
-    value: NewVaultState[TLabel],
+    value: VaultInfo[TLabel],
   ): void {
     this.data[label] = value;
   }
 }
 
-export default Form.create<NewVaultProps>({name: 'new_vault'})(NewVault);
+export default Form.create<VaultFormProps>({name: 'new_vault'})(NewVault);

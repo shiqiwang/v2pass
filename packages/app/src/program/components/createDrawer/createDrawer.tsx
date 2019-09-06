@@ -3,7 +3,6 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import NewFolder from './newFolder/newFolder';
-import NewItem from './newItem/newItem';
 import NewVault from './newVault/newVault';
 import {DrawerProps} from './types';
 
@@ -21,7 +20,18 @@ export default class CreateDrawer extends Component<DrawerProps> {
         onClose={onClose}
         visible={visible}
       >
-        {type}
+        {type === 'Vault' ? (
+          <NewVault
+            vault={{name: '', type: 'private', describe: '', _id: ''}}
+          />
+        ) : (
+          undefined
+        )}
+        {type === 'Folder' ? (
+          <NewFolder folder={{name: '', describe: '', _id: '', vaultId: ''}} />
+        ) : (
+          undefined
+        )}
       </Drawer>
     );
   }

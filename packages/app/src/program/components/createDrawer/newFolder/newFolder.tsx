@@ -1,81 +1,84 @@
-import {Button, Drawer, Form, Input} from 'antd';
+import {Button, Form, Input, Select} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
-import React, {
-  ChangeEvent,
-  Component,
-  FormEventHandler,
-  ReactNode,
-} from 'react';
+import React, {Component, FormEventHandler, ReactNode} from 'react';
 
-import './newFolder.less';
+import {FolderInfo} from '../../../types/folder';
+import {vaultInfoArray} from '../../../util/splitData';
 
-interface NewFolderDrawerOptions {
-  visible: boolean;
-  title?: string;
-  onClose(): void;
-}
+type FolderStateKey = keyof FolderInfo;
 
-interface NewFolderProps extends FormComponentProps {
-  drawer: NewFolderDrawerOptions;
+interface FolderFormProps extends FormComponentProps {
+  folder: FolderInfo;
 }
 
 @observer
-class NewFolder extends Component<NewFolderProps> {
+class NewFolder extends Component<FolderFormProps> {
   @observable
-  private data = {
-    folderName: '',
-    note: '',
-  };
+  private data: FolderInfo = this.props.folder;
 
   render(): ReactNode {
-    const {drawer: drawerOptions} = this.props;
     const {getFieldDecorator} = this.props.form!;
     const {TextArea} = Input;
-    const {onClose, visible, title} = drawerOptions;
+    const {Option} = Select;
+    const {name, describe, vaultId} = this.props.folder;
 
     return (
-      <Drawer
-        width={400}
-        title={title ? title : 'New Folder'}
-        placement="right"
-        closable={false}
-        onClose={onClose}
-        visible={visible}
-      >
-        <Form onSubmit={this.onFormSubmit} className="newFolderForm">
-          <Form.Item label="folder name">
-            {getFieldDecorator('folderName', {
-              rules: [
-                {required: true, message: 'Please input your folder name!'},
-              ],
-              initialValue: this.data.folderName,
-            })(
-              <Input
-                type="text"
-                placeholder="folder name"
-                onChange={event => this.onDataChange('folderName', event)}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item label="note">
-            {getFieldDecorator('note', {
-              initialValue: this.data.note,
-            })(
-              <TextArea
-                placeholder="note"
-                onChange={event => this.onDataChange('note', event)}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              save
-            </Button>
-          </Form.Item>
-        </Form>
-      </Drawer>
+      <Form onSubmit={this.onFormSubmit} className="newFolderForm">
+        <Form.Item label="vault">
+          {getFieldDecorator('vaultName', {
+            rules: [
+              {
+                required: true,
+                message: 'Please select the vault',
+              },
+            ],
+            initialValue: vaultId,
+          })(
+            <Select
+              onChange={value => this.onDataChange('vaultId', String(value))}
+            >
+              {vaultInfoArray.map((item, index) => (
+                <Option value={item._id} key={String(index)}>
+                  {item.name}
+                </Option>
+              ))}
+            </Select>,
+          )}
+        </Form.Item>
+        <Form.Item label="folder name">
+          {getFieldDecorator('folderName', {
+            rules: [
+              {required: true, message: 'Please input your folder name!'},
+            ],
+            initialValue: name,
+          })(
+            <Input
+              type="text"
+              placeholder="folder name"
+              onChange={event => this.onDataChange('name', event.target.value)}
+            />,
+          )}
+        </Form.Item>
+        <Form.Item label="describe">
+          {getFieldDecorator('describe', {
+            initialValue: describe,
+          })(
+            <TextArea
+              placeholder="describe"
+              onChange={event =>
+                this.onDataChange('describe', event.target.value)
+              }
+            />,
+          )}
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            save
+          </Button>
+        </Form.Item>
+      </Form>
     );
   }
 
@@ -88,17 +91,17 @@ class NewFolder extends Component<NewFolderProps> {
     });
   };
 
-  private onDataChange(
-    label: 'folderName' | 'note',
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ): void {
-    this.updateData(label, event.target.value);
+  private onDataChange(label: FolderStateKey, value: string): void {
+    this.updateData(label, value);
   }
 
   @action
-  private updateData(label: 'folderName' | 'note', value: string): void {
+  private updateData<TLabel extends FolderStateKey>(
+    label: TLabel,
+    value: FolderInfo[TLabel],
+  ): void {
     this.data[label] = value;
   }
 }
 
-export default Form.create<NewFolderProps>({name: 'new_folder'})(NewFolder);
+export default Form.create<FolderFormProps>({name: 'new_folder'})(NewFolder);
