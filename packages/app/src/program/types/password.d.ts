@@ -1,9 +1,11 @@
-export default Password;
-interface Password {
+export default interface Password extends PasswordInfo {
+  items: PasswordItem[];
+}
+
+export interface PasswordInfo {
   _id: string;
   folderId: string;
   vaultId: string;
-  items: PasswordItem[];
   collect: boolean;
   pass_name: string;
   targetId: string;

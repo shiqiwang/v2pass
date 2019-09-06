@@ -2,7 +2,12 @@ import {Nominal} from 'tslang';
 import Folder from './folder';
 type UserId = Nominal<string, 'user-id'>;
 
-type Vault = PrivateVault;
+export interface VaultInfo {
+  _id: string;
+  name: string;
+  type: 'private';
+  describe: string;
+}
 
 interface SharedVault {
   _id: string;
@@ -14,12 +19,10 @@ interface SharedVault {
   folders: Folder[];
 }
 
-interface PrivateVault {
-  _id: string;
-  name: string;
-  type: 'private';
-  describe: string;
+interface PrivateVault extends VaultInfo {
   folders: Folder[];
 }
+
+type Vault = PrivateVault;
 
 export default Vault;

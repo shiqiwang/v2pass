@@ -5,11 +5,15 @@ import Folder from './folder';
 /**
  * 使用Target接口时，前端和后端都需引入_id
  */
-export default interface User {
+
+export interface UserInfo {
   _id: string;
   username: string;
   email: string; // 前后端应该验证email格式
   unlockKey: string; // 登录 解锁密钥，应当是master password和 secret key的衍生物
+}
+
+export default interface User extends UserInfo {
   data: {
     // 这种把folder存在user下的方式是否不大好，有shared后不还扩展。存folderIds[]是否更好
     // 同理targetIds[]和passwordIds[]呢？

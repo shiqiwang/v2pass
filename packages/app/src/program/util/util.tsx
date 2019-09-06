@@ -3,7 +3,11 @@ import Folder from '../types/folder';
 import Password from '../types/password';
 import Target from '../types/target';
 import Vault from '../types/vault';
+// 目前data是用自己的test数据，后面数据应当从sessionStorage本地存储中获取
+// sessionStorage够用吗？
+// sessionStorage中存储的数据也应该是加密的吧，拿出来后再解密到数据变量中？
 
+// 以下方法需要更改以下，数据在本地后，把util弄成类似于增删查改request的文件
 export function findTarget(targetId: string, targets: Target[]): Target {
   return targets.filter(target => target._id === targetId)[0];
 }
