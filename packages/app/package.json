@@ -11,11 +11,13 @@
     "build:background": "parcel build --out-dir bld/background src/background/background.ts"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.138",
     "antd": "^3.20.7",
     "boring-router": "^0.3.0-alpha.33",
     "boring-router-react": "^0.3.0-alpha.33",
     "history": "^4.9.0",
     "less": "^3.9.0",
+    "lodash": "^4.17.15",
     "mobx": "^5.13.0",
     "mobx-react": "^6.1.1",
     "react": "^16.8.6",

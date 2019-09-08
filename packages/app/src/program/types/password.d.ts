@@ -1,12 +1,14 @@
-export default Password;
-interface Password {
+export interface PasswordGist {
   _id: string;
   folderId: string;
   vaultId: string;
-  items: PasswordItem[];
-  collect: boolean;
   pass_name: string;
+  collect: boolean;
+}
+
+export default interface Password extends PasswordGist {
   targetId: string;
+  items: PasswordItem[];
 }
 
 export type PasswordItem =
