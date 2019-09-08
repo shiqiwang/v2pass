@@ -87,6 +87,72 @@ export const userData: User = {
               },
             ],
           },
+          {
+            _id: '2',
+            vaultId: '1',
+            name: 'test folder2',
+            describe: 'test folder',
+            passwords: [
+              {
+                _id: '1',
+                folderId: '2',
+                targetId: '2',
+                vaultId: '1',
+                items: [
+                  {
+                    type: 'userName',
+                    label: 'name',
+                    value: 'emi wang',
+                  },
+                  {
+                    type: 'password',
+                    label: 'password',
+                    value: '123',
+                  },
+                  {
+                    type: 'text',
+                    label: 'describe',
+                    value: 'for test',
+                  },
+                ],
+                collect: true,
+                pass_name: 'test item',
+              },
+            ],
+          },
+          {
+            _id: '3',
+            vaultId: '1',
+            name: 'test folder3',
+            describe: 'test folder',
+            passwords: [
+              {
+                _id: '1',
+                folderId: '3',
+                targetId: '2',
+                vaultId: '1',
+                items: [
+                  {
+                    type: 'userName',
+                    label: 'name',
+                    value: 'emi wang',
+                  },
+                  {
+                    type: 'password',
+                    label: 'password',
+                    value: '123',
+                  },
+                  {
+                    type: 'text',
+                    label: 'describe',
+                    value: 'for test',
+                  },
+                ],
+                collect: true,
+                pass_name: 'test item',
+              },
+            ],
+          },
         ],
       },
       {
@@ -107,7 +173,33 @@ export const userData: User = {
             name: 'folder',
             describe: 'a folder',
             vaultId: '3',
-            passwords: [],
+            passwords: [
+              {
+                _id: '1',
+                folderId: '1',
+                targetId: '1',
+                vaultId: '3',
+                items: [
+                  {
+                    type: 'userName',
+                    label: 'name',
+                    value: 'emi wang',
+                  },
+                  {
+                    type: 'password',
+                    label: 'password',
+                    value: '123',
+                  },
+                  {
+                    type: 'text',
+                    label: 'describe',
+                    value: 'for test',
+                  },
+                ],
+                collect: true,
+                pass_name: 'test item',
+              },
+            ],
           },
         ],
       },

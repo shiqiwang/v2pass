@@ -5,7 +5,7 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import {DELETE, EDIT} from '../../../const/const';
-import NewItem from '../../public/newItem/newItem';
+import NewItem from '../../createDrawer/newItem/newItem';
 import {PasswordProps} from '../types/types';
 
 import InductionContainer from './inductionContainer/inductionContainer';

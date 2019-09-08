@@ -4,64 +4,36 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {
-  NEW_FOLDER,
-  NEW_ITEM,
-  NEW_RANDOM_PASS,
-  NEW_VAULT,
-} from '../../const/const';
-import NewFolder from '../public/newFolder/newFolder';
-import NewItem from '../public/newItem/newItem';
-import NewRandomPass from '../public/newRandomPass/newRandomPass';
-import NewVault from '../public/newVault/newVault';
+import CreateDrawer from '../createDrawer/createDrawer';
+
+const types = ['Folder', 'Vault', 'Password', 'Target'];
+
+interface DrawerStates {
+  visible: boolean;
+  type: string;
+}
 
 @observer
 class CreateNew extends Component {
   @observable
-  private newFolderDrawerVisible = false;
-  @observable
-  private newItemDrawerVisible = false;
-  @observable
-  private newRandomPassDrawerVisible = false;
-  @observable
-  private newVaultDrawerVisible = false;
+  private drawer: DrawerStates = {
+    visible: false,
+    type: '',
+  };
 
   render(): ReactNode {
     const menu = (
       <Menu onClick={(value): void => this.onAddButtonClick(value)}>
-        <Menu.Item key={NEW_VAULT}>New Vault</Menu.Item>
-        <Menu.Item key={NEW_FOLDER}>New Folder</Menu.Item>
-        <Menu.Item key={NEW_ITEM}>New Item</Menu.Item>
-        <Menu.Item key={NEW_RANDOM_PASS}>Generate Password</Menu.Item>
+        {types.map(type => (
+          <Menu.Item key={type}>{type}</Menu.Item>
+        ))}
       </Menu>
     );
+    const {visible, type} = this.drawer;
 
     return (
-      <div className="createNew">
-        <NewVault
-          drawer={{
-            visible: this.newVaultDrawerVisible,
-            onClose: () => this.onClose(NEW_VAULT),
-          }}
-        />
-        <NewFolder
-          drawer={{
-            visible: this.newFolderDrawerVisible,
-            onClose: () => this.onClose(NEW_FOLDER),
-          }}
-        />
-        <NewItem
-          drawer={{
-            visible: this.newItemDrawerVisible,
-            onClose: () => this.onClose(NEW_ITEM),
-          }}
-        />
-        <NewRandomPass
-          drawer={{
-            visible: this.newRandomPassDrawerVisible,
-            onClose: () => this.onClose(NEW_RANDOM_PASS),
-          }}
-        />
+      <div>
+        <CreateDrawer visible={visible} type={type} onClose={this.onClose} />
         <Dropdown overlay={menu}>
           <Button type="primary" icon="plus" className="newButton">
             New
@@ -71,30 +43,17 @@ class CreateNew extends Component {
     );
   }
 
-  private onClose = (type: string): void => {
-    this.toggleDrawer(type, false);
+  private onClose = (): void => {
+    this.toggleDrawer({visible: false, type: ''});
   };
 
   private onAddButtonClick = (value: ClickParam): void => {
-    this.toggleDrawer(value.key, true);
+    this.toggleDrawer({visible: true, type: value.key});
   };
 
   @action
-  private toggleDrawer(type: string, visible: boolean): void {
-    switch (type) {
-      case NEW_VAULT:
-        this.newVaultDrawerVisible = visible;
-        break;
-      case NEW_FOLDER:
-        this.newFolderDrawerVisible = visible;
-        break;
-      case NEW_ITEM:
-        this.newItemDrawerVisible = visible;
-        break;
-      case NEW_RANDOM_PASS:
-        this.newRandomPassDrawerVisible = visible;
-        break;
-    }
+  private toggleDrawer(states: DrawerStates): void {
+    this.drawer = states;
   }
 }
 
