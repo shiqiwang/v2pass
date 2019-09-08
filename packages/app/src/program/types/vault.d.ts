@@ -22,6 +22,6 @@ export interface VaultInfo extends VaultGist {
   describe: string;
 }
 
-export interface Vault extends VaultInfo {
+export default interface Vault extends VaultInfo {
   folders: Folder[];
 }
