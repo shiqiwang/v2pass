@@ -4,9 +4,11 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import CreateDrawer from '../createDrawer/createDrawer';
+import NewFolder from './newFolder';
+import NewItem from './newItem';
+import NewVault from './newVault';
 
-const types = ['Folder', 'Vault', 'Password', 'Target'];
+const types = ['Folder', 'Vault', 'Password'];
 
 interface DrawerStates {
   visible: boolean;
@@ -33,12 +35,26 @@ class CreateNew extends Component {
 
     return (
       <div>
-        <CreateDrawer visible={visible} type={type} onClose={this.onClose} />
         <Dropdown overlay={menu}>
           <Button type="primary" icon="plus" className="newButton">
             New
           </Button>
         </Dropdown>
+        {type === 'Password' && (
+          <NewItem drawer={{visible, onClose: this.onClose}} />
+        )}
+        {type === 'Folder' && (
+          <NewFolder
+            drawer={{visible, onClose: this.onClose}}
+            folder={{name: '', describe: '', _id: '', vaultId: ''}}
+          />
+        )}
+        {type === 'Vault' && (
+          <NewVault
+            drawer={{visible, onClose: this.onClose}}
+            vault={{name: '', describe: '', _id: '', type: 'private'}}
+          />
+        )}
       </div>
     );
   }

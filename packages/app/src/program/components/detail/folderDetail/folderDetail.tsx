@@ -4,7 +4,7 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import Folder from '../../../types/folder';
-import NewFolder from '../../createDrawer/newFolder/newFolder';
+import NewFolder from '../../createDrawer/newFolder';
 
 import './folderDetail.less';
 
@@ -20,7 +20,7 @@ class FolderDetail extends Component<FolderDetailProps> {
   private modalVisible = false;
 
   render(): ReactNode {
-    const {name, _id, describe} = this.props.folder;
+    const {name, _id, describe, vaultId} = this.props.folder;
 
     return (
       <div className="folderDetail">
@@ -38,6 +38,7 @@ class FolderDetail extends Component<FolderDetailProps> {
             onClose: this.onDrawerClose,
             title: 'Edit Folder',
           }}
+          folder={{_id, describe, name, vaultId}}
         />
         <div className="header">
           <Row>

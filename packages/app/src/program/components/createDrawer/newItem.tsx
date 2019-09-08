@@ -9,10 +9,6 @@ import React, {
   ReactNode,
 } from 'react';
 
-import './newItem.less';
-
-import AdditionSection, {AdditionalSectionInterface} from './additionalSection';
-
 interface NewItemDrawerOptionsInterface {
   visible: boolean;
   title?: string;
@@ -29,7 +25,6 @@ interface FormDataInterface {
   userName: string;
   password: string;
   target: string[];
-  additionalSections: AdditionalSectionInterface[];
 }
 
 type FormDataLabelType = keyof FormDataInterface;
@@ -43,18 +38,6 @@ class NewItem extends Component<NewItemProps> {
     userName: '',
     password: '',
     target: [],
-    additionalSections: [
-      {
-        sectionName: '',
-        items: [
-          {
-            name: '',
-            value: '',
-            type: '',
-          },
-        ],
-      },
-    ],
   };
 
   render(): ReactNode {
@@ -138,11 +121,6 @@ class NewItem extends Component<NewItemProps> {
               />,
             )}
           </Form.Item>
-          {this.data.additionalSections.map((item, index) => (
-            <Form.Item label="additional" {...formItemLayout} key={index}>
-              <AdditionSection data={item} />
-            </Form.Item>
-          ))}
           <Form.Item {...formButtonLayout}>
             <Button type="primary" htmlType="submit">
               save
@@ -180,4 +158,3 @@ class NewItem extends Component<NewItemProps> {
 }
 
 export default Form.create<NewItemProps>({name: 'new_item'})(NewItem);
-export * from './additionalSection';

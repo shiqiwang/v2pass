@@ -4,7 +4,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import CreateNew from '../../components/createNew/createNew';
+import CreateNew from '../../components/createDrawer/createNew';
 import Detail from '../../components/detail/detail';
 import PasswordList from '../../components/passwordList/list';
 import {ActiveItem} from '../../components/passwordList/types/types';

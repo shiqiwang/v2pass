@@ -4,7 +4,7 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import Vault from '../../../types/vault';
-import NewVault from '../../createDrawer/newVault/newVault';
+import NewVault from '../../createDrawer/newVault';
 
 import './vaultDetail.less';
 
@@ -40,6 +40,7 @@ class VaultDetail extends Component<VaultProps> {
             onClose: this.onDrawerClose,
             title: 'Edit Vault',
           }}
+          vault={{name, _id, type, describe}}
         />
         <div className="header">
           <Row>
