@@ -25,7 +25,7 @@ class NewFolder extends Component<FolderFormProps> {
     const {getFieldDecorator} = this.props.form!;
     const {TextArea} = Input;
     const {Option} = Select;
-    const {name, describe, vaultId} = this.data;
+    const {name, describe, vaultId} = this.props.folder;
     const {visible, onClose, title} = this.props.drawer;
 
     return (

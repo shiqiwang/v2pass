@@ -1,5 +1,6 @@
 import {Button, Drawer, Form, Input, Radio} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
+import lodash from 'lodash';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {
@@ -23,13 +24,15 @@ type VaultStateKey = keyof VaultInfo;
 @observer
 class NewVault extends Component<VaultFormProps> {
   @observable
-  private data: VaultInfo = this.props.vault;
+  private data: VaultInfo = lodash.cloneDeep(this.props.vault);
 
   render(): ReactNode {
     const {getFieldDecorator} = this.props.form!;
     const {TextArea} = Input;
-    const {name, type, describe} = this.data;
+    const {name, type, describe} = this.props.vault;
     const {visible, title, onClose} = this.props.drawer;
+    console.log('state', this.data);
+    console.log('props', this.props.vault);
 
     return (
       <Drawer
