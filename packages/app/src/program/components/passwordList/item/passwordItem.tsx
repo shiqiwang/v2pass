@@ -44,6 +44,7 @@ class PasswordItem extends Component<PasswordProps> {
             onClose: () => this.onDrawerClose(),
             title: 'Edit Item',
           }}
+          password={this.props.password}
         />
         <Modal
           title={DELETE}

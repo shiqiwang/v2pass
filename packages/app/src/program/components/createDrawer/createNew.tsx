@@ -41,7 +41,18 @@ class CreateNew extends Component {
           </Button>
         </Dropdown>
         {type === 'Password' && (
-          <NewItem drawer={{visible, onClose: this.onClose}} />
+          <NewItem
+            drawer={{visible, onClose: this.onClose}}
+            password={{
+              _id: '',
+              folderId: '',
+              vaultId: '',
+              pass_name: '',
+              items: [],
+              collect: false,
+              targetId: '',
+            }}
+          />
         )}
         {type === 'Folder' && (
           <NewFolder

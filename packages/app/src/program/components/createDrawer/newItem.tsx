@@ -1,124 +1,142 @@
-import {Button, Drawer, Form, Input} from 'antd';
+import {Button, Drawer, Form, Input, Radio, Select} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
+import lodash from 'lodash';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
-import React, {
-  ChangeEvent,
-  Component,
-  FormEventHandler,
-  ReactNode,
-} from 'react';
+import React, {Component, FormEventHandler, ReactNode} from 'react';
 
-interface NewItemDrawerOptionsInterface {
-  visible: boolean;
-  title?: string;
-  onClose(): void;
-}
+import Password, {PasswordItem} from '../../types/password';
+import {folderGistArray, targets, vaultGistArray} from '../../util/splitData';
+
+import {DrawerProps} from './types';
 
 interface NewItemProps extends FormComponentProps {
-  drawer: NewItemDrawerOptionsInterface;
+  drawer: DrawerProps;
+  password: Password;
 }
 
-interface FormDataInterface {
-  title: string;
-  note: string;
-  userName: string;
-  password: string;
-  target: string[];
-}
+type FormDataLabelType = keyof Password;
 
-type FormDataLabelType = keyof FormDataInterface;
+const formItemLayout = {
+  labelCol: {span: 6},
+  wrapperCol: {span: 18},
+};
+const formButtonLayout = {
+  wrapperCol: {span: 18, offset: 6},
+};
+
+const {Option} = Select;
+const {TextArea} = Input;
 
 @observer
 class NewItem extends Component<NewItemProps> {
   @observable
-  private data: FormDataInterface = {
-    title: '',
-    note: '',
-    userName: '',
-    password: '',
-    target: [],
-  };
+  private data: Password = lodash.cloneDeep(this.props.password);
 
   render(): ReactNode {
-    const {drawer: drawerOptions} = this.props;
+    const {title, visible, onClose} = this.props.drawer;
     const {getFieldDecorator} = this.props.form!;
-    const formItemLayout = {
-      labelCol: {span: 6},
-      wrapperCol: {span: 18},
-    };
-    const formButtonLayout = {
-      wrapperCol: {span: 18, offset: 6},
-    };
+    const {
+      pass_name,
+      folderId,
+      vaultId,
+      targetId,
+      items,
+      collect,
+    } = this.props.password;
 
     return (
       <Drawer
         width={400}
-        title={drawerOptions.title ? drawerOptions.title : 'New Item'}
+        title={title ? title : 'New Item'}
         placement="right"
         closable={false}
-        onClose={drawerOptions.onClose}
-        visible={drawerOptions.visible}
+        onClose={onClose}
+        visible={visible}
       >
         <Form
           onSubmit={this.onFormSubmit}
           className="newItemForm"
           layout="horizontal"
         >
+          <h4>必填选项</h4>
           <Form.Item label="title" {...formItemLayout}>
             {getFieldDecorator('title', {
-              rules: [{required: true, message: 'Please input title!'}],
-              initialValue: this.data.title,
+              rules: [
+                {required: true, message: 'Please input password item title!'},
+              ],
+              initialValue: pass_name,
             })(
               <Input
                 type="text"
                 placeholder="title"
-                onChange={event => this.onDataChange('title', event)}
+                onChange={event =>
+                  this.onDataChange('pass_name', event.target.value)
+                }
               />,
             )}
           </Form.Item>
-          <Form.Item label="note" {...formItemLayout}>
-            {getFieldDecorator('note', {
-              initialValue: this.data.note,
+          <Form.Item label="vault" {...formItemLayout}>
+            {getFieldDecorator('vault', {
+              rules: [{required: true, message: 'Please select the vault!'}],
+              initialValue: vaultId,
             })(
-              <Input.TextArea
-                placeholder="note"
-                onChange={event => this.onDataChange('note', event)}
-              />,
+              <Select
+                onChange={value => this.onDataChange('vaultId', String(value))}
+              >
+                {vaultGistArray.map((vault, index) => (
+                  <Option value={vault._id} key={String(index)}>
+                    {vault.name}
+                  </Option>
+                ))}
+              </Select>,
             )}
           </Form.Item>
-          <Form.Item label="user name" {...formItemLayout}>
-            {getFieldDecorator('user name', {
-              rules: [{required: true, message: 'Please input user name!'}],
-              initialValue: this.data.userName,
+          <Form.Item label="folder" {...formItemLayout}>
+            {getFieldDecorator('folder', {
+              rules: [{required: true, message: 'Please select the folder!'}],
+              initialValue: folderId,
             })(
-              <Input
-                type="text"
-                placeholder="user name"
-                onChange={event => this.onDataChange('userName', event)}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item label="password" {...formItemLayout}>
-            {getFieldDecorator('password', {
-              rules: [{required: true, message: 'Please input user password!'}],
-              initialValue: this.data.password,
-            })(
-              <Input
-                type="password"
-                placeholder="password"
-                onChange={event => this.onDataChange('password', event)}
-              />,
+              <Select
+                onChange={value => this.onDataChange('folderId', String(value))}
+              >
+                {folderGistArray.map((folder, index) => (
+                  <Option value={folder._id} key={String(index)}>
+                    {folder.name}
+                  </Option>
+                ))}
+              </Select>,
             )}
           </Form.Item>
           <Form.Item label="target" {...formItemLayout}>
             {getFieldDecorator('target', {
-              initialValue: this.data.target,
+              rules: [{required: true, message: 'Please select the target!'}],
+              initialValue: targetId,
             })(
-              <Input.TextArea
-                placeholder="Please input target, use line breaks to separate!"
-                onChange={event => this.onDataChange('password', event)}
-              />,
+              <Select
+                onChange={value => this.onDataChange('targetId', String(value))}
+              >
+                {targets.map((target, index) => (
+                  <Option value={target._id} key={String(index)}>
+                    {target.displayName}
+                  </Option>
+                ))}
+              </Select>,
+            )}
+          </Form.Item>
+          <Form.Item label="collection" {...formItemLayout}>
+            {getFieldDecorator('collect', {
+              rules: [{required: true}],
+              initialValue: collect,
+            })(
+              <Radio.Group
+                onChange={event =>
+                  this.onDataChange('collect', event.target.value)
+                }
+              >
+                <Radio value={true}>true</Radio>
+                <Radio value={false}>false</Radio>
+              </Radio.Group>,
             )}
           </Form.Item>
           <Form.Item {...formButtonLayout}>
@@ -143,15 +161,15 @@ class NewItem extends Component<NewItemProps> {
 
   private onDataChange(
     label: FormDataLabelType,
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    value: string | boolean,
   ): void {
-    this.updateData(label, event.target.value);
+    this.updateData(label, value);
   }
 
   @action
   private updateData<TLabel extends FormDataLabelType>(
     label: TLabel,
-    value: FormDataInterface[TLabel],
+    value: Password[TLabel],
   ): void {
     this.data[label] = value;
   }
