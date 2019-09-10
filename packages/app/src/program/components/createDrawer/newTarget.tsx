@@ -80,75 +80,67 @@ class NewTarget extends Component<TargetFormProps> {
             )}
           </Form.Item>
           <h4>Entries</h4>
-          {entries.length ? (
-            <div>
-              {entries.map((entry, index) => {
-                return (
-                  <Row className="entry" key={String(index)}>
-                    <Col span={6}>
-                      <Form.Item>
-                        {getFieldDecorator(`${entry._id}type`, {
-                          rules: [
-                            {required: true, message: 'the type is needed!'},
-                          ],
-                          initialValue: entry.type,
-                        })(
-                          <Select<TargetStateValue>
-                            onChange={value =>
-                              this.onChangeEntry(entry._id, 'type', value)
-                            }
-                          >
-                            {typeList.map(item => (
-                              <Select.Option value={item} key={item}>
-                                {item}
-                              </Select.Option>
-                            ))}
-                          </Select>,
-                        )}
-                      </Form.Item>
-                    </Col>
-                    <Col span={14} offset={1}>
-                      <Form.Item>
-                        {getFieldDecorator(`${entry._id}value`, {
-                          rules: [
-                            {
-                              required: true,
-                              message: 'the entry value is needed!',
-                            },
-                          ],
-                          initialValue: entry.value,
-                        })(
-                          <Input
-                            type="text"
-                            placeholder="value"
-                            onChange={event =>
-                              this.onChangeEntry(
-                                entry._id,
-                                'value',
-                                event.target.value,
-                              )
-                            }
-                          />,
-                        )}
-                      </Form.Item>
-                    </Col>
-                    <Col span={2} offset={1}>
-                      <Form.Item>
-                        <Button
-                          icon="minus"
-                          shape="circle"
-                          size="small"
-                          onClick={event => this.onReduceEntry(entry._id)}
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                );
-              })}
-            </div>
-          ) : (
-            undefined
-          )}
+          {entries.map((entry, index) => {
+            return (
+              <Row className="entry" key={String(index)}>
+                <Col span={6}>
+                  <Form.Item>
+                    {getFieldDecorator(`${entry._id}type`, {
+                      rules: [{required: true, message: 'the type is needed!'}],
+                      initialValue: entry.type,
+                    })(
+                      <Select<TargetStateValue>
+                        onChange={value =>
+                          this.onChangeEntry(entry._id, 'type', value)
+                        }
+                      >
+                        {typeList.map(item => (
+                          <Select.Option value={item} key={item}>
+                            {item}
+                          </Select.Option>
+                        ))}
+                      </Select>,
+                    )}
+                  </Form.Item>
+                </Col>
+                <Col span={14} offset={1}>
+                  <Form.Item>
+                    {getFieldDecorator(`${entry._id}value`, {
+                      rules: [
+                        {
+                          required: true,
+                          message: 'the entry value is needed!',
+                        },
+                      ],
+                      initialValue: entry.value,
+                    })(
+                      <Input
+                        type="text"
+                        placeholder="value"
+                        onChange={event =>
+                          this.onChangeEntry(
+                            entry._id,
+                            'value',
+                            event.target.value,
+                          )
+                        }
+                      />,
+                    )}
+                  </Form.Item>
+                </Col>
+                <Col span={2} offset={1}>
+                  <Form.Item>
+                    <Button
+                      icon="minus"
+                      shape="circle"
+                      size="small"
+                      onClick={event => this.onReduceEntry(entry._id)}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            );
+          })}
           <Form.Item>
             <Button
               shape="circle"
