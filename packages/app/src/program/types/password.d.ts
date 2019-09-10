@@ -21,38 +21,44 @@ export type PasswordItem =
   | NoteInfoItem;
 
 interface NameInfoItem {
+  _id: string;
   type: 'userName';
   label: string;
   value: string;
 }
 interface PhoneNumberInfoItem {
+  _id: string;
   type: 'phone';
   label: string;
-  value: number; // 加入电话号码校验
+  value: string; // 加入电话号码校验
 }
 
 interface EmailInfoItem {
+  _id: string;
   type: 'email';
   label: string;
   value: string; // 加入邮箱校验
 }
 
 interface TextInfoItem {
+  _id: string;
   type: 'text';
   label: string;
   value: string;
 }
 
 interface PasswordInfoItem {
+  _id: string;
   type: 'password';
   label: string;
   value: string;
 }
 
 interface DateInfoItem {
+  _id: string;
   type: 'date';
   label: string;
-  value: Date;
+  value: string;
 }
 
 interface OneTimePasswordInfoItem {
@@ -60,12 +66,14 @@ interface OneTimePasswordInfoItem {
 }
 
 interface AddressInfoItem {
+  _id: string;
   type: 'address';
   label: string;
   value: string;
 }
 
 interface NoteInfoItem {
+  _id: string;
   type: 'note';
   label: string;
   value: string;

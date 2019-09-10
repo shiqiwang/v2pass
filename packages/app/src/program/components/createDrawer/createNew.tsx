@@ -46,11 +46,11 @@ class CreateNew extends Component {
           <NewItem
             drawer={{visible, onClose: this.onClose}}
             password={{
-              _id: '',
+              _id: uuid(),
               folderId: '',
               vaultId: '',
               pass_name: '',
-              items: [],
+              items: [{_id: uuid(), type: 'text', label: '', value: ''}],
               collect: false,
               targetId: '',
             }}
@@ -59,13 +59,13 @@ class CreateNew extends Component {
         {type === 'Folder' && (
           <NewFolder
             drawer={{visible, onClose: this.onClose}}
-            folder={{name: '', describe: '', _id: '', vaultId: ''}}
+            folder={{name: '', describe: '', _id: uuid(), vaultId: ''}}
           />
         )}
         {type === 'Vault' && (
           <NewVault
             drawer={{visible, onClose: this.onClose}}
-            vault={{name: '', describe: '', _id: '', type: 'private'}}
+            vault={{name: '', describe: '', _id: uuid(), type: 'private'}}
           />
         )}
         {type === 'Target' && (
