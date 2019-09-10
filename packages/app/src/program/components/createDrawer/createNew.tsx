@@ -3,12 +3,14 @@ import {ClickParam} from 'antd/lib/menu';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
+import uuid from 'uuid';
 
 import NewFolder from './newFolder';
 import NewItem from './newItem';
+import NewTarget from './newTarget';
 import NewVault from './newVault';
 
-const types = ['Folder', 'Vault', 'Password'];
+const types = ['Folder', 'Vault', 'Password', 'Target'];
 
 interface DrawerStates {
   visible: boolean;
@@ -64,6 +66,16 @@ class CreateNew extends Component {
           <NewVault
             drawer={{visible, onClose: this.onClose}}
             vault={{name: '', describe: '', _id: '', type: 'private'}}
+          />
+        )}
+        {type === 'Target' && (
+          <NewTarget
+            drawer={{visible, onClose: this.onClose}}
+            target={{
+              displayName: '',
+              _id: uuid(),
+              entries: [{_id: uuid(), type: 'website URL', value: ''}],
+            }}
           />
         )}
       </div>

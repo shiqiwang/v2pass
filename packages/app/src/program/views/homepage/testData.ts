@@ -14,12 +14,15 @@ export const userData: User = {
       {
         _id: '1',
         displayName: '阿里云',
-        entries: [{type: 'website URL', value: 'https://aliyun.com'}],
+        entries: [{type: 'website URL', value: 'https://aliyun.com', _id: '1'}],
       },
       {
         _id: '2',
         displayName: '腾讯系',
-        entries: [{type: 'website URL', value: 'https://qq.com'}],
+        entries: [
+          {type: 'website URL', value: 'https://qq.com', _id: '2'},
+          {type: 'ios-app ID', value: '123', _id: '3'},
+        ],
       },
     ],
     vaults: [
