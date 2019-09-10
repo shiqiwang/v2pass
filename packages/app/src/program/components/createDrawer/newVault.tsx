@@ -1,7 +1,6 @@
 import {Button, Drawer, Form, Input, Radio} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
-import lodash from 'lodash';
-import {action, observable} from 'mobx';
+import {action, computed, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {
   ChangeEvent,
@@ -23,16 +22,34 @@ type VaultStateKey = keyof VaultInfo;
 
 @observer
 class NewVault extends Component<VaultFormProps> {
+  // @observable
+  // private data: VaultInfo = lodash.cloneDeep(this.props.vault);
+
   @observable
-  private data: VaultInfo = lodash.cloneDeep(this.props.vault);
+  private changedVaultId: string | undefined;
+
+  @observable
+  private changedVaultInfo: Partial<VaultInfo> | undefined;
+
+  @computed
+  get data(): VaultInfo {
+    let {vault} = this.props;
+
+    if (!this.changedVaultId || this.changedVaultId !== vault._id) {
+      return vault;
+    }
+
+    return {
+      ...vault,
+      ...this.changedVaultInfo,
+    };
+  }
 
   render(): ReactNode {
     const {getFieldDecorator} = this.props.form!;
     const {TextArea} = Input;
     const {name, type, describe} = this.props.vault;
     const {visible, title, onClose} = this.props.drawer;
-    console.log('state', this.data);
-    console.log('props', this.props.vault);
 
     return (
       <Drawer
@@ -110,7 +127,14 @@ class NewVault extends Component<VaultFormProps> {
     label: TLabel,
     value: VaultInfo[TLabel],
   ): void {
-    this.data[label] = value;
+    let {vault} = this.props;
+
+    if (this.changedVaultId !== vault._id) {
+      this.changedVaultId = vault._id;
+      this.changedVaultInfo = {};
+    }
+
+    this.changedVaultInfo![label] = value;
   }
 }
 

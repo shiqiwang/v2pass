@@ -1,6 +1,6 @@
 import {Button, Drawer, Form, Input, Select} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
-import {action, observable} from 'mobx';
+import {action, computed, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 
@@ -19,7 +19,23 @@ interface FolderFormProps extends FormComponentProps {
 @observer
 class NewFolder extends Component<FolderFormProps> {
   @observable
-  private data: FolderInfo = this.props.folder;
+  private changedFolderId: string | undefined;
+  @observable
+  private changedFolderInfo: Partial<FolderInfo> | undefined;
+
+  @computed
+  get data(): FolderInfo {
+    let {folder} = this.props;
+
+    if (!this.changedFolderId || this.changedFolderId !== folder._id) {
+      return folder;
+    }
+
+    return {
+      ...folder,
+      ...this.changedFolderInfo,
+    };
+  }
 
   render(): ReactNode {
     const {getFieldDecorator} = this.props.form!;
@@ -115,7 +131,14 @@ class NewFolder extends Component<FolderFormProps> {
     label: TLabel,
     value: FolderInfo[TLabel],
   ): void {
-    this.data[label] = value;
+    let {folder} = this.props;
+
+    if (this.changedFolderId !== folder._id) {
+      this.changedFolderId = folder._id;
+      this.changedFolderInfo = {};
+    }
+
+    this.changedFolderInfo![label] = value;
   }
 }
 
