@@ -1,11 +1,8 @@
-import {Button, Drawer, Input} from 'antd';
-import {action, observable} from 'mobx';
+import {Drawer} from 'antd';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import GenerateRandomPassword from '../generateRandomPassword/generateRandomPassword';
-
-import './newRandomPass.less';
 
 interface NewRandomPassDrawerOptions {
   visible: boolean;
@@ -18,9 +15,6 @@ interface NewRandomPassProps {
 
 @observer
 class NewRandomPass extends Component<NewRandomPassProps> {
-  @observable
-  private password = '';
-
   render(): ReactNode {
     const {drawer: drawerOptions} = this.props;
 
@@ -33,8 +27,6 @@ class NewRandomPass extends Component<NewRandomPassProps> {
         onClose={drawerOptions.onClose}
         visible={drawerOptions.visible}
       >
-        <Input value={this.password} />
-        <Button type="primary">copy</Button>
         <GenerateRandomPassword />
       </Drawer>
     );

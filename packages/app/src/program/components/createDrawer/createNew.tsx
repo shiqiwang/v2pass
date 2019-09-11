@@ -7,10 +7,11 @@ import uuid from 'uuid';
 
 import NewFolder from './newFolder';
 import NewItem from './newItem';
+import NewRandomPass from './newRandomPass';
 import NewTarget from './newTarget';
 import NewVault from './newVault';
 
-const types = ['Folder', 'Vault', 'Password', 'Target'];
+const types = ['Folder', 'Vault', 'Password', 'Target', 'Random Password'];
 
 interface DrawerStates {
   visible: boolean;
@@ -77,6 +78,9 @@ class CreateNew extends Component {
               entries: [{_id: uuid(), type: 'website URL', value: ''}],
             }}
           />
+        )}
+        {type === 'Random Password' && (
+          <NewRandomPass drawer={{visible, onClose: this.onClose}} />
         )}
       </div>
     );
