@@ -9,6 +9,7 @@
 
 1. server 部分代码编译：`yarn tsc`或`yarn tsc -p .`
 2. 如果编译不通过，在项目根目录下执行`yarn tsc -p ./packages/server/src/program/tsconfig.json`，把路径给全。
+3. 启动 server，命令：`node main.js`，在 v2pass/packages/server/bld/program 目录下
 
 ## 加密解密
 
