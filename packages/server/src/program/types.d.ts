@@ -1,10 +1,15 @@
 import {ObjectId} from 'mongodb';
 
-export default interface User {
+export interface UserWithVerify extends User {
+  verify: string;
+}
+
+export interface User {
   _id: ObjectId;
   username: string;
   email: string;
-  avatar: any;
-  unlockKey: string;
-  data: object; // 这里用了加密后，数据类型不是object，记得更改
+  // 数据都是加密的，在node中为Buffer，在前端为ArrayBuffer，内存中表示为二进制
+  data: Buffer;
 }
+
+export type UnlockKey = string;
