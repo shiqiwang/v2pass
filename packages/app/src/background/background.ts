@@ -11,3 +11,9 @@ chrome.runtime.onInstalled.addListener(() => {
     ]);
   });
 });
+
+function test(): void {
+  console.log('123');
+}
+
+(window as any).test = test;

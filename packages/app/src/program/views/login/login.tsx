@@ -1,12 +1,13 @@
-import {Button, Col, Form, Icon, Input, Row} from 'antd';
+/*global chrome*/
+
+import {Button, Col, Form, Input, Row} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
-import Password from 'antd/lib/input/Password';
-import {Link, RouteComponentProps} from 'boring-router-react';
+import axios from 'axios';
+import {RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {
   ChangeEvent,
-  ChangeEventHandler,
   Component,
   FormEventHandler,
   ReactNode,
@@ -101,6 +102,18 @@ class Login extends Component<LoginPageProps> {
 
       if (!error && userName === 'emi' && password === '123') {
         router.unlock.$push();
+        axios
+          .post('http://localhost:3000/test', {test: 'test'})
+          .then(response => {
+            console.log('test response', response);
+          })
+          .catch(error => {
+            console.log('test error', error);
+          });
+        // eslint-disable-line
+        // const bg = chrome.extension.getBackgroundPage();
+        // console.log('bg', bg);
+        // console.log('bg test', (bg as any).test());
       }
 
       setFields({
