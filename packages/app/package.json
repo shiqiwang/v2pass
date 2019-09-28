@@ -11,10 +11,12 @@
     "build:background": "parcel build --out-dir bld/background src/background/background.ts"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
     "@types/chrome": "^0.0.89",
     "@types/lodash": "^4.14.138",
     "@types/uuid": "^3.4.5",
     "antd": "^3.20.7",
+    "axios": "^0.19.0",
     "boring-router": "^0.3.0-alpha.33",
     "boring-router-react": "^0.3.0-alpha.33",
     "history": "^4.9.0",
