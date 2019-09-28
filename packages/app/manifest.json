@@ -2,7 +2,7 @@
   "name": "v2pass",
   "version": "1.0",
   "description": "a password management tool",
-  "permissions": ["storage", "declarativeContent"],
+  "permissions": ["storage", "declarativeContent", "http://localhost:3000/*"],
   "background": {
     "scripts": ["./bld/background/background.js"],
     "persistent": false
