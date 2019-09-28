@@ -4,51 +4,16 @@ import assert from 'assert';
 
 import mongodb from 'mongodb';
 
-import User from './types';
+import {UserWithVerify} from './types';
 
-const userDocument: User[] = [
+const userDocument: UserWithVerify[] = [
   {
     _id: new mongodb.ObjectId(),
     username: 'emi wang',
     email: 'shiqi.wang@live.com',
-    avatar: undefined,
-    unlockKey: '123',
+    verify: '123',
     // 这里data后面应当是加密后的数据
-    data: {
-      targets: [
-        {
-          _id: new mongodb.ObjectId(),
-          displayName: '阿里云',
-          entries: [{type: 'website', url: 'https://aliyun.com'}],
-        },
-      ],
-      vaults: [
-        {
-          _id: new mongodb.ObjectId(),
-          name: 'vault',
-          type: 'private',
-          describe: 'test vault',
-          avatar: undefined,
-          folders: [
-            {
-              _id: new mongodb.ObjectId(),
-              name: 'test folder',
-              describe: 'test folder',
-              avatar: undefined,
-            },
-          ],
-        },
-      ],
-      passwords: [
-        {
-          _id: new mongodb.ObjectId(),
-          items: [],
-          collect: true,
-          avatar: undefined,
-          pass_name: 'test item',
-        },
-      ],
-    },
+    data: Buffer.from('data'),
   },
 ];
 
