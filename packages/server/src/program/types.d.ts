@@ -13,3 +13,8 @@ export interface User {
 }
 
 export type UnlockKey = string;
+
+export interface ResponseMessage {
+  code: number;
+  message: string;
+}
