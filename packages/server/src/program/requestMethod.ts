@@ -19,6 +19,11 @@ collection
   .createIndex({username: 1, email: 1}, {unique: true})
   .catch(console.error);
 
+export async function getDatabaseCollect(): Promise<mongodb.MongoClient> {
+  const result = await client.connect();
+  return result;
+}
+
 function authenticate(
   unlockKey: UnlockKey,
   verify: UserWithVerify['verify'],
