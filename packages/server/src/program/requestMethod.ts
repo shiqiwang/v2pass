@@ -6,29 +6,45 @@
 import mongodb from 'mongodb';
 
 import {UnlockKey, User, UserWithVerify} from './types';
-
 const MongoClient = mongodb.MongoClient;
 const url = 'mongodb://localhost:27017';
 const dbName = 'v2pass';
-const client = new MongoClient(url);
-const db = client.db(dbName);
-const collection = db.collection('test');
+const clientPromise = new MongoClient(url).connect();
 
-// 使用索引保证插入数据的username和email的唯一性
-collection
-  .createIndex({username: 1, email: 1}, {unique: true})
-  .catch(console.error);
+const collectionPromise = clientPromise.then(client =>
+  client.db(dbName).collection('test'),
+);
 
-export async function getDatabaseCollect(): Promise<mongodb.MongoClient> {
-  const result = await client.connect();
-  return result;
+(async (): Promise<void> => {
+  const collection = await collectionPromise;
+  collection
+    .createIndex({username: 1, email: 1}, {unique: true})
+    .catch(console.error);
+})().catch(error => console.error('collection createIndex error', error));
+
+interface FirstSearchCondition {
+  username: User['username'];
+  email: User['email'];
 }
 
-function authenticate(
+interface SecondSearchCondition {
+  _id: User['_id'];
+}
+
+type SearchCondition = FirstSearchCondition | SecondSearchCondition;
+
+export async function getAuthenticate(
+  search: SearchCondition,
   unlockKey: UnlockKey,
-  verify: UserWithVerify['verify'],
-): boolean {
-  if (verify === unlockKey) {
+): Promise<boolean> {
+  const collection = await collectionPromise;
+  const users = await collection.find(search).toArray();
+
+  if (!users.length) {
+    return false;
+  }
+
+  if (users[0].verify === unlockKey) {
     // 这里应该用verify验证器来验证unlockKey才对!!!
     return true;
   }
@@ -36,32 +52,10 @@ function authenticate(
   return false;
 }
 
-async function getUserById(_id: User['_id']): Promise<any> {
-  const result = await collection.find({_id}).toArray();
-
-  if (!result.length) {
-    throw Error('not found');
-  }
-
-  return result[0];
-}
-
-async function getUserByUsernameEmail(
-  username: User['username'],
-  email: User['email'],
-): Promise<any> {
-  const result = await collection.find({username, email}).toArray();
-
-  if (!result.length) {
-    throw Error('not found');
-  }
-
-  return result[0];
-}
-
 export async function testUserNameAvailability(
   username: User['username'],
 ): Promise<boolean> {
+  const collection = await collectionPromise;
   const num = await collection.count({username});
   return !num;
 }
@@ -69,6 +63,7 @@ export async function testUserNameAvailability(
 export async function testEmailAvailability(
   email: User['email'],
 ): Promise<boolean> {
+  const collection = await collectionPromise;
   const num = await collection.count({email});
   return !num;
 }
@@ -79,66 +74,47 @@ export async function register(
   username: User['username'],
   email: User['email'],
   verify: UserWithVerify['verify'],
-): Promise<mongodb.InsertOneWriteOpResult> {
-  return collection.insertOne({
+): Promise<mongodb.InsertOneWriteOpResult['result']> {
+  const collection = await collectionPromise;
+
+  const result = await collection.insertOne({
     username,
     email,
     verify,
     _id: mongodb.ObjectId,
   });
+
+  return result.result;
 }
 
 export async function updateData(
   _id: User['_id'],
   data: User['data'],
-  unlockKey: UnlockKey,
-): Promise<mongodb.UpdateWriteOpResult> {
-  const user = await getUserById(_id);
-  const {verify} = user;
-  const result = await authenticate(unlockKey, verify);
-
-  if (result) {
-    return collection.updateOne({_id}, {$set: {data}});
-  }
-
-  throw Error('authentication failed');
+): Promise<mongodb.UpdateWriteOpResult['result']> {
+  const collection = await collectionPromise;
+  const result = await collection.updateOne({_id}, {$set: {data}});
+  return result.result;
 }
 
-// verify为新验证器，unlockKey需要传递过来用旧验证器验证一边先
-// 更改账户信息时，前端也需要查重用户名邮箱，且会导致unlockKey和verify的变化
 export async function updateAccount(
   _id: User['_id'],
   newUsername: User['username'],
   newEmail: User['email'],
   newVerify: UserWithVerify['verify'],
-  unlockKey: UnlockKey,
-): Promise<mongodb.UpdateWriteOpResult> {
-  const user = await getUserById(_id);
-  const {verify} = user;
-  const result = await authenticate(unlockKey, verify);
-
-  if (result) {
-    return collection.updateOne(
-      {_id},
-      {$set: {username: newUsername, email: newEmail, verify: newVerify}},
-    );
-  }
-
-  throw Error('authentication failed');
+): Promise<mongodb.UpdateWriteOpResult['result']> {
+  const collection = await collectionPromise;
+  const result = await collection.updateOne(
+    {_id},
+    {$set: {username: newUsername, email: newEmail, verify: newVerify}},
+  );
+  return result.result;
 }
 
 export async function getData(
   username: User['username'],
   email: User['email'],
-  unlockKey: UnlockKey,
 ): Promise<any> {
-  const user = await getUserByUsernameEmail(username, email);
-  const {verify} = user;
-  const result = await authenticate(unlockKey, verify);
-
-  if (result) {
-    return user.data;
-  }
-
-  throw Error('authentication failed');
+  const collection = await collectionPromise;
+  const result = await collection.find({username, email}).toArray();
+  return result[0];
 }
