@@ -9,7 +9,10 @@ import {UnlockKey, User, UserWithVerify} from './types';
 const MongoClient = mongodb.MongoClient;
 const url = 'mongodb://localhost:27017';
 const dbName = 'v2pass';
-const clientPromise = new MongoClient(url).connect();
+const clientPromise = new MongoClient(url, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+}).connect();
 
 const collectionPromise = clientPromise.then(client =>
   client.db(dbName).collection('test'),
@@ -56,7 +59,7 @@ export async function testUserNameAvailability(
   username: User['username'],
 ): Promise<boolean> {
   const collection = await collectionPromise;
-  const num = await collection.count({username});
+  const num = await collection.countDocuments({username});
   return !num;
 }
 
@@ -64,7 +67,7 @@ export async function testEmailAvailability(
   email: User['email'],
 ): Promise<boolean> {
   const collection = await collectionPromise;
-  const num = await collection.count({email});
+  const num = await collection.countDocuments({email});
   return !num;
 }
 
