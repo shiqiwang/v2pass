@@ -20,8 +20,10 @@ import {
 import {
   authenticateFailed,
   generalErrorMessage,
+  notString,
   successMessage,
 } from './responseMessage';
+import {testString} from './util';
 
 const app = express();
 const jsonParser = bodyParser.json();
@@ -52,6 +54,12 @@ app.all('*', jsonParser, (req, res, next) => {
 });
 
 app.get('/testUsernameAvailability', (req, res) => {
+  if (testString(req.query)) {
+    console.error(notString);
+    res.send(generalErrorMessage);
+    return;
+  }
+
   const {username} = req.query;
   testUserNameAvailability(username)
     .then(result => res.send({code: 200, message: result}))
@@ -62,7 +70,14 @@ app.get('/testUsernameAvailability', (req, res) => {
 });
 
 app.get('/testEmailAvailability', (req, res) => {
+  if (testString(req.query)) {
+    console.error(notString);
+    res.send(generalErrorMessage);
+    return;
+  }
+
   const {email} = req.query;
+
   testEmailAvailability(email)
     .then(result => res.send({code: 200, message: result}))
     .catch(error => {
@@ -72,7 +87,14 @@ app.get('/testEmailAvailability', (req, res) => {
 });
 
 app.post('/register', jsonParser, (req, res) => {
+  if (testString(req.body)) {
+    console.error(notString);
+    res.send(generalErrorMessage);
+    return;
+  }
+
   const {username, email, verify} = req.body;
+
   register(username, email, verify)
     .then(result => {
       const {n, ok} = result;
@@ -90,6 +112,12 @@ app.post('/register', jsonParser, (req, res) => {
 });
 
 app.post('/updateData', jsonParser, (req, res) => {
+  if (testString(req.body)) {
+    console.error(notString);
+    res.send(generalErrorMessage);
+    return;
+  }
+
   const {data, id, unlockKey} = req.body;
   const useId = new ObjectId(id);
   getAuthenticate({_id: useId}, unlockKey)
@@ -101,7 +129,6 @@ app.post('/updateData', jsonParser, (req, res) => {
         updateData(useId, Buffer.from(data))
           .then(result => {
             const {nModified, n, ok} = result;
-            console.log('result', result);
 
             if (nModified === 1 && n === 1 && ok === 1) {
               res.send(successMessage);
@@ -122,6 +149,12 @@ app.post('/updateData', jsonParser, (req, res) => {
 });
 
 app.post('/updateAccount', jsonParser, (req, res) => {
+  if (testString(req.body)) {
+    console.error(notString);
+    res.send(generalErrorMessage);
+    return;
+  }
+
   const {id, username, email, verify, unlockKey} = req.body;
   const useId = new ObjectId(id);
   getAuthenticate({_id: useId}, unlockKey)
@@ -152,6 +185,12 @@ app.post('/updateAccount', jsonParser, (req, res) => {
 });
 
 app.post('/getData', jsonParser, (req, res) => {
+  if (testString(req.body)) {
+    console.error(notString);
+    res.send(generalErrorMessage);
+    return;
+  }
+
   const {username, email, unlockKey} = req.body;
   getAuthenticate({username, email}, unlockKey)
     .then(result => {

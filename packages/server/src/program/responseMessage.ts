@@ -14,3 +14,8 @@ export const authenticateFailed: ResponseMessage = {
   code: 401,
   message: 'authenticate failed',
 };
+
+export const notString: ResponseMessage = {
+  code: 400,
+  message: 'not string',
+};
