@@ -1,5 +1,9 @@
 import bodyParser from 'body-parser';
-// session的设定时机？验证身份以后？
+// session的设定时机？验证身份以后！！！
+// 功能完善后考虑debounce
+// 加密！！！
+// 统一处理error的中间件是肿么回事！！！
+// 所有用户输入获取到的信息，需要鉴别是否为字符串
 import session from 'cookie-session';
 import express from 'express';
 import {ObjectId} from 'mongodb';
@@ -47,9 +51,8 @@ app.all('*', jsonParser, (req, res, next) => {
   }
 });
 
-// 是不是要有debounce？如果恶意的人一直发请求会不会让服务崩溃？
-app.get('/testUsernameAvailability/:username', (req, res) => {
-  const {username} = req.params;
+app.get('/testUsernameAvailability', (req, res) => {
+  const {username} = req.query;
   testUserNameAvailability(username)
     .then(result => res.send({code: 200, message: result}))
     .catch(error => {
@@ -58,8 +61,8 @@ app.get('/testUsernameAvailability/:username', (req, res) => {
     });
 });
 
-app.get('/testEmailAvailability/:email', (req, res) => {
-  const {email} = req.params;
+app.get('/testEmailAvailability', (req, res) => {
+  const {email} = req.query;
   testEmailAvailability(email)
     .then(result => res.send({code: 200, message: result}))
     .catch(error => {
