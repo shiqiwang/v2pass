@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 // 所有用户输入获取到的信息，需要鉴别是否为字符串
 import session from 'cookie-session';
 import express from 'express';
+import helmet from 'helmet';
 import {ObjectId} from 'mongodb';
 
 import {
@@ -27,6 +28,8 @@ import {testString} from './util';
 
 const app = express();
 const jsonParser = bodyParser.json();
+
+app.use(helmet()); // 设置HTTP头部保护app免受一些知名的web攻击
 
 app.all('*', jsonParser, (req, res, next) => {
   const origins = req.headers.origin;
