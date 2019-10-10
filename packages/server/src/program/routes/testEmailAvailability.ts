@@ -2,7 +2,12 @@ import Joi from '@hapi/joi';
 import {RequestHandler} from 'express';
 
 import {testEmailAvailability} from '../requestMethod';
-import {generalErrorMessage, validateFailed} from '../responseMessage';
+import {
+  generalErrorMessage,
+  successMessage,
+  testEmailFailed,
+  validateFailed,
+} from '../responseMessage';
 
 const schema = Joi.object({
   email: Joi.string()
@@ -20,7 +25,13 @@ export const testEmailAvailabilityRoute: RequestHandler = (req, res) => {
 
   const {email} = value;
   testEmailAvailability(email)
-    .then(result => res.send({code: 200, message: result}))
+    .then(result => {
+      if (result) {
+        res.send(successMessage);
+      } else {
+        res.send(testEmailFailed);
+      }
+    })
     .catch(error => {
       console.error('test email availability error', error);
       res.send(generalErrorMessage);

@@ -27,5 +27,5 @@ export const testEmailFailed: ResponseMessage = {
 
 export const testUsernameFailed: ResponseMessage = {
   code: 10047,
-  message: 'email already exists',
+  message: 'username already exists',
 };

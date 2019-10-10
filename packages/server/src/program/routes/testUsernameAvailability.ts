@@ -2,7 +2,12 @@ import Joi from '@hapi/joi';
 import {RequestHandler} from 'express';
 
 import {testUserNameAvailability} from '../requestMethod';
-import {generalErrorMessage, validateFailed} from '../responseMessage';
+import {
+  generalErrorMessage,
+  successMessage,
+  testUsernameFailed,
+  validateFailed,
+} from '../responseMessage';
 
 const schema = Joi.object({
   username: Joi.string()
@@ -22,7 +27,13 @@ export const testUsernameAvailabilityRoute: RequestHandler = (req, res) => {
 
   const {username} = value;
   testUserNameAvailability(username)
-    .then(result => res.send({code: 200, message: result}))
+    .then(result => {
+      if (result) {
+        res.send(successMessage);
+      } else {
+        res.send(testUsernameFailed);
+      }
+    })
     .catch(error => {
       console.error('test username availability error', error);
       res.send(generalErrorMessage);

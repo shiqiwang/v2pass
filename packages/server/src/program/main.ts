@@ -28,16 +28,12 @@ app.post('/updateAccount', jsonParser, route.updateAccountRoute);
 
 app.post('/getData', jsonParser, route.getDataRoute);
 
-// app.use((error, req, res, next) => {
-//   // 不能为any吗？
-//   console.error(error.stack);
-//   res.status(500).send('500');
-// });
-
 app.use((req, res, next) => {
+  console.error('no such route', req.url);
   res.status(404).send('404');
+  next();
 });
 
 app.listen(3000, () => {
-  console.log('listening on port 3000');
+  console.warn('listening on port 3000');
 });
