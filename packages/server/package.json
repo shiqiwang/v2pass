@@ -5,6 +5,8 @@
   "author": "Emi Wang",
   "license": "MIT",
   "dependencies": {
+    "@hapi/joi": "^16.1.7",
+    "@types/hapi__joi": "^16.0.0",
     "@types/body-parser": "^1.17.1",
     "@types/cookie-session": "^2.0.37",
     "@types/express": "^4.17.1",

@@ -5,17 +5,19 @@
 // 后端的操作应尽量简单，一个操作或者api只做单一的一件事，以免出现漏洞被利用
 import mongodb from 'mongodb';
 
+import {config} from './customConfig.js';
+import {testEmailFailed, testUsernameFailed} from './responseMessage';
 import {UnlockKey, User, UserWithVerify} from './types';
+
+const {database} = config;
 const MongoClient = mongodb.MongoClient;
-const url = 'mongodb://localhost:27017';
-const dbName = 'v2pass';
-const clientPromise = new MongoClient(url, {
+const clientPromise = new MongoClient(database.url, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
 }).connect();
 
 const collectionPromise = clientPromise.then(client =>
-  client.db(dbName).collection('test'),
+  client.db(database.name).collection(database.collection),
 );
 
 (async (): Promise<void> => {
@@ -78,6 +80,18 @@ export async function register(
   email: User['email'],
   verify: UserWithVerify['verify'],
 ): Promise<mongodb.InsertOneWriteOpResult['result']> {
+  const testUsername = await testUserNameAvailability(username);
+
+  if (!testUsername) {
+    throw testUsernameFailed;
+  }
+
+  const testEmail = await testEmailAvailability(email);
+
+  if (!testEmail) {
+    throw testEmailFailed;
+  }
+
   const collection = await collectionPromise;
 
   const result = await collection.insertOne({

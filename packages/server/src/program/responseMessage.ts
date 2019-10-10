@@ -15,7 +15,17 @@ export const authenticateFailed: ResponseMessage = {
   message: 'authenticate failed',
 };
 
-export const notString: ResponseMessage = {
+export const validateFailed: ResponseMessage = {
   code: 400,
-  message: 'not string',
+  message: 'params type validate failed',
+};
+
+export const testEmailFailed: ResponseMessage = {
+  code: 10047,
+  message: 'email already exists',
+};
+
+export const testUsernameFailed: ResponseMessage = {
+  code: 10047,
+  message: 'email already exists',
 };
