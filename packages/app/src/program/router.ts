@@ -5,6 +5,7 @@ export const history = createHashHistory();
 
 export const router = Router.create(
   {
+    register: true,
     login: true,
     unlock: true,
     homepage: true,
@@ -23,7 +24,7 @@ export const router = Router.create(
 export type Router = typeof router;
 
 router.rest.$intercept(() => {
-  router.login.$push();
+  router.register.$push();
 });
 
 // 做访问前验证的钩子
