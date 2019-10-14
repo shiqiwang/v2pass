@@ -1,6 +1,5 @@
-import {Button, Form, Input} from 'antd';
+import {Button, Form, Input, message} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
-import axios from 'axios';
 import {RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
@@ -11,6 +10,11 @@ import React, {
   ReactNode,
 } from 'react';
 
+import {
+  registerApi,
+  testEmailApi,
+  testUsernameApi,
+} from '../../request/request';
 import {Router, router} from '../../router';
 import {UserInfo} from '../../types/user';
 
@@ -106,6 +110,7 @@ class Register extends Component<RegisterPageProps> {
               <Input
                 type="text"
                 onChange={event => this.onInputChange('email', event)}
+                onBlur={event => this.onTestEmail(event.target.value)}
               />,
             )}
           </Form.Item>
@@ -121,6 +126,7 @@ class Register extends Component<RegisterPageProps> {
               <Input
                 type="password"
                 onChange={event => this.onInputChange('password', event)}
+                onBlur={event => this.onTestPassword(event.target.value)}
               />,
             )}
           </Form.Item>
@@ -136,6 +142,7 @@ class Register extends Component<RegisterPageProps> {
               <Input
                 type="password"
                 onChange={event => this.onInputChange('repeatPassword', event)}
+                onBlur={event => this.onCheckPassword(event.target.value)}
               />,
             )}
           </Form.Item>
@@ -151,14 +158,20 @@ class Register extends Component<RegisterPageProps> {
 
   private onFormSubmit: FormEventHandler<HTMLFormElement> = event => {
     event.preventDefault();
-    const {validateFields, setFields} = this.props.form!;
-    validateFields((error, values) => {
-      if (error) {
-        setFields(error);
-      } else {
-        console.warn('register', values);
-      }
-    });
+    const {username, email, password, repeatPassword} = this.data;
+
+    if (
+      username.status === 'success' &&
+      email.status === 'success' &&
+      password.status === 'success' &&
+      repeatPassword.status === 'success'
+    ) {
+      // 生成verify
+      // 提交注册数据
+      // 把username email存储到chrome extension的storage中
+    } else {
+      message.error('correct error, submit again');
+    }
   };
 
   private onInputChange(
@@ -171,31 +184,26 @@ class Register extends Component<RegisterPageProps> {
   private onTestUsername(value: UserInfo['username']): void {
     this.updateStatus('username', 'validating');
     const {setFields} = this.props.form!;
+    // 怎么限定不能以数字开头？？？
+    const pattern = /^\w{5,30}$/;
 
-    if (!value) {
+    if (!pattern.test(value)) {
       this.updateStatus('username', 'error');
       setFields({
         username: {
-          errors: [{message: 'username required!'}],
-        },
-      });
-    } else if (value.length < 5 || value.length > 30) {
-      this.updateStatus('username', 'error');
-      setFields({
-        username: {
-          errors: [{message: "username's length should between 5 and 30"}],
+          errors: [{message: 'length 5~30, contain a-z A-Z _'}],
         },
       });
     } else {
-      axios
-        .get(
-          `http://localhost:3000/testUsernameAvailability?username=${encodeURIComponent(
-            value,
-          )}`,
-        )
+      testUsernameApi(value)
         .then(result => {
-          if ((result as any).data.code === 200) {
+          if (result.data.code === 200) {
             this.updateStatus('username', 'success');
+            setFields({
+              username: {
+                errors: [{message: ''}],
+              },
+            });
           } else {
             this.updateStatus('username', 'error');
             setFields({
@@ -211,9 +219,85 @@ class Register extends Component<RegisterPageProps> {
     }
   }
 
-  private onTestEmail(value: UserInfo['email']): void {}
+  private onTestEmail(value: UserInfo['email']): void {
+    this.updateStatus('email', 'validating');
+    const {setFields} = this.props.form!;
+    const pattern = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$/;
 
-  private onCheckPassword(value: string): void {}
+    if (!pattern.test(value)) {
+      this.updateStatus('email', 'error');
+      setFields({
+        email: {
+          errors: [{message: 'input valid email address'}],
+        },
+      });
+    } else {
+      testEmailApi(value)
+        .then(result => {
+          if (result.data.code === 200) {
+            this.updateStatus('email', 'success');
+            setFields({
+              email: {
+                errors: [{message: ''}],
+              },
+            });
+          } else {
+            this.updateStatus('email', 'error');
+            setFields({
+              email: {
+                errors: [{message: 'email exist, use another one'}],
+              },
+            });
+          }
+        })
+        .catch(error => {
+          console.error('test email', error);
+        });
+    }
+  }
+
+  private onTestPassword(value: string): void {
+    this.updateStatus('password', 'validating');
+    const pattern = /^\S{10,30}$/;
+    const {setFields} = this.props.form!;
+
+    if (!pattern.test(value)) {
+      this.updateStatus('password', 'error');
+      setFields({
+        password: {
+          errors: [{message: 'length 10~30, printable character'}],
+        },
+      });
+    } else {
+      this.updateStatus('password', 'success');
+      setFields({
+        password: {
+          errors: [{message: ''}],
+        },
+      });
+    }
+  }
+
+  private onCheckPassword(value: string): void {
+    this.updateStatus('repeatPassword', 'validating');
+    const {setFields} = this.props.form!;
+
+    if (value === this.data.password.value) {
+      this.updateStatus('repeatPassword', 'success');
+      setFields({
+        repeatPassword: {
+          errors: [{message: ''}],
+        },
+      });
+    } else {
+      this.updateStatus('repeatPassword', 'error');
+      setFields({
+        repeatPassword: {
+          errors: [{message: 'different from the password'}],
+        },
+      });
+    }
+  }
 
   @action
   private updateData<TLabel extends FormDataLabelType>(

@@ -11,7 +11,7 @@ import {
 
 const schema = Joi.object({
   username: Joi.string()
-    .alphanum()
+    .pattern(/^\w{5,30}$/)
     .min(5)
     .max(30)
     .required(),
