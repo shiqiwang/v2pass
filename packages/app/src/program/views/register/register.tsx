@@ -167,8 +167,7 @@ class Register extends Component<RegisterPageProps> {
       repeatPassword.status === 'success'
     ) {
       // 生成verify
-      // 提交注册数据
-      // 把username email存储到chrome extension的storage中
+      // 提交注册数据 username email verify
     } else {
       message.error('correct error, submit again');
     }
