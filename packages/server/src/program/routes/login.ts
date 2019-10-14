@@ -17,7 +17,7 @@ export const loginRoute: RequestHandler = (req, res) => {
   }
 
   const {username, unlockKey} = value;
-  getAuthenticate(username, unlockKey)
+  getAuthenticate({username}, unlockKey)
     .then(result => {
       if (!result) {
         res.send(authenticateFailed);
