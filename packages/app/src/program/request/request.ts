@@ -30,6 +30,26 @@ export function registerApi(
   });
 }
 
+export function loginApi(
+  username: UserInfo['username'],
+  unlockKey: string,
+): Promise<any> {
+  return axios.post(`${serverUrl}login`, {
+    username,
+    unlockKey,
+  });
+}
+
+export function getDataApi(
+  username: UserInfo['username'],
+  unlockKey: string,
+): Promise<any> {
+  return axios.post(`${serverUrl}getData`, {
+    username,
+    unlockKey,
+  });
+}
+
 // 这里data应当是加密后的base64
 export function updateDataApi(
   id: UserInfo['_id'],
@@ -55,18 +75,6 @@ export function updateAccountApi(
     username,
     email,
     verify,
-    unlockKey,
-  });
-}
-
-export function getDataApi(
-  username: UserInfo['username'],
-  email: UserInfo['email'],
-  unlockKey: string,
-): Promise<any> {
-  return axios.post(`${serverUrl}getData`, {
-    username,
-    email,
     unlockKey,
   });
 }
