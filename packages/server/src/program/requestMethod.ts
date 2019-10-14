@@ -29,7 +29,6 @@ const collectionPromise = clientPromise.then(client =>
 
 interface FirstSearchCondition {
   username: User['username'];
-  email: User['email'];
 }
 
 interface SecondSearchCondition {
@@ -104,6 +103,12 @@ export async function register(
   return result.result;
 }
 
+export async function getData(username: User['username']): Promise<any> {
+  const collection = await collectionPromise;
+  const result = await collection.find({username}).toArray();
+  return result[0];
+}
+
 export async function updateData(
   _id: User['_id'],
   data: User['data'],
@@ -125,13 +130,4 @@ export async function updateAccount(
     {$set: {username: newUsername, email: newEmail, verify: newVerify}},
   );
   return result.result;
-}
-
-export async function getData(
-  username: User['username'],
-  email: User['email'],
-): Promise<any> {
-  const collection = await collectionPromise;
-  const result = await collection.find({username, email}).toArray();
-  return result[0];
 }

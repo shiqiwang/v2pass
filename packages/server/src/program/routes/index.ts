@@ -5,3 +5,4 @@ export * from './testUsernameAvailability';
 export * from './updateAccount';
 export * from './updateData';
 export * from './pretreat';
+export * from './login';

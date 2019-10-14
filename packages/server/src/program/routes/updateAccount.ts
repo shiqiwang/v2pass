@@ -1,4 +1,3 @@
-import Joi from '@hapi/joi';
 import {RequestHandler} from 'express';
 import {ObjectId} from 'mongodb';
 
@@ -10,24 +9,10 @@ import {
   validateFailed,
 } from '../responseMessage';
 
-const schema = Joi.object({
-  id: Joi.string()
-    .alphanum()
-    .required(),
-  username: Joi.string()
-    .alphanum()
-    .min(5)
-    .max(30)
-    .required(),
-  email: Joi.string()
-    .email()
-    .required(),
-  verify: Joi.string().required(),
-  unlockKey: Joi.string().required(),
-});
+import {updateAccountSchema} from './schema/schema';
 
 export const updateAccountRoute: RequestHandler = (req, res) => {
-  const {error, value} = schema.validate(req.body);
+  const {error, value} = updateAccountSchema.validate(req.body);
 
   if (error) {
     res.send(validateFailed);

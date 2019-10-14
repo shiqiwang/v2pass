@@ -1,4 +1,3 @@
-import Joi from '@hapi/joi';
 import {RequestHandler} from 'express';
 import {ObjectId} from 'mongodb';
 
@@ -10,18 +9,10 @@ import {
   validateFailed,
 } from '../responseMessage';
 
-const schema = Joi.object({
-  id: Joi.string()
-    .alphanum()
-    .required(),
-  data: Joi.string()
-    .base64()
-    .required(),
-  unlockKey: Joi.string().required(),
-});
+import {updateDataSchema} from './schema/schema';
 
 export const updateDataRoute: RequestHandler = (req, res) => {
-  const {error, value} = schema.validate(req.body);
+  const {error, value} = updateDataSchema.validate(req.body);
 
   if (error) {
     res.send(validateFailed);

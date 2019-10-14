@@ -1,4 +1,3 @@
-import Joi from '@hapi/joi';
 import {RequestHandler} from 'express';
 
 import {config} from '../customConfig.js';
@@ -9,20 +8,10 @@ import {
   validateFailed,
 } from '../responseMessage';
 
-const schema = Joi.object({
-  username: Joi.string()
-    .pattern(/^\w{5,30}$/)
-    .min(5)
-    .max(30)
-    .required(),
-  email: Joi.string()
-    .email()
-    .required(),
-  verify: Joi.string().required(),
-});
+import {registerSchema} from './schema/schema';
 
 export const registerRoute: RequestHandler = (req, res) => {
-  const {error, value} = schema.validate(req.body);
+  const {error, value} = registerSchema.validate(req.body);
 
   if (error) {
     res.send(validateFailed);

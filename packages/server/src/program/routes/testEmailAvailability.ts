@@ -1,4 +1,3 @@
-import Joi from '@hapi/joi';
 import {RequestHandler} from 'express';
 
 import {testEmailAvailability} from '../requestMethod';
@@ -9,14 +8,10 @@ import {
   validateFailed,
 } from '../responseMessage';
 
-const schema = Joi.object({
-  email: Joi.string()
-    .email()
-    .required(),
-});
+import {testEmailSchema} from './schema/schema';
 
 export const testEmailAvailabilityRoute: RequestHandler = (req, res) => {
-  const {error, value} = schema.validate(req.query);
+  const {error, value} = testEmailSchema.validate(req.query);
 
   if (error) {
     res.send(validateFailed);

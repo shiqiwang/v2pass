@@ -22,6 +22,8 @@ app.get('/testEmailAvailability', route.testEmailAvailabilityRoute);
 
 app.post('/register', jsonParser, route.registerRoute);
 
+app.post('/login', jsonParser, route.loginRoute);
+
 app.post('/updateData', jsonParser, route.updateDataRoute);
 
 app.post('/updateAccount', jsonParser, route.updateAccountRoute);
