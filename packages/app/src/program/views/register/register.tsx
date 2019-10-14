@@ -168,6 +168,8 @@ class Register extends Component<RegisterPageProps> {
     ) {
       // 生成verify
       // 提交注册数据 username email verify
+      // 以上步骤做完且成功后转到login页面
+      router.login.$push();
     } else {
       message.error('correct error, submit again');
     }
