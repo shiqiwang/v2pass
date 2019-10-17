@@ -37,8 +37,8 @@ export default class Register extends Component {
       <div className="registerPage">
         <Steps>
           <Step status={one} title="base info" icon={<Icon type="user" />} />
-          <Step status={two} title="password" icon={<Icon type="user" />} />
-          <Step status={three} title="kit" icon={<Icon type="user" />} />
+          <Step status={two} title="password" icon={<Icon type="solution" />} />
+          <Step status={three} title="kit" icon={<Icon type="smile" />} />
         </Steps>
         <div className="mainStep">
           {one === 'process' ? (

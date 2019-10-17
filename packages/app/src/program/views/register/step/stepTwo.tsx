@@ -12,6 +12,8 @@ import React, {
 import {registerApi} from '../../../request/request';
 import {PasswordInfo} from '../types';
 
+import './step.less';
+
 type PasswordInfoLabel = keyof PasswordInfo;
 
 interface IStepTwoProps extends FormComponentProps {
@@ -38,7 +40,7 @@ class StepTwo extends Component<IStepTwoProps> {
     const {password, repeatPassword} = this.data;
 
     return (
-      <div className="stepTwo">
+      <div className="registerPageStep">
         <Form className="registerPageForm" onSubmit={this.onFormSubmit}>
           <Form.Item
             label="password"
@@ -71,7 +73,10 @@ class StepTwo extends Component<IStepTwoProps> {
             )}
           </Form.Item>
           <Form.Item>
-            <Button type="primary" onClick={() => this.props.backward()}>
+            <Button
+              onClick={() => this.props.backward()}
+              className="backwardButton"
+            >
               Backward
             </Button>
             <Button type="primary" htmlType="submit">

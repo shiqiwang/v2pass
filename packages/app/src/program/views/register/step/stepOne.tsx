@@ -12,6 +12,8 @@ import React, {
 import {testEmailApi, testUsernameApi} from '../../../request/request';
 import {BaseInfo} from '../types';
 
+import './step.less';
+
 type BaseInfoLabel = keyof BaseInfo;
 
 interface IStepOneProps extends FormComponentProps {
@@ -37,7 +39,7 @@ class StepOne extends Component<IStepOneProps> {
     const {username, email} = this.data;
 
     return (
-      <div className="stepOne">
+      <div className="registerPageStep">
         <Form className="registerPageForm" onSubmit={this.onFormSubmit}>
           <Form.Item
             label="username"
