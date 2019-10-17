@@ -1,319 +1,123 @@
-import {Button, Form, Input, message} from 'antd';
-import {FormComponentProps} from 'antd/lib/form';
-import {RouteComponentProps} from 'boring-router-react';
+import {Icon, Steps, message} from 'antd';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
-import React, {
-  ChangeEvent,
-  Component,
-  FormEventHandler,
-  ReactNode,
-} from 'react';
+import React, {Component, ReactNode} from 'react';
 
-import {
-  registerApi,
-  testEmailApi,
-  testUsernameApi,
-} from '../../request/request';
-import {Router, router} from '../../router';
-import {UserInfo} from '../../types/user';
+import StepOne from './step/stepOne';
+import StepThree from './step/stepThree';
+import StepTwo from './step/stepTwo';
+import {Factor, IStepStatus} from './types';
 
-export interface RegisterPageProps
-  extends FormComponentProps,
-    RouteComponentProps<Router['register']> {}
+type FactorLabel = keyof Factor;
+type IStepStatusLabel = keyof IStepStatus;
 
-type ValidateStatus = 'success' | 'warning' | 'validating' | 'error';
-
-interface FormData {
-  username: {
-    value: UserInfo['username'];
-    status: ValidateStatus;
-  };
-  email: {
-    value: UserInfo['email'];
-    status: ValidateStatus;
-  };
-  password: {
-    value: string;
-    status: ValidateStatus;
-  };
-  repeatPassword: {
-    value: string;
-    status: ValidateStatus;
-  };
-}
-
-type FormDataLabelType = keyof FormData;
-
-const itemLayout = {
-  labelCol: {span: 6},
-  wrapperCol: {span: 12},
-};
-const buttonLayout = {
-  wrapperCol: {span: 12, offset: 6},
-};
+const {Step} = Steps;
 
 @observer
-class Register extends Component<RegisterPageProps> {
+export default class Register extends Component {
   @observable
-  private data: FormData = {
-    username: {
-      value: '',
-      status: 'warning',
+  private stepData: IStepStatus[] = [
+    {
+      status: 'process',
+      title: 'base info',
+      icon: 'user',
+      step: 'one',
     },
-    email: {
-      value: '',
-      status: 'warning',
+    {
+      status: 'wait',
+      title: 'password',
+      icon: 'user',
+      step: 'two',
     },
-    password: {
-      value: '',
-      status: 'warning',
+    {
+      status: 'wait',
+      title: 'kit',
+      icon: 'user',
+      step: 'three',
     },
-    repeatPassword: {
-      value: '',
-      status: 'warning',
-    },
+  ];
+  @observable
+  private factor: Factor = {
+    id: '',
+    email: '',
+    secretKey: '',
+    salt: '',
+    password: '',
   };
 
   render(): ReactNode {
-    const {getFieldDecorator} = this.props.form!;
-    const {username, email, password, repeatPassword} = this.data;
-
     return (
       <div className="registerPage">
-        <Form className="registerPageForm" onSubmit={this.onFormSubmit}>
-          <Form.Item
-            label="username"
-            {...itemLayout}
-            hasFeedback
-            validateStatus={username.status}
-          >
-            {getFieldDecorator('username', {
-              initialValue: username.value,
-            })(
-              <Input
-                type="text"
-                onChange={event => this.onInputChange('username', event)}
-                onBlur={event => this.onTestUsername(event.target.value)}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item
-            label="email"
-            {...itemLayout}
-            hasFeedback
-            validateStatus={email.status}
-          >
-            {getFieldDecorator('email', {
-              initialValue: email.value,
-            })(
-              <Input
-                type="text"
-                onChange={event => this.onInputChange('email', event)}
-                onBlur={event => this.onTestEmail(event.target.value)}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item
-            label="password"
-            {...itemLayout}
-            hasFeedback
-            validateStatus={password.status}
-          >
-            {getFieldDecorator('password', {
-              initialValue: password.value,
-            })(
-              <Input
-                type="password"
-                onChange={event => this.onInputChange('password', event)}
-                onBlur={event => this.onTestPassword(event.target.value)}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item
-            label="repeat password"
-            {...itemLayout}
-            hasFeedback
-            validateStatus={repeatPassword.status}
-          >
-            {getFieldDecorator('repeatPassword', {
-              initialValue: repeatPassword.value,
-            })(
-              <Input
-                type="password"
-                onChange={event => this.onInputChange('repeatPassword', event)}
-                onBlur={event => this.onCheckPassword(event.target.value)}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item {...buttonLayout}>
-            <Button type="primary" htmlType="submit">
-              Register
-            </Button>
-          </Form.Item>
-        </Form>
+        <Steps>
+          {this.stepData.map((item, index) => (
+            <Step
+              key={String(index)}
+              status={item.status}
+              title={item.title}
+              icon={<Icon type={item.icon} />}
+            />
+          ))}
+        </Steps>
+        {this.stepData.map((item, index) => {
+          return (
+            <div key={String(index)}>
+              {item.step === 'one' && item.status === 'process' ? (
+                <StepOne forward={email => this.stepOneForward(email)} />
+              ) : (
+                undefined
+              )}
+              {item.step === 'two' && item.status === 'process' ? (
+                <StepTwo
+                  forward={password => this.stepTwoForward(password)}
+                  backward={() => this.stepTwoBackward()}
+                />
+              ) : (
+                undefined
+              )}
+              {item.step === 'three' && item.status === 'process' ? (
+                <StepThree />
+              ) : (
+                undefined
+              )}
+            </div>
+          );
+        })}
       </div>
     );
   }
 
-  private onFormSubmit: FormEventHandler<HTMLFormElement> = event => {
-    event.preventDefault();
-    const {username, email, password, repeatPassword} = this.data;
+  private stepOneForward(email: Factor['email']): void {
+    this.updateFactor('email', email);
+    this.updateStepData('one', 'status', 'finish');
+    this.updateStepData('two', 'status', 'process');
+  }
 
-    if (
-      username.status === 'success' &&
-      email.status === 'success' &&
-      password.status === 'success' &&
-      repeatPassword.status === 'success'
-    ) {
-      // 生成verify
-      // 提交注册数据 username email verify
-      // 以上步骤做完且成功后转到login页面
-      router.login.$push();
-    } else {
-      message.error('correct error, submit again');
-    }
-  };
+  private stepTwoForward(password: Factor['password']): void {
+    this.updateFactor('password', password);
+    this.updateStepData('two', 'status', 'finish');
+    this.updateStepData('three', 'status', 'process');
+  }
 
-  private onInputChange(
-    label: FormDataLabelType,
-    event: ChangeEvent<HTMLInputElement>,
+  private stepTwoBackward(): void {}
+
+  @action
+  private updateStepData<TLabel extends IStepStatusLabel>(
+    step: IStepStatus['step'],
+    label: TLabel,
+    value: IStepStatus[TLabel],
   ): void {
-    this.updateData(label, event.target.value);
-  }
+    const theOne = this.stepData.findIndex(item => item.step === step);
 
-  private onTestUsername(value: UserInfo['username']): void {
-    this.updateStatus('username', 'validating');
-    const {setFields} = this.props.form!;
-    // 怎么限定不能以数字开头？？？
-    const pattern = /^\w{5,30}$/;
-
-    if (!pattern.test(value)) {
-      this.updateStatus('username', 'error');
-      setFields({
-        username: {
-          errors: [{message: 'length 5~30, contain a-z A-Z _'}],
-        },
-      });
-    } else {
-      testUsernameApi(value)
-        .then(result => {
-          if (result.data.code === 200) {
-            this.updateStatus('username', 'success');
-            setFields({
-              username: {
-                errors: [{message: ''}],
-              },
-            });
-          } else {
-            this.updateStatus('username', 'error');
-            setFields({
-              username: {
-                errors: [{message: 'username exist, use another one'}],
-              },
-            });
-          }
-        })
-        .catch(error => {
-          console.error('test username', error);
-        });
-    }
-  }
-
-  private onTestEmail(value: UserInfo['email']): void {
-    this.updateStatus('email', 'validating');
-    const {setFields} = this.props.form!;
-    const pattern = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$/;
-
-    if (!pattern.test(value)) {
-      this.updateStatus('email', 'error');
-      setFields({
-        email: {
-          errors: [{message: 'input valid email address'}],
-        },
-      });
-    } else {
-      testEmailApi(value)
-        .then(result => {
-          if (result.data.code === 200) {
-            this.updateStatus('email', 'success');
-            setFields({
-              email: {
-                errors: [{message: ''}],
-              },
-            });
-          } else {
-            this.updateStatus('email', 'error');
-            setFields({
-              email: {
-                errors: [{message: 'email exist, use another one'}],
-              },
-            });
-          }
-        })
-        .catch(error => {
-          console.error('test email', error);
-        });
-    }
-  }
-
-  private onTestPassword(value: string): void {
-    this.updateStatus('password', 'validating');
-    const pattern = /^\S{10,30}$/;
-    const {setFields} = this.props.form!;
-
-    if (!pattern.test(value)) {
-      this.updateStatus('password', 'error');
-      setFields({
-        password: {
-          errors: [{message: 'length 10~30, printable character'}],
-        },
-      });
-    } else {
-      this.updateStatus('password', 'success');
-      setFields({
-        password: {
-          errors: [{message: ''}],
-        },
-      });
-    }
-  }
-
-  private onCheckPassword(value: string): void {
-    this.updateStatus('repeatPassword', 'validating');
-    const {setFields} = this.props.form!;
-
-    if (value === this.data.password.value) {
-      this.updateStatus('repeatPassword', 'success');
-      setFields({
-        repeatPassword: {
-          errors: [{message: ''}],
-        },
-      });
-    } else {
-      this.updateStatus('repeatPassword', 'error');
-      setFields({
-        repeatPassword: {
-          errors: [{message: 'different from the password'}],
-        },
-      });
+    if (theOne !== -1) {
+      this.stepData[theOne][label] = value;
     }
   }
 
   @action
-  private updateData<TLabel extends FormDataLabelType>(
+  private updateFactor<TLabel extends FactorLabel>(
     label: TLabel,
-    value: FormData[TLabel]['value'],
+    value: Factor[TLabel],
   ): void {
-    this.data[label]['value'] = value;
-  }
-
-  private updateStatus<TLabel extends FormDataLabelType>(
-    label: TLabel,
-    value: FormData[TLabel]['status'],
-  ): void {
-    this.data[label]['status'] = value;
+    this.factor[label] = value;
   }
 }
-
-export default Form.create<RegisterPageProps>({name: 'register'})(Register);
