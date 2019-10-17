@@ -1,4 +1,4 @@
-import {Icon, Steps, message} from 'antd';
+import {Icon, Steps} from 'antd';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
@@ -16,26 +16,11 @@ const {Step} = Steps;
 @observer
 export default class Register extends Component {
   @observable
-  private stepData: IStepStatus[] = [
-    {
-      status: 'process',
-      title: 'base info',
-      icon: 'user',
-      step: 'one',
-    },
-    {
-      status: 'wait',
-      title: 'password',
-      icon: 'user',
-      step: 'two',
-    },
-    {
-      status: 'wait',
-      title: 'kit',
-      icon: 'user',
-      step: 'three',
-    },
-  ];
+  private stepStatus: IStepStatus = {
+    one: 'process',
+    two: 'wait',
+    three: 'wait',
+  };
   @observable
   private factor: Factor = {
     id: '',
@@ -46,71 +31,67 @@ export default class Register extends Component {
   };
 
   render(): ReactNode {
+    const {one, two, three} = this.stepStatus;
+
     return (
       <div className="registerPage">
         <Steps>
-          {this.stepData.map((item, index) => (
-            <Step
-              key={String(index)}
-              status={item.status}
-              title={item.title}
-              icon={<Icon type={item.icon} />}
-            />
-          ))}
+          <Step status={one} title="base info" icon={<Icon type="user" />} />
+          <Step status={two} title="password" icon={<Icon type="user" />} />
+          <Step status={three} title="kit" icon={<Icon type="user" />} />
         </Steps>
-        {this.stepData.map((item, index) => {
-          return (
-            <div key={String(index)}>
-              {item.step === 'one' && item.status === 'process' ? (
-                <StepOne forward={email => this.stepOneForward(email)} />
-              ) : (
-                undefined
-              )}
-              {item.step === 'two' && item.status === 'process' ? (
-                <StepTwo
-                  forward={password => this.stepTwoForward(password)}
-                  backward={() => this.stepTwoBackward()}
-                />
-              ) : (
-                undefined
-              )}
-              {item.step === 'three' && item.status === 'process' ? (
-                <StepThree />
-              ) : (
-                undefined
-              )}
-            </div>
-          );
-        })}
+        <div className="mainStep">
+          {one === 'process' ? (
+            <StepOne forward={email => this.stepOneForward(email)} />
+          ) : (
+            undefined
+          )}
+          {two === 'process' ? (
+            <StepTwo
+              forward={password => this.stepTwoForward(password)}
+              backward={() => this.stepTwoBackward()}
+            />
+          ) : (
+            undefined
+          )}
+          {three === 'process' ? (
+            <StepThree backward={() => this.stepThreeBackward()} />
+          ) : (
+            undefined
+          )}
+        </div>
       </div>
     );
   }
 
   private stepOneForward(email: Factor['email']): void {
     this.updateFactor('email', email);
-    this.updateStepData('one', 'status', 'finish');
-    this.updateStepData('two', 'status', 'process');
+    this.updateStepStatus('one', 'finish');
+    this.updateStepStatus('two', 'process');
   }
 
   private stepTwoForward(password: Factor['password']): void {
     this.updateFactor('password', password);
-    this.updateStepData('two', 'status', 'finish');
-    this.updateStepData('three', 'status', 'process');
+    this.updateStepStatus('two', 'finish');
+    this.updateStepStatus('three', 'process');
   }
 
-  private stepTwoBackward(): void {}
+  private stepTwoBackward(): void {
+    this.updateStepStatus('one', 'process');
+    this.updateStepStatus('two', 'wait');
+  }
+
+  private stepThreeBackward(): void {
+    this.updateStepStatus('two', 'process');
+    this.updateStepStatus('three', 'wait');
+  }
 
   @action
-  private updateStepData<TLabel extends IStepStatusLabel>(
-    step: IStepStatus['step'],
+  private updateStepStatus<TLabel extends IStepStatusLabel>(
     label: TLabel,
     value: IStepStatus[TLabel],
   ): void {
-    const theOne = this.stepData.findIndex(item => item.step === step);
-
-    if (theOne !== -1) {
-      this.stepData[theOne][label] = value;
-    }
+    this.stepStatus[label] = value;
   }
 
   @action

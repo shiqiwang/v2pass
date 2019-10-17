@@ -71,6 +71,9 @@ class StepTwo extends Component<IStepTwoProps> {
             )}
           </Form.Item>
           <Form.Item>
+            <Button type="primary" onClick={() => this.props.backward()}>
+              Backward
+            </Button>
             <Button type="primary" htmlType="submit">
               Register
             </Button>

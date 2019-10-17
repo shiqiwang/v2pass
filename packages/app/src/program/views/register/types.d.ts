@@ -3,11 +3,10 @@ import {UserInfo} from '../../types/user';
 type ValidateStatus = 'success' | 'warning' | 'validating' | 'error';
 type StepStatus = 'error' | 'wait' | 'process' | 'finish' | undefined;
 
-export interface IStepStatus {
-  status: StepStatus;
-  title: string;
-  icon: string;
-  step: string;
+interface IStepStatus {
+  one: StepStatus;
+  two: StepStatus;
+  three: StepStatus;
 }
 
 export interface BaseInfo {
