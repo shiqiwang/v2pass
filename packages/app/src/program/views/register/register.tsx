@@ -1,14 +1,18 @@
 import {Icon, Steps, message} from 'antd';
+import {RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import {registerBaseInfoApi, registerValidatorApi} from '../../request';
+import {Router, router} from '../../router';
 
 import StepOne from './step/stepOne';
 import StepThree from './step/stepThree';
 import StepTwo from './step/stepTwo';
 import {BaseInfo, Factor, IStepStatus} from './types';
+
+interface RegisterProps extends RouteComponentProps<Router['register']> {}
 
 type FactorLabel = keyof Factor;
 type IStepStatusLabel = keyof IStepStatus;
@@ -16,7 +20,7 @@ type IStepStatusLabel = keyof IStepStatus;
 const {Step} = Steps;
 
 @observer
-export default class Register extends Component {
+export default class Register extends Component<RegisterProps> {
   @observable
   private stepStatus: IStepStatus = {
     one: 'process',
@@ -26,6 +30,7 @@ export default class Register extends Component {
   @observable
   private factor: Factor = {
     id: '',
+    username: '',
     email: '',
     secretKey: '',
     salt: '',
@@ -66,8 +71,15 @@ export default class Register extends Component {
             undefined
           )}
         </div>
+        <button onClick={event => this.onTest()}>click</button>
       </div>
     );
+  }
+
+  private onTest(): void {
+    chrome.storage.sync.get(items => {
+      console.log('user info', items);
+    });
   }
 
   private stepOneForward(
@@ -80,6 +92,7 @@ export default class Register extends Component {
           this.updateStepStatus('one', 'finish');
           this.updateStepStatus('two', 'process');
           this.updateFactor('email', email);
+          this.updateFactor('username', username);
         } else {
           message.error(result.data.message);
         }
@@ -97,6 +110,13 @@ export default class Register extends Component {
           this.updateFactor('password', password);
           this.updateStepStatus('two', 'finish');
           this.updateStepStatus('three', 'process');
+          const {username, email, id, secretKey} = this.factor;
+          chrome.storage.sync.set({
+            username,
+            email,
+            id,
+            secretKey,
+          });
         } else {
           message.error(result.data.message);
         }

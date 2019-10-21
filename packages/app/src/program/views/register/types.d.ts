@@ -33,6 +33,7 @@ export interface PasswordInfo {
 
 export interface Factor {
   id: UserInfo['_id'];
+  username: UserInfo['username'];
   password: string;
   email: UserInfo['email'];
   secretKey: string;
