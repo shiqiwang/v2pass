@@ -37,3 +37,8 @@
 - master password + secret key ---hash(sha256)--->encrypt/decrypt key
 
 3. unlockKey，verify，encrypt/decrypt key 三个重要密码的生成都在客户端，因此客户端安全很重要，确保安装客户端的设备是无风险的。
+
+## login 与 unlock
+
+1. login 意味着，用户 storage 中丢失了存储的所有东西，用户需要输入 username，password，secretKey 认证身份，获取用户基本信息和数据
+2. unlock 意味着，用户 storage 中有 username，email，id，secretKey 这些基础的用户信息，但由于会话过期，storage 中没有了数据，只需要用户输入 password 以获取数据
