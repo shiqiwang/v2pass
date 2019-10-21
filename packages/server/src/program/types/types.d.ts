@@ -1,7 +1,7 @@
 import {ObjectId} from 'mongodb';
 
 export interface User {
-  id: ObjectId;
+  id: string;
   username: string;
   email: string;
   // 数据都是加密的，在node中为Buffer，在前端为ArrayBuffer，内存中表示为二进制
