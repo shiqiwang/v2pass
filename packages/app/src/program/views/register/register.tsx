@@ -14,9 +14,6 @@ import {BaseInfo, Factor, IStepStatus} from './types';
 
 interface RegisterProps extends RouteComponentProps<Router['register']> {}
 
-type FactorLabel = keyof Factor;
-type IStepStatusLabel = keyof IStepStatus;
-
 const {Step} = Steps;
 
 @observer
@@ -89,10 +86,14 @@ export default class Register extends Component<RegisterProps> {
     registerBaseInfoApi(username, email)
       .then(result => {
         if (result.data.code === 200) {
-          this.updateStepStatus('one', 'finish');
-          this.updateStepStatus('two', 'process');
-          this.updateFactor('email', email);
-          this.updateFactor('username', username);
+          this.updateStepStatus({
+            one: 'finish',
+            two: 'process',
+          });
+          this.updateFactor({
+            email,
+            username,
+          });
         } else {
           message.error(result.data.message);
         }
@@ -107,9 +108,11 @@ export default class Register extends Component<RegisterProps> {
     registerValidatorApi(password)
       .then(result => {
         if (result.data.code === 200) {
-          this.updateFactor('password', password);
-          this.updateStepStatus('two', 'finish');
-          this.updateStepStatus('three', 'process');
+          this.updateFactor({password});
+          this.updateStepStatus({
+            two: 'finish',
+            three: 'process',
+          });
           const {username, email, id, secretKey} = this.factor;
           chrome.storage.sync.set({
             username,
@@ -127,28 +130,32 @@ export default class Register extends Component<RegisterProps> {
   }
 
   private stepTwoBackward(): void {
-    this.updateStepStatus('one', 'process');
-    this.updateStepStatus('two', 'wait');
+    this.updateStepStatus({
+      one: 'process',
+      two: 'wait',
+    });
   }
 
   private stepThreeBackward(): void {
-    this.updateStepStatus('two', 'process');
-    this.updateStepStatus('three', 'wait');
+    this.updateStepStatus({
+      two: 'process',
+      three: 'wait',
+    });
   }
 
   @action
-  private updateStepStatus<TLabel extends IStepStatusLabel>(
-    label: TLabel,
-    value: IStepStatus[TLabel],
-  ): void {
-    this.stepStatus[label] = value;
+  private updateStepStatus(value: Partial<IStepStatus>): void {
+    this.stepStatus = {
+      ...this.stepStatus,
+      ...value,
+    };
   }
 
   @action
-  private updateFactor<TLabel extends FactorLabel>(
-    label: TLabel,
-    value: Factor[TLabel],
-  ): void {
-    this.factor[label] = value;
+  private updateFactor(value: Partial<Factor>): void {
+    this.factor = {
+      ...this.factor,
+      ...value,
+    };
   }
 }
