@@ -21,5 +21,5 @@ export type Verify = string;
 
 export interface ResponseMessage {
   code: number;
-  message: string | boolean | User['data'];
+  message: string | boolean | User['data'] | object;
 }

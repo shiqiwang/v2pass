@@ -31,6 +31,7 @@ export function pretreatRoute(
     return;
   } else if (
     path !== '/login' &&
+    path !== 'loginGetBaseInfo' &&
     path !== '/registerBaseInfo' &&
     path !== '/registerValidator' &&
     path !== '/testEmailAvailability' &&

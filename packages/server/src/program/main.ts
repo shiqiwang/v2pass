@@ -34,6 +34,8 @@ app.post('/registerBaseInfo', jsonParser, route.registerBaseInfoRoute);
 
 app.post('/registerValidator', jsonParser, route.registerValidatorRoute);
 
+app.post('/loginGetBaseInfo', jsonParser, route.loginGetBaseInfoRoute);
+
 app.post('/login', jsonParser, route.loginRoute);
 
 app.post('/updateData', jsonParser, route.updateDataRoute);

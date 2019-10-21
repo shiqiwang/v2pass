@@ -37,8 +37,12 @@ export const registerValidatorSchema = Joi.object({
   verify,
 });
 
+export const loginGetBaseInfoSchema = Joi.object({
+  username,
+});
+
 export const loginSchema = Joi.object({
-  id,
+  username,
   unlockKey,
 });
 

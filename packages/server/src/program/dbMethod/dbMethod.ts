@@ -95,16 +95,39 @@ export async function registerValidator(
   return responseMessage.generalError;
 }
 
+export async function loginGetBaseInfo(
+  username: User['username'],
+): Promise<ResponseMessage> {
+  const collection = await collectionPromise;
+  const result = await collection.find({username}).toArray();
+
+  if (!result.length) {
+    return responseMessage.customError(`${username} does not exist`);
+  }
+
+  const {_id, email} = result[0];
+
+  return responseMessage.success({
+    id: _id.toHexString(),
+    email,
+  });
+}
+
 export async function login(
-  id: User['id'],
+  username: User['username'],
   unlockKey: UnlockKey,
 ): Promise<ResponseMessage> {
   const collection = await collectionPromise;
-  const result = await collection.find({_id: new ObjectId(id)}).toArray();
-  const {verify} = result[0];
+  const result = await collection.find({username}).toArray();
+
+  if (!result.length) {
+    return responseMessage.customError(`${username} does not exist`);
+  }
+
+  const {verify, _id} = result[0];
 
   if (unlockKey === verify) {
-    return responseMessage.success(true);
+    return responseMessage.success(`${_id.toHexString()}`);
   }
 
   console.error('login error', result);
