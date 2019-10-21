@@ -28,20 +28,22 @@ export const testEmailSchema = Joi.object({
   email,
 });
 
-export const registerSchema = Joi.object({
+export const registerBaseInfoSchema = Joi.object({
   username,
   email,
+});
+
+export const registerValidatorSchema = Joi.object({
   verify,
 });
 
 export const loginSchema = Joi.object({
-  username,
+  id,
   unlockKey,
 });
 
 export const getDataSchema = Joi.object({
-  username,
-  unlockKey,
+  id,
 });
 
 export const updateAccountSchema = Joi.object({
@@ -55,5 +57,4 @@ export const updateAccountSchema = Joi.object({
 export const updateDataSchema = Joi.object({
   id,
   data,
-  unlockKey,
 });

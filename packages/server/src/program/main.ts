@@ -4,6 +4,7 @@
 // 统一处理error的中间件是肿么回事！！！
 // 所有用户输入获取到的信息，需要鉴别是否为字符串
 import bodyParser from 'body-parser';
+import session from 'cookie-session';
 import express from 'express';
 import helmet from 'helmet';
 
@@ -11,6 +12,15 @@ import * as route from './routes';
 
 const app = express();
 const jsonParser = bodyParser.json();
+
+app.use(
+  session({
+    keys: [],
+    maxAge: 15 * 60 * 1000,
+    secure: true,
+    // httpOnly: true, 后面加上
+  }),
+);
 
 app.use(helmet()); // 设置HTTP头部保护app免受一些知名的web攻击
 
@@ -20,7 +30,9 @@ app.get('/testUsernameAvailability', route.testUsernameAvailabilityRoute);
 
 app.get('/testEmailAvailability', route.testEmailAvailabilityRoute);
 
-app.post('/register', jsonParser, route.registerRoute);
+app.post('/registerBaseInfo', jsonParser, route.registerBaseInfoRoute);
+
+app.post('/registerValidator', jsonParser, route.registerValidatorRoute);
 
 app.post('/login', jsonParser, route.loginRoute);
 

@@ -1,31 +1,29 @@
 import {RequestHandler} from 'express';
 
-import {getAuthenticate} from '../requestMethod';
-import {
-  authenticateFailed,
-  successMessage,
-  validateFailed,
-} from '../responseMessage';
+import {login} from '../dbMethod';
+import {generalError, validateError} from '../responseMessage';
 
-import {loginSchema} from './schema/schema';
+import {loginSchema} from './schema';
 
 export const loginRoute: RequestHandler = (req, res) => {
   const {error, value} = loginSchema.validate(req.body);
 
   if (error) {
-    res.send(validateFailed);
+    res.send(validateError);
   }
 
-  const {username, unlockKey} = value;
-  getAuthenticate({username}, unlockKey)
+  const {id, unlockKey} = value;
+  login(id, unlockKey)
     .then(result => {
-      if (!result) {
-        res.send(authenticateFailed);
-      } else {
-        res.send(successMessage);
+      if (result.code === 200) {
+        req.session!.id = id;
+        req.session!.stage = 'login';
       }
+
+      res.send(result);
     })
     .catch(error => {
-      console.error('login error', error);
+      console.error('login route error', error);
+      res.send(generalError);
     });
 };

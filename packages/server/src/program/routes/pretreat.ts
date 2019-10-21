@@ -1,5 +1,7 @@
 import {NextFunction, Request, Response} from 'express';
 
+import {authenticateError} from '../responseMessage';
+
 export function pretreatRoute(
   req: Request,
   res: Response,
@@ -22,8 +24,24 @@ export function pretreatRoute(
   );
   res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
 
+  const {url} = req;
+
   if (req.method === 'OPTIONS') {
     res.send(200);
+    return;
+  } else if (
+    url !== 'login' &&
+    url !== 'register' &&
+    url !== 'testEmailAvailability' &&
+    url !== 'testUsernameAvailability'
+  ) {
+    if (!req.session || !req.session.id) {
+      res.send(authenticateError);
+      console.error('pretreat route error, req.session', req.session);
+      return;
+    } else {
+      next();
+    }
   } else {
     next();
   }
