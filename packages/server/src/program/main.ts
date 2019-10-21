@@ -15,9 +15,9 @@ const jsonParser = bodyParser.json();
 
 app.use(
   session({
-    keys: [],
+    keys: ['one', 'two'],
     maxAge: 15 * 60 * 1000,
-    secure: true,
+    // secure: true,
     // httpOnly: true, 后面加上
   }),
 );

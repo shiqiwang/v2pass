@@ -9,7 +9,6 @@ import React, {
   ReactNode,
 } from 'react';
 
-import {registerApi} from '../../../request/request';
 import {PasswordInfo} from '../types';
 
 import './step.less';

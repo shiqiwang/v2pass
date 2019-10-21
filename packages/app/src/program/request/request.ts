@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import UserInfo from '../types/user';
+import {UserInfo, Verify} from '../types/user';
 
 const serverUrl = 'http://localhost:3000/';
 
@@ -18,48 +18,38 @@ export function testEmailApi(email: UserInfo['email']): Promise<any> {
   );
 }
 
-export function registerApi(
+export function registerBaseInfoApi(
   username: UserInfo['username'],
   email: UserInfo['email'],
-  verify: string,
 ): Promise<any> {
-  return axios.post(`${serverUrl}register`, {
+  return axios.post(`${serverUrl}registerBaseInfo`, {
     username,
     email,
+  });
+}
+
+export function registerValidatorApi(verify: Verify): Promise<any> {
+  return axios.post(`${serverUrl}registerValidator`, {
     verify,
   });
 }
 
-export function loginApi(
-  username: UserInfo['username'],
-  unlockKey: string,
-): Promise<any> {
+export function loginApi(id: UserInfo['_id'], unlockKey: string): Promise<any> {
   return axios.post(`${serverUrl}login`, {
-    username,
+    id,
     unlockKey,
   });
 }
 
-export function getDataApi(
-  username: UserInfo['username'],
-  unlockKey: string,
-): Promise<any> {
-  return axios.post(`${serverUrl}getData`, {
-    username,
-    unlockKey,
-  });
+export function getDataApi(id: UserInfo['_id']): Promise<any> {
+  return axios.post(`${serverUrl}getData`, {id});
 }
 
 // 这里data应当是加密后的base64
-export function updateDataApi(
-  id: UserInfo['_id'],
-  data: string,
-  unlockKey: string,
-): Promise<any> {
+export function updateDataApi(id: UserInfo['_id'], data: string): Promise<any> {
   return axios.post(`${serverUrl}updateData`, {
     id,
     data,
-    unlockKey,
   });
 }
 
@@ -67,14 +57,12 @@ export function updateAccountApi(
   id: UserInfo['_id'],
   username: UserInfo['username'],
   email: UserInfo['email'],
-  verify: string,
-  unlockKey: string,
+  verify: Verify,
 ): Promise<any> {
   return axios.post(`${serverUrl}updateAccount`, {
     id,
     username,
     email,
     verify,
-    unlockKey,
   });
 }

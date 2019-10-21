@@ -13,7 +13,8 @@ export const registerValidatorRoute: RequestHandler = (req, res) => {
     return;
   }
 
-  const {id, verify} = value;
+  const {verify} = value;
+  const id = req.session!.id;
   registerValidator(id, verify)
     .then(result => res.send(result))
     .catch(error => {

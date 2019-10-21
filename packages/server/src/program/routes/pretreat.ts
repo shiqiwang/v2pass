@@ -24,16 +24,17 @@ export function pretreatRoute(
   );
   res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
 
-  const {url} = req;
+  const {path} = req;
 
   if (req.method === 'OPTIONS') {
     res.send(200);
     return;
   } else if (
-    url !== 'login' &&
-    url !== 'register' &&
-    url !== 'testEmailAvailability' &&
-    url !== 'testUsernameAvailability'
+    path !== '/login' &&
+    path !== '/registerBaseInfo' &&
+    path !== '/registerValidator' &&
+    path !== '/testEmailAvailability' &&
+    path !== '/testUsernameAvailability'
   ) {
     if (!req.session || !req.session.id) {
       res.send(authenticateError);

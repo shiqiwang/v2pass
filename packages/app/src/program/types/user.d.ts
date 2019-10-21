@@ -13,6 +13,8 @@ export interface UserInfo {
   unlockKey: string; // 登录 解锁密钥，应当是master password和 secret key的衍生物
 }
 
+export type Verify = string;
+
 export default interface User extends UserInfo {
   data: {
     // 这种把folder存在user下的方式是否不大好，有shared后不还扩展。存folderIds[]是否更好

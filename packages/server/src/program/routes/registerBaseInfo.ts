@@ -1,7 +1,7 @@
 import {RequestHandler} from 'express';
 
 import {registerBaseInfo} from '../dbMethod';
-import {generalError, validateError} from '../responseMessage';
+import {generalError, success, validateError} from '../responseMessage';
 
 import {registerBaseInfoSchema} from './schema';
 
@@ -22,7 +22,7 @@ export const registerBaseInfoRoute: RequestHandler = (req, res) => {
         req.session!.stage = 'register';
       }
 
-      res.send(result);
+      res.send(success(true));
     })
     .catch(error => {
       console.error('register baseInfo error', error);

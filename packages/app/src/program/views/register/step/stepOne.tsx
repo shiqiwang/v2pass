@@ -9,7 +9,7 @@ import React, {
   ReactNode,
 } from 'react';
 
-import {testEmailApi, testUsernameApi} from '../../../request/request';
+import {testEmailApi, testUsernameApi} from '../../../request';
 import {BaseInfo} from '../types';
 
 import './step.less';
@@ -17,7 +17,10 @@ import './step.less';
 type BaseInfoLabel = keyof BaseInfo;
 
 interface IStepOneProps extends FormComponentProps {
-  forward(email: BaseInfo['email']['value']): void;
+  forward(
+    username: BaseInfo['username']['value'],
+    email: BaseInfo['email']['value'],
+  ): void;
 }
 
 @observer
@@ -94,7 +97,8 @@ class StepOne extends Component<IStepOneProps> {
       // 验证email是该用户的email
       // 把数据传出至上层组件
       // 转步骤2
-      this.props.forward(this.data.email.value);
+      const {username, email} = this.data;
+      this.props.forward(username.value, email.value);
     } else {
       message.error('correct error, submit again');
     }
@@ -110,7 +114,6 @@ class StepOne extends Component<IStepOneProps> {
   private onTestUsername(value: BaseInfo['username']['value']): void {
     this.updateStatus('username', 'validating');
     const {setFields} = this.props.form!;
-    // 怎么限定不能以数字开头？？？
     const pattern = /^\w{5,30}$/;
 
     if (!pattern.test(value)) {

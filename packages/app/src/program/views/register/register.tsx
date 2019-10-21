@@ -1,12 +1,14 @@
-import {Icon, Steps} from 'antd';
+import {Icon, Steps, message} from 'antd';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import {registerBaseInfoApi, registerValidatorApi} from '../../request';
+
 import StepOne from './step/stepOne';
 import StepThree from './step/stepThree';
 import StepTwo from './step/stepTwo';
-import {Factor, IStepStatus} from './types';
+import {BaseInfo, Factor, IStepStatus} from './types';
 
 type FactorLabel = keyof Factor;
 type IStepStatusLabel = keyof IStepStatus;
@@ -42,7 +44,11 @@ export default class Register extends Component {
         </Steps>
         <div className="mainStep">
           {one === 'process' ? (
-            <StepOne forward={email => this.stepOneForward(email)} />
+            <StepOne
+              forward={(username, email) =>
+                this.stepOneForward(username, email)
+              }
+            />
           ) : (
             undefined
           )}
@@ -64,16 +70,40 @@ export default class Register extends Component {
     );
   }
 
-  private stepOneForward(email: Factor['email']): void {
-    this.updateFactor('email', email);
-    this.updateStepStatus('one', 'finish');
-    this.updateStepStatus('two', 'process');
+  private stepOneForward(
+    username: BaseInfo['username']['value'],
+    email: Factor['email'],
+  ): void {
+    registerBaseInfoApi(username, email)
+      .then(result => {
+        if (result.data.code === 200) {
+          this.updateStepStatus('one', 'finish');
+          this.updateStepStatus('two', 'process');
+          this.updateFactor('email', email);
+        } else {
+          message.error(result.data.message);
+        }
+      })
+      .catch(error => {
+        message.error(error.message);
+      });
   }
 
   private stepTwoForward(password: Factor['password']): void {
-    this.updateFactor('password', password);
-    this.updateStepStatus('two', 'finish');
-    this.updateStepStatus('three', 'process');
+    // 有了加密后应当是verify!!!
+    registerValidatorApi(password)
+      .then(result => {
+        if (result.data.code === 200) {
+          this.updateFactor('password', password);
+          this.updateStepStatus('two', 'finish');
+          this.updateStepStatus('three', 'process');
+        } else {
+          message.error(result.data.message);
+        }
+      })
+      .catch(error => {
+        console.error('register validator api', error);
+      });
   }
 
   private stepTwoBackward(): void {
