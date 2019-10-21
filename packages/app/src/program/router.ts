@@ -24,7 +24,13 @@ export const router = Router.create(
 export type Router = typeof router;
 
 router.rest.$intercept(() => {
-  router.register.$push();
+  chrome.storage.sync.get(items => {
+    if (items.id) {
+      router.unlock.$push();
+    } else {
+      router.login.$push();
+    }
+  });
 });
 
 // 做访问前验证的钩子
