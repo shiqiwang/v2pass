@@ -1,19 +1,17 @@
 import {RequestHandler} from 'express';
 
 import {updateData} from '../dbMethod';
-import {generalError, validateError} from '../responseMessage';
-
-import {updateDataSchema} from './schema';
+import {authenticateError, generalError} from '../responseMessage';
 
 export const updateDataRoute: RequestHandler = (req, res) => {
-  const {error, value} = updateDataSchema.validate(req.body);
+  const {id} = req.session!;
 
-  if (error) {
-    res.send(validateError);
+  if (!id) {
+    res.send(authenticateError);
     return;
   }
 
-  const {data, id} = value;
+  const {data} = req.body;
   // 后面有加密后，这个Buffer.from(data)记得变为data!!!
   updateData(id, Buffer.from(data))
     .then(result => res.send(result))

@@ -1,19 +1,17 @@
 import {RequestHandler} from 'express';
 
 import {updateAccount} from '../dbMethod';
-import {generalError, validateError} from '../responseMessage';
-
-import {updateAccountSchema} from './schema';
+import {authenticateError, generalError} from '../responseMessage';
 
 export const updateAccountRoute: RequestHandler = (req, res) => {
-  const {error, value} = updateAccountSchema.validate(req.body);
+  const {id} = req.session!;
 
-  if (error) {
-    res.send(validateError);
+  if (!id) {
+    res.send(authenticateError);
     return;
   }
 
-  const {id, username, email, verify} = value;
+  const {username, email, verify} = req.body;
   updateAccount(id, username, email, verify)
     .then(result => res.send(result))
     .catch(error => {

@@ -5,9 +5,6 @@ import {generalError, validateError} from '../responseMessage';
 
 import {loginGetBaseInfoSchema, loginSchema} from './schema';
 
-// login 需先请求loginGetBaseInfoRoute 再请求loginRoute
-// unlock 直接请求loginRoute
-
 export const loginGetBaseInfoRoute: RequestHandler = (req, res) => {
   const {error, value} = loginGetBaseInfoSchema.validate(req.body);
 
