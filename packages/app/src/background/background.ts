@@ -10,7 +10,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.pageAction.onClicked.addListener(tab => {
-  chrome.storage.sync.get(items => {
+  chrome.storage.local.get(items => {
     console.log('chrome storage items', items);
   });
 });

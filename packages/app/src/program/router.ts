@@ -24,7 +24,7 @@ export const router = Router.create(
 export type Router = typeof router;
 
 router.rest.$intercept(() => {
-  chrome.storage.sync.get(items => {
+  chrome.storage.local.get(items => {
     if (items.id) {
       router.unlock.$push();
     } else {

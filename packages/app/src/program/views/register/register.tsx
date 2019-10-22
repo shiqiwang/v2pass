@@ -74,7 +74,7 @@ export default class Register extends Component<RegisterProps> {
   }
 
   private onTest(): void {
-    chrome.storage.sync.get(items => {
+    chrome.storage.local.get(items => {
       console.log('user info', items);
     });
   }
@@ -114,7 +114,7 @@ export default class Register extends Component<RegisterProps> {
             three: 'process',
           });
           const {username, email, id, secretKey} = this.factor;
-          chrome.storage.sync.set({
+          chrome.storage.local.set({
             username,
             email,
             id,
