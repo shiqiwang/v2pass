@@ -34,33 +34,37 @@ export function registerValidatorApi(verify: Verify): Promise<any> {
   });
 }
 
-export function loginApi(id: UserInfo['_id'], unlockKey: string): Promise<any> {
+export function loginGetBaseInfo(username: UserInfo['username']): Promise<any> {
+  return axios.post(`${serverUrl}loginGetBaseInfo`, {username});
+}
+
+export function loginApi(
+  username: UserInfo['username'],
+  unlockKey: string,
+): Promise<any> {
   return axios.post(`${serverUrl}login`, {
-    id,
+    username,
     unlockKey,
   });
 }
 
-export function getDataApi(id: UserInfo['_id']): Promise<any> {
-  return axios.post(`${serverUrl}getData`, {id});
+export function getDataApi(): Promise<any> {
+  return axios.get(`${serverUrl}getData`);
 }
 
 // 这里data应当是加密后的base64
-export function updateDataApi(id: UserInfo['_id'], data: string): Promise<any> {
+export function updateDataApi(data: string): Promise<any> {
   return axios.post(`${serverUrl}updateData`, {
-    id,
     data,
   });
 }
 
 export function updateAccountApi(
-  id: UserInfo['_id'],
   username: UserInfo['username'],
   email: UserInfo['email'],
   verify: Verify,
 ): Promise<any> {
   return axios.post(`${serverUrl}updateAccount`, {
-    id,
     username,
     email,
     verify,
