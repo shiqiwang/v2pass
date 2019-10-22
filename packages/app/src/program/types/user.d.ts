@@ -2,9 +2,14 @@ import Target from './target';
 import Password from './password';
 import Vault from './vault';
 import Folder from './folder';
-/**
- * 使用Target接口时，前端和后端都需引入_id
- */
+
+export interface StorageInfo {
+  id: string;
+  username: string;
+  email: string;
+  secretKey: string;
+  data: Buffer;
+}
 
 export interface UserInfo {
   _id: string;
