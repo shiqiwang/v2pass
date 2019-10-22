@@ -47,7 +47,6 @@ export const loginSchema = Joi.object({
 });
 
 export const updateAccountSchema = Joi.object({
-  id,
   username,
   email,
   verify,
@@ -55,6 +54,5 @@ export const updateAccountSchema = Joi.object({
 });
 
 export const updateDataSchema = Joi.object({
-  id,
   data,
 });
