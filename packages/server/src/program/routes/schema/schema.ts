@@ -46,10 +46,6 @@ export const loginSchema = Joi.object({
   unlockKey,
 });
 
-export const getDataSchema = Joi.object({
-  id,
-});
-
 export const updateAccountSchema = Joi.object({
   id,
   username,

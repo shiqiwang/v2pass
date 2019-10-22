@@ -1,19 +1,16 @@
 import {RequestHandler} from 'express';
 
 import {getData} from '../dbMethod';
-import {generalError, validateError} from '../responseMessage';
-
-import {getDataSchema} from './schema';
+import {authenticateError, generalError} from '../responseMessage';
 
 export const getDataRoute: RequestHandler = (req, res) => {
-  const {error, value} = getDataSchema.validate(req.body);
+  const {id} = req.session!;
 
-  if (error) {
-    res.send(validateError);
+  if (!id) {
+    res.send(authenticateError);
     return;
   }
 
-  const {id} = value;
   getData(id)
     .then(result => res.send(result))
     .catch(error => {

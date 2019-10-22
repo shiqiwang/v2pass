@@ -42,7 +42,7 @@ app.post('/updateData', jsonParser, route.updateDataRoute);
 
 app.post('/updateAccount', jsonParser, route.updateAccountRoute);
 
-app.post('/getData', jsonParser, route.getDataRoute);
+app.get('/getData', route.getDataRoute);
 
 app.use((req, res, next) => {
   console.error('no such route', req.url);
