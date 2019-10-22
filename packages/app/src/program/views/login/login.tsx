@@ -1,6 +1,6 @@
 /*global chrome*/
 
-import {Button, Col, Form, Input, Row, message} from 'antd';
+import {Button, Form, Input, message} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
 import {RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
@@ -12,8 +12,9 @@ import React, {
   ReactNode,
 } from 'react';
 
-import {getDataApi, loginApi} from '../../request/request';
+import {getDataApi, loginApi, loginGetBaseInfo} from '../../request';
 import {Router, router} from '../../router';
+import {StorageInfo} from '../../types/user';
 
 import './login.less';
 
@@ -22,8 +23,9 @@ export interface LoginPageProps
     RouteComponentProps<Router['login']> {}
 
 interface FormData {
-  username: string;
+  username: StorageInfo['username'];
   password: string;
+  secretKey: StorageInfo['secretKey'];
 }
 
 type FormDataLabelType = keyof FormData;
@@ -34,60 +36,63 @@ class Login extends Component<LoginPageProps> {
   private data: FormData = {
     username: '',
     password: '',
+    secretKey: '',
   };
 
   render(): ReactNode {
     const {getFieldDecorator} = this.props.form!;
-    const itemLayout = {
-      labelCol: {span: 4},
-      wrapperCol: {span: 20},
-    };
-    const buttonLayout = {
-      wrapperCol: {span: 2, offset: 4},
-    };
-    const {password, username} = this.data;
+    const {password, username, secretKey} = this.data;
 
     return (
       <div className="loginPage">
-        <Row type="flex" justify="center" align="middle" className="loginPage">
-          <Col span={20}>
-            <Form className="loginForm" onSubmit={this.onFormSubmit}>
-              <Form.Item label="user name" {...itemLayout}>
-                {getFieldDecorator('username', {
-                  rules: [
-                    {required: true, message: 'Please input your username!'},
-                  ],
-                  initialValue: username,
-                })(
-                  <Input
-                    type="text"
-                    placeholder="user name"
-                    onChange={event => this.onInputChange('username', event)}
-                  />,
-                )}
-              </Form.Item>
-              <Form.Item label="password" {...itemLayout}>
-                {getFieldDecorator('password', {
-                  rules: [
-                    {required: true, message: 'Please input your password!'},
-                  ],
-                  initialValue: password,
-                })(
-                  <Input
-                    type="password"
-                    placeholder="password"
-                    onChange={event => this.onInputChange('password', event)}
-                  />,
-                )}
-              </Form.Item>
-              <Form.Item {...buttonLayout}>
-                <Button type="primary" htmlType="submit">
-                  Login
-                </Button>
-              </Form.Item>
-            </Form>
-          </Col>
-        </Row>
+        <Form className="loginForm" onSubmit={this.onFormSubmit}>
+          <Form.Item label="user name">
+            {getFieldDecorator('username', {
+              rules: [{required: true, message: 'Please input your username!'}],
+              initialValue: username,
+            })(
+              <Input
+                type="text"
+                placeholder="user name"
+                onChange={event => this.onInputChange('username', event)}
+              />,
+            )}
+          </Form.Item>
+          <Form.Item label="password">
+            {getFieldDecorator('password', {
+              rules: [{required: true, message: 'Please input your password!'}],
+              initialValue: password,
+            })(
+              <Input
+                type="password"
+                placeholder="password"
+                onChange={event => this.onInputChange('password', event)}
+              />,
+            )}
+          </Form.Item>
+          <Form.Item label="secretKey">
+            {getFieldDecorator('secretKey', {
+              rules: [
+                {required: true, message: 'Please input your secret key!'},
+              ],
+              initialValue: secretKey,
+            })(
+              <Input
+                type="input"
+                placeholder="secret key"
+                onChange={event => this.onInputChange('secretKey', event)}
+              />,
+            )}
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Login
+            </Button>
+            <Button type="link" onClick={() => this.toRegisterPage()}>
+              register
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
     );
   }
@@ -96,36 +101,45 @@ class Login extends Component<LoginPageProps> {
     event.preventDefault();
     const {validateFields} = this.props.form!;
     validateFields((error, values) => {
-      const {password, username} = values;
+      const {password, username, secretKey} = values;
 
-      // 只要storage中有username和email，则用unlock页面解锁进入主页面，否则用login页面登录
-      // unlockKey应当是输入密码时即刻生成的
       if (!error) {
-        loginApi(username, password)
+        loginGetBaseInfo(username)
           .then(result => {
-            if (result.data.code === 200) {
-              // 注册后第一次为登录页面，登录后把username email存储到chrome extension的storage中
-              getDataApi(username, password)
+            const {data} = result;
+
+            if (data.code === 200) {
+              const {email, id} = data.message;
+              console.log(email, id);
+              // email, id, secret key, password
+              // 这里后面应当是计算出的unlockKey！！！
+              loginApi(username, password)
                 .then(result => {
-                  if (result.data) {
-                    console.log(result.data);
-                    // 把得到的数据存入chrome extension的storage中以备后用
-                    router.homepage.$push();
+                  if (result.data.code === 200) {
+                    // 获取数据
+                  } else {
+                    message.error(result.data.message);
                   }
                 })
                 .catch(error => {
-                  console.error('get data', error);
+                  console.error('login error', error);
+                  message.error(error.message);
                 });
             } else {
-              message.error(result.data.message);
+              message.error(data.message);
             }
           })
           .catch(error => {
             console.error('login error', error);
+            message.error(error.message);
           });
       }
     });
   };
+
+  private toRegisterPage(): void {
+    router.register.$push();
+  }
 
   private onInputChange(
     label: FormDataLabelType,
