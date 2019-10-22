@@ -8,10 +8,6 @@ const email = Joi.string()
   .email()
   .required();
 
-const id = Joi.string()
-  .alphanum()
-  .required();
-
 const data = Joi.string()
   .base64()
   .required();
