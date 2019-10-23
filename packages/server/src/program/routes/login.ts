@@ -1,46 +1,44 @@
 import {RequestHandler} from 'express';
 
-import {login, loginGetBaseInfo} from '../dbMethod';
-import {generalError, validateError} from '../responseMessage';
+import {ERROR_CODE, SERVER_ERROR, login, loginGetBaseInfo} from '../dbMethod';
 
-import {loginGetBaseInfoSchema, loginSchema} from './schema';
+import {testSchema} from './schema';
+
+const resError = {
+  code: ERROR_CODE,
+  message: SERVER_ERROR,
+};
 
 export const loginGetBaseInfoRoute: RequestHandler = (req, res) => {
-  const {error, value} = loginGetBaseInfoSchema.validate(req.body);
+  const paramsTest = testSchema(req.body, ['username']);
 
-  if (error) {
-    res.send(validateError);
+  if (!paramsTest.code) {
+    res.send(paramsTest);
     return;
   }
 
-  const {username} = value;
+  const {username} = req.body;
   loginGetBaseInfo(username)
     .then(result => res.send(result))
     .catch(error => {
       console.error('login get base info route error', error);
+      res.send(resError);
     });
 };
 
 export const loginRoute: RequestHandler = (req, res) => {
-  const {error, value} = loginSchema.validate(req.body);
+  const paramsTest = testSchema(req.body, ['id', 'unlockKey']);
 
-  if (error) {
-    res.send(validateError);
+  if (!paramsTest.code) {
+    res.send(paramsTest);
     return;
   }
 
-  const {username, unlockKey} = value;
-  login(username, unlockKey)
-    .then(result => {
-      if (result.code === 200) {
-        req.session!.id = result.message;
-        req.session!.stage = 'login';
-      }
-
-      res.send(result);
-    })
+  const {id, unlockKey} = req.body;
+  login(id, unlockKey)
+    .then(result => res.send(result))
     .catch(error => {
       console.error('login route error', error);
-      res.send(generalError);
+      res.send(resError);
     });
 };
