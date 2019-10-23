@@ -4,8 +4,12 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  // 数据都是加密的，在node中为Buffer，在前端为ArrayBuffer，内存中表示为二进制
-  data: Buffer | undefined;
+  data: string | undefined;
+}
+
+export interface UserFactor extends User {
+  unlockKey: string;
+  verify: string;
 }
 
 export interface UserDocument {
@@ -13,13 +17,17 @@ export interface UserDocument {
   username: string;
   email: string;
   verify?: string;
-  data?: Buffer;
+  data?: string;
 }
 
-export type UnlockKey = string;
-export type Verify = string;
-
-export interface ResponseMessage {
+interface ResponseMessage {
   code: number;
-  message: string | boolean | User['data'] | object;
+  message: string;
 }
+
+interface ResponseData {
+  code: number;
+  data?: string | Partial<User>;
+}
+
+export type Response = ResponseMessage | ResponseData;

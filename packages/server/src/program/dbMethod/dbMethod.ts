@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import mongodb, {ObjectId} from 'mongodb';
 
 import {config} from '../customConfig.js';
-import {Response, UnlockKey, User, UserDocument, Verify} from '../types';
+import {Response, UserDocument, UserFactor} from '../types';
 
 import * as message from './const';
 
@@ -25,8 +25,8 @@ const collectionPromise = clientPromise.then(client =>
 })().catch(error => console.error('collection createIndex error', error));
 
 async function testAuth(
-  id: User['id'],
-  unlockKey: UnlockKey,
+  id: UserFactor['id'],
+  unlockKey: UserFactor['unlockKey'],
 ): Promise<Response> {
   const collection = await collectionPromise;
   const result = await collection.find({_id: new ObjectId(id)}).toArray();
@@ -59,7 +59,7 @@ async function testAuth(
 }
 
 export async function testUserNameAvailability(
-  username: User['username'],
+  username: UserFactor['username'],
 ): Promise<Response> {
   const collection = await collectionPromise;
   const num = await collection.countDocuments({username});
@@ -78,7 +78,7 @@ export async function testUserNameAvailability(
 }
 
 export async function testEmailAvailability(
-  email: User['email'],
+  email: UserFactor['email'],
 ): Promise<Response> {
   const collection = await collectionPromise;
   const num = await collection.countDocuments({email});
@@ -97,8 +97,8 @@ export async function testEmailAvailability(
 }
 
 export async function registerBaseInfo(
-  username: User['username'],
-  email: User['email'],
+  username: UserFactor['username'],
+  email: UserFactor['email'],
 ): Promise<Response> {
   const collection = await collectionPromise;
   const testUsername = await testUserNameAvailability(username);
@@ -139,8 +139,8 @@ export async function registerBaseInfo(
 }
 
 export async function register(
-  id: User['id'],
-  verify: Verify,
+  id: UserFactor['id'],
+  verify: UserFactor['verify'],
 ): Promise<Response> {
   const collection = await collectionPromise;
   const result = await collection.updateOne(
@@ -165,7 +165,7 @@ export async function register(
 }
 
 export async function loginGetBaseInfo(
-  username: User['username'],
+  username: UserFactor['username'],
 ): Promise<Response> {
   const collection = await collectionPromise;
   const result = await collection.find({username}).toArray();
@@ -189,16 +189,16 @@ export async function loginGetBaseInfo(
 }
 
 export async function login(
-  id: User['id'],
-  unlockKey: UnlockKey,
+  id: UserFactor['id'],
+  unlockKey: UserFactor['unlockKey'],
 ): Promise<Response> {
   const result = await testAuth(id, unlockKey);
   return result;
 }
 
 export async function getData(
-  id: User['id'],
-  unlockKey: UnlockKey,
+  id: UserFactor['id'],
+  unlockKey: UserFactor['unlockKey'],
 ): Promise<Response> {
   const getAuth = await testAuth(id, unlockKey);
 
@@ -218,9 +218,9 @@ export async function getData(
 }
 
 export async function updateData(
-  id: User['id'],
-  unlockKey: UnlockKey,
-  data: User['data'],
+  id: UserFactor['id'],
+  unlockKey: UserFactor['unlockKey'],
+  data: UserFactor['data'],
 ): Promise<Response> {
   const getAuth = await testAuth(id, unlockKey);
 
@@ -251,13 +251,13 @@ export async function updateData(
 }
 
 export async function updateAccount(
-  id: User['id'],
-  verify: Verify,
-  newUsername: User['username'],
-  newEmail: User['email'],
-  newVerify: Verify,
+  id: UserFactor['id'],
+  unlockKey: UserFactor['unlockKey'],
+  newUsername: UserFactor['username'],
+  newEmail: UserFactor['email'],
+  newVerify: UserFactor['verify'],
 ): Promise<Response> {
-  const getAuth = await testAuth(id, verify);
+  const getAuth = await testAuth(id, unlockKey);
 
   if (getAuth.code) {
     const collection = await collectionPromise;
