@@ -1,3 +1,5 @@
+export const SUCCESS_CODE = 1;
+export const ERROR_CODE = 0;
 export const SUCCESS = 'ok';
 export const AUTH_FAILED = 'authenticate failed';
 export const USERNAME_EXIST = 'username is occupied';

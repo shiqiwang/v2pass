@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import mongodb, {ObjectId} from 'mongodb';
 
 import {config} from '../customConfig.js';
-import {UnlockKey, User, UserDocument, Verify} from '../types';
+import {Response, UnlockKey, User, UserDocument, Verify} from '../types';
 
 import * as message from './const';
 
@@ -24,65 +24,92 @@ const collectionPromise = clientPromise.then(client =>
     .catch(console.error);
 })().catch(error => console.error('collection createIndex error', error));
 
-async function testAuth(id: User['id'], unlockKey: UnlockKey): Promise<string> {
+async function testAuth(
+  id: User['id'],
+  unlockKey: UnlockKey,
+): Promise<Response> {
   const collection = await collectionPromise;
   const result = await collection.find({_id: new ObjectId(id)}).toArray();
 
   if (!result.length) {
-    return message.NOT_EXIST;
+    return {
+      code: message.ERROR_CODE,
+      message: message.NOT_EXIST,
+    };
   }
 
   const {verify} = result[0];
 
   if (!verify) {
-    return message.REGISTRATION_NOT_COMPLETED;
+    return {
+      code: message.ERROR_CODE,
+      message: message.REGISTRATION_NOT_COMPLETED,
+    };
   } else if (bcrypt.compareSync(unlockKey, verify)) {
-    return message.SUCCESS;
+    return {
+      code: message.SUCCESS_CODE,
+      message: message.SUCCESS,
+    };
   }
 
-  return message.AUTH_FAILED;
+  return {
+    code: message.ERROR_CODE,
+    message: message.AUTH_FAILED,
+  };
 }
 
 export async function testUserNameAvailability(
   username: User['username'],
-): Promise<string> {
+): Promise<Response> {
   const collection = await collectionPromise;
   const num = await collection.countDocuments({username});
 
   if (num) {
-    return message.USERNAME_EXIST;
+    return {
+      code: message.ERROR_CODE,
+      message: message.USERNAME_EXIST,
+    };
   }
 
-  return message.SUCCESS;
+  return {
+    code: message.SUCCESS_CODE,
+    message: message.SUCCESS,
+  };
 }
 
 export async function testEmailAvailability(
   email: User['email'],
-): Promise<string> {
+): Promise<Response> {
   const collection = await collectionPromise;
   const num = await collection.countDocuments({email});
 
   if (num) {
-    return message.EMAIL_EXIST;
+    return {
+      code: message.ERROR_CODE,
+      message: message.EMAIL_EXIST,
+    };
   }
 
-  return message.SUCCESS;
+  return {
+    code: message.SUCCESS_CODE,
+    message: message.SUCCESS,
+  };
 }
 
 export async function registerBaseInfo(
   username: User['username'],
   email: User['email'],
-): Promise<string> {
+): Promise<Response> {
   const collection = await collectionPromise;
   const testUsername = await testUserNameAvailability(username);
   const testEmail = await testEmailAvailability(email);
 
-  if (testUsername !== message.SUCCESS) {
-    return message.USERNAME_EXIST;
+  if (!testUsername.code) {
+    return testUsername;
   }
 
-  if (testEmail !== message.SUCCESS) {
-    return message.EMAIL_EXIST;
+  if (!testEmail.code) {
+    return testEmail;
   }
 
   const result = await collection.insertOne({
@@ -95,17 +122,26 @@ export async function registerBaseInfo(
   if (ok === 1 && n === 1) {
     const getId = await collection.find({username}).toArray();
 
-    return getId[0]['_id'].toHexString();
+    return {
+      code: message.SUCCESS_CODE,
+      data: {
+        id: getId[0]['_id'].toHexString(),
+      },
+    };
   }
 
   console.error('register validator', result.result);
-  return message.SERVER_ERROR;
+
+  return {
+    code: message.ERROR_CODE,
+    message: message.SERVER_ERROR,
+  };
 }
 
-export async function registerValidator(
+export async function register(
   id: User['id'],
   verify: Verify,
-): Promise<string> {
+): Promise<Response> {
   const collection = await collectionPromise;
   const result = await collection.updateOne(
     {_id: new ObjectId(id)},
@@ -114,35 +150,48 @@ export async function registerValidator(
   const {nModified, ok} = result.result;
 
   if (nModified === 1 && ok === 1) {
-    return message.SUCCESS;
+    return {
+      code: message.SUCCESS_CODE,
+      message: message.SUCCESS,
+    };
   }
 
   console.error('register validator', result);
-  return message.SERVER_ERROR;
+
+  return {
+    code: message.ERROR_CODE,
+    message: message.SERVER_ERROR,
+  };
 }
 
 export async function loginGetBaseInfo(
   username: User['username'],
-): Promise<string | object> {
+): Promise<Response> {
   const collection = await collectionPromise;
   const result = await collection.find({username}).toArray();
 
   if (!result.length) {
-    return message.NOT_EXIST;
+    return {
+      code: message.ERROR_CODE,
+      message: message.NOT_EXIST,
+    };
   }
 
   const {_id, email} = result[0];
 
   return {
-    id: _id.toHexString(),
-    email,
+    code: message.SUCCESS_CODE,
+    data: {
+      id: _id.toHexString(),
+      email,
+    },
   };
 }
 
 export async function login(
   id: User['id'],
   unlockKey: UnlockKey,
-): Promise<string> {
+): Promise<Response> {
   const result = await testAuth(id, unlockKey);
   return result;
 }
@@ -150,13 +199,19 @@ export async function login(
 export async function getData(
   id: User['id'],
   unlockKey: UnlockKey,
-): Promise<string | Buffer | undefined> {
+): Promise<Response> {
   const getAuth = await testAuth(id, unlockKey);
 
-  if (getAuth === message.SUCCESS) {
+  if (getAuth.code) {
     const collection = await collectionPromise;
     const result = await collection.find({_id: new ObjectId(id)}).toArray();
-    return result[0].data;
+
+    return {
+      code: message.SUCCESS_CODE,
+      data: {
+        data: result[0].data,
+      },
+    };
   }
 
   return getAuth;
@@ -166,10 +221,10 @@ export async function updateData(
   id: User['id'],
   unlockKey: UnlockKey,
   data: User['data'],
-): Promise<string> {
+): Promise<Response> {
   const getAuth = await testAuth(id, unlockKey);
 
-  if (getAuth === message.SUCCESS) {
+  if (getAuth.code) {
     const collection = await collectionPromise;
     const result = await collection.updateOne(
       {_id: new ObjectId(id)},
@@ -178,11 +233,18 @@ export async function updateData(
     const {nModified, ok} = result.result;
 
     if (nModified === 1 && ok === 1) {
-      return message.SUCCESS;
+      return {
+        code: message.SUCCESS_CODE,
+        message: message.SUCCESS,
+      };
     }
 
     console.error('update data error', result);
-    return message.SERVER_ERROR;
+
+    return {
+      code: message.ERROR_CODE,
+      message: message.SERVER_ERROR,
+    };
   }
 
   return getAuth;
@@ -194,10 +256,10 @@ export async function updateAccount(
   newUsername: User['username'],
   newEmail: User['email'],
   newVerify: Verify,
-): Promise<string> {
+): Promise<Response> {
   const getAuth = await testAuth(id, verify);
 
-  if (getAuth === message.SUCCESS) {
+  if (getAuth.code) {
     const collection = await collectionPromise;
     const result = await collection.updateOne(
       {_id: new ObjectId(id)},
@@ -208,10 +270,18 @@ export async function updateAccount(
     const {nModified, ok} = result.result;
 
     if (nModified === 1 && ok === 1) {
-      return message.SUCCESS;
+      return {
+        code: message.SUCCESS_CODE,
+        message: message.SUCCESS,
+      };
     }
 
-    return message.SERVER_ERROR;
+    console.error('update account error', result);
+
+    return {
+      code: message.ERROR_CODE,
+      message: message.SERVER_ERROR,
+    };
   }
 
   return getAuth;
