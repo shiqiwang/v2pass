@@ -1,54 +1,41 @@
 import Joi from '@hapi/joi';
+import lodash from 'lodash';
 
-const username = Joi.string()
-  .pattern(/^\w{5,30}$/)
-  .required();
+import {ERROR_CODE, PARAMS_VALIDATE_FAILED, SUCCESS_CODE} from '../../dbMethod';
+import {Response, UserFactor} from '../../types';
 
-const email = Joi.string()
-  .email()
-  .required();
+type Params = 'id' | 'username' | 'email' | 'data' | 'unlockKey' | 'verify';
 
-const data = Joi.string()
-  .base64()
-  .required();
+const factor = {
+  id: Joi.string().required(),
+  username: Joi.string()
+    .pattern(/^\w{5,30}$/)
+    .required(),
+  email: Joi.string()
+    .email()
+    .required(),
+  data: Joi.string()
+    .base64()
+    .required(),
+  unlockKey: Joi.string().required(),
+  verify: Joi.string().required(),
+};
 
-const unlockKey = Joi.string().required();
+export function testSchema(
+  values: Partial<UserFactor>,
+  testArray: Params[],
+): Response {
+  const schema = Joi.object(lodash.pick(factor, testArray));
+  const {error} = schema.validate(values);
 
-const verify = Joi.string().required();
+  if (error) {
+    return {
+      code: ERROR_CODE,
+      message: PARAMS_VALIDATE_FAILED,
+    };
+  }
 
-export const testUsernameSchema = Joi.object({
-  username,
-});
-
-export const testEmailSchema = Joi.object({
-  email,
-});
-
-export const registerBaseInfoSchema = Joi.object({
-  username,
-  email,
-});
-
-export const registerValidatorSchema = Joi.object({
-  verify,
-});
-
-export const loginGetBaseInfoSchema = Joi.object({
-  username,
-});
-
-export const loginSchema = Joi.object({
-  username,
-  unlockKey,
-});
-
-export const updateAccountSchema = Joi.object({
-  username,
-  email,
-  verify,
-  unlockKey,
-});
-
-export const updateDataSchema = Joi.object({
-  data,
-});
+  return {
+    code: SUCCESS_CODE,
+  };
+}
