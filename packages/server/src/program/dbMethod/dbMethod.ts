@@ -1,13 +1,10 @@
-// 这个verify（验证器）只能被node查到，但是不能传递到前端
-// node和数据库会跑在同一个局域网中，需要保证服务器安全，及时升级系统，开启防火墙等
-// 所有用户输入的数据在路由（express）阶段都需要小心处理，看看是否带有恶意代码
-// 如果用户是登录的，可以用session验证身份，登录后生成的零时令牌
-// 后端的操作应尽量简单，一个操作或者api只做单一的一件事，以免出现漏洞被利用
+import bcrypt from 'bcryptjs';
 import mongodb, {ObjectId} from 'mongodb';
 
 import {config} from '../customConfig.js';
-import * as responseMessage from '../responseMessage';
-import {ResponseMessage, UnlockKey, User, UserDocument, Verify} from '../types';
+import {UnlockKey, User, UserDocument, Verify} from '../types';
+
+import * as message from './const';
 
 const {database} = config;
 const MongoClient = mongodb.MongoClient;
@@ -27,37 +24,66 @@ const collectionPromise = clientPromise.then(client =>
     .catch(console.error);
 })().catch(error => console.error('collection createIndex error', error));
 
+async function testAuth(id: User['id'], unlockKey: UnlockKey): Promise<string> {
+  const collection = await collectionPromise;
+  const result = await collection.find({_id: new ObjectId(id)}).toArray();
+
+  if (!result.length) {
+    return message.NOT_EXIST;
+  }
+
+  const {verify} = result[0];
+
+  if (!verify) {
+    return message.REGISTRATION_NOT_COMPLETED;
+  } else if (bcrypt.compareSync(unlockKey, verify)) {
+    return message.SUCCESS;
+  }
+
+  return message.AUTH_FAILED;
+}
+
 export async function testUserNameAvailability(
   username: User['username'],
-): Promise<ResponseMessage> {
+): Promise<string> {
   const collection = await collectionPromise;
   const num = await collection.countDocuments({username});
 
   if (num) {
-    return responseMessage.customError('username is occupied!');
+    return message.USERNAME_EXIST;
   }
 
-  return responseMessage.success(true);
+  return message.SUCCESS;
 }
 
 export async function testEmailAvailability(
   email: User['email'],
-): Promise<ResponseMessage> {
+): Promise<string> {
   const collection = await collectionPromise;
   const num = await collection.countDocuments({email});
 
   if (num) {
-    responseMessage.customError('email is occupied!');
+    return message.EMAIL_EXIST;
   }
 
-  return responseMessage.success(true);
+  return message.SUCCESS;
 }
 
 export async function registerBaseInfo(
   username: User['username'],
   email: User['email'],
-): Promise<ResponseMessage> {
+): Promise<string> {
   const collection = await collectionPromise;
+  const testUsername = await testUserNameAvailability(username);
+  const testEmail = await testEmailAvailability(email);
+
+  if (testUsername !== message.SUCCESS) {
+    return message.USERNAME_EXIST;
+  }
+
+  if (testEmail !== message.SUCCESS) {
+    return message.EMAIL_EXIST;
+  }
 
   const result = await collection.insertOne({
     username,
@@ -69,17 +95,17 @@ export async function registerBaseInfo(
   if (ok === 1 && n === 1) {
     const getId = await collection.find({username}).toArray();
 
-    return responseMessage.success(getId[0]['_id'].toHexString());
+    return getId[0]['_id'].toHexString();
   }
 
   console.error('register validator', result.result);
-  return responseMessage.generalError;
+  return message.SERVER_ERROR;
 }
 
 export async function registerValidator(
   id: User['id'],
   verify: Verify,
-): Promise<ResponseMessage> {
+): Promise<string> {
   const collection = await collectionPromise;
   const result = await collection.updateOne(
     {_id: new ObjectId(id)},
@@ -88,95 +114,105 @@ export async function registerValidator(
   const {nModified, ok} = result.result;
 
   if (nModified === 1 && ok === 1) {
-    return responseMessage.success(true);
+    return message.SUCCESS;
   }
 
   console.error('register validator', result);
-  return responseMessage.generalError;
+  return message.SERVER_ERROR;
 }
 
 export async function loginGetBaseInfo(
   username: User['username'],
-): Promise<ResponseMessage> {
+): Promise<string | object> {
   const collection = await collectionPromise;
   const result = await collection.find({username}).toArray();
 
   if (!result.length) {
-    return responseMessage.customError(`${username} does not exist`);
+    return message.NOT_EXIST;
   }
 
   const {_id, email} = result[0];
 
-  return responseMessage.success({
+  return {
     id: _id.toHexString(),
     email,
-  });
+  };
 }
 
 export async function login(
-  username: User['username'],
+  id: User['id'],
   unlockKey: UnlockKey,
-): Promise<ResponseMessage> {
-  const collection = await collectionPromise;
-  const result = await collection.find({username}).toArray();
-
-  if (!result.length) {
-    return responseMessage.customError(`${username} does not exist`);
-  }
-
-  const {verify, _id} = result[0];
-
-  if (unlockKey === verify) {
-    return responseMessage.success(`${_id.toHexString()}`);
-  }
-
-  console.error('login error', result);
-  return responseMessage.authenticateError;
+): Promise<string> {
+  const result = await testAuth(id, unlockKey);
+  return result;
 }
 
-export async function getData(id: User['id']): Promise<ResponseMessage> {
-  const collection = await collectionPromise;
-  const result = await collection.find({_id: new ObjectId(id)}).toArray();
+export async function getData(
+  id: User['id'],
+  unlockKey: UnlockKey,
+): Promise<string | Buffer | undefined> {
+  const getAuth = await testAuth(id, unlockKey);
 
-  return responseMessage.success(result[0].data);
+  if (getAuth === message.SUCCESS) {
+    const collection = await collectionPromise;
+    const result = await collection.find({_id: new ObjectId(id)}).toArray();
+    return result[0].data;
+  }
+
+  return getAuth;
 }
 
 export async function updateData(
   id: User['id'],
+  unlockKey: UnlockKey,
   data: User['data'],
-): Promise<ResponseMessage> {
-  const collection = await collectionPromise;
-  const result = await collection.updateOne(
-    {_id: new ObjectId(id)},
-    {$set: {data}},
-  );
-  const {nModified, ok} = result.result;
+): Promise<string> {
+  const getAuth = await testAuth(id, unlockKey);
 
-  if (nModified === 1 && ok === 1) {
-    return responseMessage.success(true);
+  if (getAuth === message.SUCCESS) {
+    const collection = await collectionPromise;
+    const result = await collection.updateOne(
+      {_id: new ObjectId(id)},
+      {$set: {data}},
+    );
+    const {nModified, ok} = result.result;
+
+    if (nModified === 1 && ok === 1) {
+      return message.SUCCESS;
+    }
+
+    console.error('update data error', result);
+    return message.SERVER_ERROR;
   }
 
-  console.error('update data error', result);
-  return responseMessage.generalError;
+  return getAuth;
 }
 
 export async function updateAccount(
   id: User['id'],
+  verify: Verify,
   newUsername: User['username'],
   newEmail: User['email'],
   newVerify: Verify,
-): Promise<ResponseMessage> {
-  const collection = await collectionPromise;
-  const result = await collection.updateOne(
-    {_id: new ObjectId(id)},
-    {$set: {username: newUsername, email: newEmail, verify: newVerify}},
-  );
-  const {nModified, ok} = result.result;
+): Promise<string> {
+  const getAuth = await testAuth(id, verify);
 
-  if (nModified === 1 && ok === 1) {
-    return responseMessage.success(true);
+  if (getAuth === message.SUCCESS) {
+    const collection = await collectionPromise;
+    const result = await collection.updateOne(
+      {_id: new ObjectId(id)},
+      {
+        $set: {username: newUsername, email: newEmail, verify: newVerify},
+      },
+    );
+    const {nModified, ok} = result.result;
+
+    if (nModified === 1 && ok === 1) {
+      return message.SUCCESS;
+    }
+
+    return message.SERVER_ERROR;
   }
 
-  console.error('update account error', result);
-  return responseMessage.generalError;
+  return getAuth;
 }
