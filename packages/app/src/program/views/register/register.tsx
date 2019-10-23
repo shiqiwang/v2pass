@@ -1,9 +1,12 @@
+// 如果一个人注册完第一步就退出去了，这种情况应当如何处理？
+
 import {Icon, Steps, message} from 'antd';
 import {RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import {createSecretKey, createVerify} from '../../auth';
 import {registerBaseInfoApi, registerValidatorApi} from '../../request';
 import {Router, router} from '../../router';
 
@@ -36,6 +39,7 @@ export default class Register extends Component<RegisterProps> {
 
   render(): ReactNode {
     const {one, two, three} = this.stepStatus;
+    const {secretKey} = this.factor;
 
     return (
       <div className="registerPage">
@@ -63,20 +67,16 @@ export default class Register extends Component<RegisterProps> {
             undefined
           )}
           {three === 'process' ? (
-            <StepThree backward={() => this.stepThreeBackward()} />
+            <StepThree
+              secretKey={secretKey}
+              backward={() => this.stepThreeBackward()}
+            />
           ) : (
             undefined
           )}
         </div>
-        <button onClick={event => this.onTest()}>click</button>
       </div>
     );
-  }
-
-  private onTest(): void {
-    chrome.storage.local.get(items => {
-      console.log('user info', items);
-    });
   }
 
   private stepOneForward(
@@ -93,6 +93,7 @@ export default class Register extends Component<RegisterProps> {
           this.updateFactor({
             email,
             username,
+            id: result.data.message,
           });
         } else {
           message.error(result.data.message);
@@ -104,21 +105,22 @@ export default class Register extends Component<RegisterProps> {
   }
 
   private stepTwoForward(password: Factor['password']): void {
-    // 有了加密后应当是verify!!!
-    registerValidatorApi(password)
+    const secretKey = createSecretKey();
+    const {username, email, id} = this.factor;
+    const verify = createVerify({id, email, secretKey, password});
+    registerValidatorApi(verify)
       .then(result => {
         if (result.data.code === 200) {
-          this.updateFactor({password});
-          this.updateStepStatus({
-            two: 'finish',
-            three: 'process',
-          });
-          const {username, email, id, secretKey} = this.factor;
           chrome.storage.local.set({
             username,
             email,
             id,
             secretKey,
+          });
+          this.updateFactor({secretKey});
+          this.updateStepStatus({
+            two: 'finish',
+            three: 'process',
           });
         } else {
           message.error(result.data.message);
