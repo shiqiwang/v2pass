@@ -1,6 +1,5 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import CryptoJS from 'crypto-js';
-import sha256 from 'crypto-js/sha256';
 import uuid from 'uuid';
 
 interface UnlockKeyFactor {
@@ -24,19 +23,20 @@ export function createSecretKey(): string {
 // 生成用户login, getData, updateData, updateAccount时验证身份的密钥
 export function createUnlockKey(factor: UnlockKeyFactor): string {
   const {id, secretKey, password, email} = factor;
-  const hashId = sha256(id.trim());
-  const hashSecretKey = sha256(secretKey.trim());
-  const hashPassword = sha256(password.trim());
-  const hashEmail = sha256(email.trim());
+  const hashId = CryptoJS.SHA256(id.trim());
+  const hashSecretKey = CryptoJS.SHA256(secretKey.trim());
+  const hashPassword = CryptoJS.SHA256(password.trim());
+  const hashEmail = CryptoJS.SHA256(email.trim());
   const plaintextKey = `${hashId}${hashSecretKey}${hashPassword}${hashEmail}`;
-  return sha256(plaintextKey).toString();
+  return CryptoJS.SHA256(plaintextKey).toString();
 }
 
 // 生成用户身份密钥的验证器
 export function createVerify(factor: UnlockKeyFactor): string {
   const unlockKey = createUnlockKey(factor);
   const saltRounds = 10;
-  const hash = bcrypt.hashSync(unlockKey, saltRounds);
+  const salt = bcrypt.genSaltSync(saltRounds);
+  const hash = bcrypt.hashSync(unlockKey, salt);
   return hash;
   // check unlockKey
   // bcrypt.compareSync(unlockKey, hash);
@@ -45,11 +45,11 @@ export function createVerify(factor: UnlockKeyFactor): string {
 // 生成加密，解密数据用的密钥
 export function createDataKey(factor: DataKeyFactor): string {
   const {id, secretKey, password} = factor;
-  const hashId = sha256(id.trim());
-  const hashSecretKey = sha256(secretKey.trim());
-  const hashPassword = sha256(password.trim());
+  const hashId = CryptoJS.SHA256(id.trim());
+  const hashSecretKey = CryptoJS.SHA256(secretKey.trim());
+  const hashPassword = CryptoJS.SHA256(password.trim());
   const plaintextKey = `${hashId}${hashSecretKey}${hashPassword}`;
-  return sha256(plaintextKey).toString();
+  return CryptoJS.SHA256(plaintextKey).toString();
 }
 
 export function encryptData(key: string, data: object): string {
