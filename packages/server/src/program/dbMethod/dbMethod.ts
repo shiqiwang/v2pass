@@ -34,7 +34,7 @@ async function testAuth(
   if (!result.length) {
     return {
       code: message.ERROR_CODE,
-      message: message.NOT_EXIST,
+      data: message.NOT_EXIST,
     };
   }
 
@@ -43,18 +43,18 @@ async function testAuth(
   if (!verify) {
     return {
       code: message.ERROR_CODE,
-      message: message.REGISTRATION_NOT_COMPLETED,
+      data: message.REGISTRATION_NOT_COMPLETED,
     };
   } else if (bcrypt.compareSync(unlockKey, verify)) {
     return {
       code: message.SUCCESS_CODE,
-      message: message.SUCCESS,
+      data: message.SUCCESS,
     };
   }
 
   return {
     code: message.ERROR_CODE,
-    message: message.AUTH_FAILED,
+    data: message.AUTH_FAILED,
   };
 }
 
@@ -67,13 +67,13 @@ export async function testUserNameAvailability(
   if (num) {
     return {
       code: message.ERROR_CODE,
-      message: message.USERNAME_EXIST,
+      data: message.USERNAME_EXIST,
     };
   }
 
   return {
     code: message.SUCCESS_CODE,
-    message: message.SUCCESS,
+    data: message.SUCCESS,
   };
 }
 
@@ -86,13 +86,13 @@ export async function testEmailAvailability(
   if (num) {
     return {
       code: message.ERROR_CODE,
-      message: message.EMAIL_EXIST,
+      data: message.EMAIL_EXIST,
     };
   }
 
   return {
     code: message.SUCCESS_CODE,
-    message: message.SUCCESS,
+    data: message.SUCCESS,
   };
 }
 
@@ -134,7 +134,7 @@ export async function registerBaseInfo(
 
   return {
     code: message.ERROR_CODE,
-    message: message.SERVER_ERROR,
+    data: message.SERVER_ERROR,
   };
 }
 
@@ -152,7 +152,7 @@ export async function register(
   if (nModified === 1 && ok === 1) {
     return {
       code: message.SUCCESS_CODE,
-      message: message.SUCCESS,
+      data: message.SUCCESS,
     };
   }
 
@@ -160,7 +160,7 @@ export async function register(
 
   return {
     code: message.ERROR_CODE,
-    message: message.SERVER_ERROR,
+    data: message.SERVER_ERROR,
   };
 }
 
@@ -173,7 +173,7 @@ export async function loginGetBaseInfo(
   if (!result.length) {
     return {
       code: message.ERROR_CODE,
-      message: message.NOT_EXIST,
+      data: message.NOT_EXIST,
     };
   }
 
@@ -235,7 +235,7 @@ export async function updateData(
     if (nModified === 1 && ok === 1) {
       return {
         code: message.SUCCESS_CODE,
-        message: message.SUCCESS,
+        data: message.SUCCESS,
       };
     }
 
@@ -243,7 +243,7 @@ export async function updateData(
 
     return {
       code: message.ERROR_CODE,
-      message: message.SERVER_ERROR,
+      data: message.SERVER_ERROR,
     };
   }
 
@@ -272,7 +272,7 @@ export async function updateAccount(
     if (nModified === 1 && ok === 1) {
       return {
         code: message.SUCCESS_CODE,
-        message: message.SUCCESS,
+        data: message.SUCCESS,
       };
     }
 
@@ -280,7 +280,7 @@ export async function updateAccount(
 
     return {
       code: message.ERROR_CODE,
-      message: message.SERVER_ERROR,
+      data: message.SERVER_ERROR,
     };
   }
 

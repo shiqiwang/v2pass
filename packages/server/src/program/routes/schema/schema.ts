@@ -31,11 +31,12 @@ export function testSchema(
   if (error) {
     return {
       code: ERROR_CODE,
-      message: PARAMS_VALIDATE_FAILED,
+      data: PARAMS_VALIDATE_FAILED,
     };
   }
 
   return {
     code: SUCCESS_CODE,
+    data: '',
   };
 }

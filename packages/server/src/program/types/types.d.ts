@@ -20,14 +20,7 @@ export interface UserDocument {
   data?: string;
 }
 
-interface ResponseMessage {
+export interface Response {
   code: number;
-  message: string;
+  data: string | Partial<User> | undefined;
 }
-
-interface ResponseData {
-  code: number;
-  data?: string | Partial<User>;
-}
-
-export type Response = ResponseMessage | ResponseData;
