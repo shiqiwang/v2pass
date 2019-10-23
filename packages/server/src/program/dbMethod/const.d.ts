@@ -9,3 +9,4 @@ export const REGISTRATION_NOT_COMPLETED = 'registration not completed';
 export const SERVER_ERROR = 'internal server error';
 export const PARAMS_VALIDATE_FAILED = 'params type validate failed';
 export const TIME_OUT = 'time out';
+export const REGISTRATION_HAS_COMPLETED = 'registration has completed';

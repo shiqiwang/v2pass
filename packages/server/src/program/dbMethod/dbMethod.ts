@@ -143,10 +143,24 @@ export async function register(
   verify: UserFactor['verify'],
 ): Promise<Response> {
   const collection = await collectionPromise;
-  const result = await collection.updateOne(
-    {_id: new ObjectId(id)},
-    {$set: {verify}},
-  );
+  const _id = new ObjectId(id);
+  const getInfo = await collection.find({_id}).toArray();
+
+  if (!getInfo.length) {
+    return {
+      code: message.ERROR_CODE,
+      data: message.NOT_EXIST,
+    };
+  }
+
+  if (getInfo[0].verify) {
+    return {
+      code: message.ERROR_CODE,
+      data: message.REGISTRATION_HAS_COMPLETED,
+    };
+  }
+
+  const result = await collection.updateOne({_id}, {$set: {verify}});
   const {nModified, ok} = result.result;
 
   if (nModified === 1 && ok === 1) {
