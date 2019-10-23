@@ -33,7 +33,7 @@ export const registerBaseInfoRoute: RequestHandler = (req, res) => {
     });
 };
 
-export const registerValidatorRoute: RequestHandler = (req, res) => {
+export const registerRoute: RequestHandler = (req, res) => {
   const paramsTest = testSchema(req.body, ['id', 'verify']);
 
   if (!paramsTest.code) {
