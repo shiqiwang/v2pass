@@ -9,7 +9,7 @@ import React, {
   ReactNode,
 } from 'react';
 
-import {VaultInfo} from '../../types/vault';
+import {VaultInfo} from '../../types';
 
 import {DrawerProps} from './types';
 
@@ -35,7 +35,7 @@ class NewVault extends Component<VaultFormProps> {
   get data(): VaultInfo {
     let {vault} = this.props;
 
-    if (!this.changedVaultId || this.changedVaultId !== vault._id) {
+    if (!this.changedVaultId || this.changedVaultId !== vault.id) {
       return vault;
     }
 
@@ -129,8 +129,8 @@ class NewVault extends Component<VaultFormProps> {
   ): void {
     let {vault} = this.props;
 
-    if (this.changedVaultId !== vault._id) {
-      this.changedVaultId = vault._id;
+    if (this.changedVaultId !== vault.id) {
+      this.changedVaultId = vault.id;
       this.changedVaultInfo = {};
     }
 

@@ -4,7 +4,7 @@ import {action, computed, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 
-import {FolderInfo} from '../../types/folder';
+import {FolderInfo} from '../../types';
 import {vaultInfoArray} from '../../util/splitData';
 
 import {DrawerProps} from './types';
@@ -27,7 +27,7 @@ class NewFolder extends Component<FolderFormProps> {
   get data(): FolderInfo {
     let {folder} = this.props;
 
-    if (!this.changedFolderId || this.changedFolderId !== folder._id) {
+    if (!this.changedFolderId || this.changedFolderId !== folder.id) {
       return folder;
     }
 
@@ -68,7 +68,7 @@ class NewFolder extends Component<FolderFormProps> {
                 onChange={value => this.onDataChange('vaultId', String(value))}
               >
                 {vaultInfoArray.map((item, index) => (
-                  <Option value={item._id} key={String(index)}>
+                  <Option value={item.id} key={String(index)}>
                     {item.name}
                   </Option>
                 ))}
@@ -133,8 +133,8 @@ class NewFolder extends Component<FolderFormProps> {
   ): void {
     let {folder} = this.props;
 
-    if (this.changedFolderId !== folder._id) {
-      this.changedFolderId = folder._id;
+    if (this.changedFolderId !== folder.id) {
+      this.changedFolderId = folder.id;
       this.changedFolderInfo = {};
     }
 

@@ -5,7 +5,7 @@ import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 import uuid from 'uuid';
 
-import Password, {PasswordItem} from '../../types/password';
+import {Password, PasswordItem} from '../../types';
 import {folderGistArray, targets, vaultGistArray} from '../../util/splitData';
 
 import {DrawerProps} from './types';
@@ -50,7 +50,7 @@ class NewItem extends Component<NewItemProps> {
   get data(): Password {
     let {password} = this.props;
 
-    if (this.changedItemId !== password._id) {
+    if (this.changedItemId !== password.id) {
       return password;
     }
 
@@ -104,7 +104,7 @@ class NewItem extends Component<NewItemProps> {
                 onChange={value => this.onDataChange('vaultId', String(value))}
               >
                 {vaultGistArray.map((vault, index) => (
-                  <Option value={vault._id} key={String(index)}>
+                  <Option value={vault.id} key={String(index)}>
                     {vault.name}
                   </Option>
                 ))}
@@ -120,7 +120,7 @@ class NewItem extends Component<NewItemProps> {
                 onChange={value => this.onDataChange('folderId', String(value))}
               >
                 {folderGistArray.map((folder, index) => (
-                  <Option value={folder._id} key={String(index)}>
+                  <Option value={folder.id} key={String(index)}>
                     {folder.name}
                   </Option>
                 ))}
@@ -136,7 +136,7 @@ class NewItem extends Component<NewItemProps> {
                 onChange={value => this.onDataChange('targetId', String(value))}
               >
                 {targets.map((target, index) => (
-                  <Option value={target._id} key={String(index)}>
+                  <Option value={target.id} key={String(index)}>
                     {target.displayName}
                   </Option>
                 ))}
@@ -159,19 +159,19 @@ class NewItem extends Component<NewItemProps> {
             )}
           </Form.Item>
           {items.map((item, index) => {
-            const {_id, type, label, value} = item;
+            const {id, type, label, value} = item;
 
             return (
               <Row className="item" key={String(index)}>
                 <Col span={5}>
                   <Form.Item>
-                    {getFieldDecorator(`${_id}type`, {
+                    {getFieldDecorator(`${id}type`, {
                       rules: [{required: true, message: 'type is needed!'}],
                       initialValue: type,
                     })(
                       <Select<ItemTypeValue>
                         onChange={value =>
-                          this.onChangePassItem(_id, 'type', value)
+                          this.onChangePassItem(id, 'type', value)
                         }
                       >
                         {itemType.map(item => (
@@ -185,7 +185,7 @@ class NewItem extends Component<NewItemProps> {
                 </Col>
                 <Col span={5} offset={1}>
                   <Form.Item>
-                    {getFieldDecorator(`${_id}label`, {
+                    {getFieldDecorator(`${id}label`, {
                       rules: [{required: true, message: 'label is needed!'}],
                       initialValue: label,
                     })(
@@ -193,11 +193,7 @@ class NewItem extends Component<NewItemProps> {
                         type="text"
                         placeholder="label"
                         onChange={event =>
-                          this.onChangePassItem(
-                            _id,
-                            'label',
-                            event.target.value,
-                          )
+                          this.onChangePassItem(id, 'label', event.target.value)
                         }
                       />,
                     )}
@@ -205,7 +201,7 @@ class NewItem extends Component<NewItemProps> {
                 </Col>
                 <Col span={9} offset={1}>
                   <Form.Item>
-                    {getFieldDecorator(`${_id}value`, {
+                    {getFieldDecorator(`${id}value`, {
                       rules: [{required: true, message: 'value is needed!'}],
                       initialValue: value,
                     })(
@@ -214,7 +210,7 @@ class NewItem extends Component<NewItemProps> {
                           placeholder="value"
                           onChange={event =>
                             this.onChangePassItem(
-                              _id,
+                              id,
                               'value',
                               event.target.value,
                             )
@@ -226,7 +222,7 @@ class NewItem extends Component<NewItemProps> {
                           type={type === 'password' ? 'password' : 'text'}
                           onChange={event =>
                             this.onChangePassItem(
-                              _id,
+                              id,
                               'value',
                               event.target.value,
                             )
@@ -242,7 +238,7 @@ class NewItem extends Component<NewItemProps> {
                       icon="minus"
                       shape="circle"
                       size="small"
-                      onClick={event => this.onReducePassItem(_id)}
+                      onClick={event => this.onReducePassItem(id)}
                     />
                   </Form.Item>
                 </Col>
@@ -271,7 +267,7 @@ class NewItem extends Component<NewItemProps> {
     this.updateData('items', [
       ...this.data.items,
       {
-        _id: uuid(),
+        id: uuid(),
         type: 'text',
         label: '',
         value: '',
@@ -279,12 +275,12 @@ class NewItem extends Component<NewItemProps> {
     ]);
   }
 
-  private onReducePassItem(id: PasswordItem['_id']): void {
-    this.updateData('items', this.data.items.filter(item => item._id !== id));
+  private onReducePassItem(id: PasswordItem['id']): void {
+    this.updateData('items', this.data.items.filter(item => item.id !== id));
   }
 
   private onChangePassItem<TKey extends 'type' | 'label' | 'value'>(
-    id: PasswordItem['_id'],
+    id: PasswordItem['id'],
     key: TKey,
     value: PasswordItem[TKey],
   ): void {
@@ -292,7 +288,7 @@ class NewItem extends Component<NewItemProps> {
       'items',
       this.data.items.map(
         (item): PasswordItem => {
-          if (item._id === id) {
+          if (item.id === id) {
             return {
               ...item,
               [key]: value,
@@ -329,8 +325,8 @@ class NewItem extends Component<NewItemProps> {
   ): void {
     let {password} = this.props;
 
-    if (this.changedItemId !== password._id) {
-      this.changedItemId = password._id;
+    if (this.changedItemId !== password.id) {
+      this.changedItemId = password.id;
       this.changedItemInfo = {};
     }
 

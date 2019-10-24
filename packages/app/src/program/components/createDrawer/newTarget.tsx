@@ -6,7 +6,7 @@ import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 import uuid from 'uuid';
 
-import Target, {TargetEntry} from '../../types/target';
+import {Target, TargetEntry} from '../../types';
 
 import {DrawerProps} from './types';
 
@@ -36,7 +36,7 @@ class NewTarget extends Component<TargetFormProps> {
   get data(): Target {
     let {target} = this.props;
 
-    if (this.changedTargetId !== target._id) {
+    if (this.changedTargetId !== target.id) {
       return target;
     }
 
@@ -85,13 +85,13 @@ class NewTarget extends Component<TargetFormProps> {
               <Row className="entry" key={String(index)}>
                 <Col span={6}>
                   <Form.Item>
-                    {getFieldDecorator(`${entry._id}type`, {
+                    {getFieldDecorator(`${entry.id}type`, {
                       rules: [{required: true, message: 'the type is needed!'}],
                       initialValue: entry.type,
                     })(
                       <Select<TargetStateValue>
                         onChange={value =>
-                          this.onChangeEntry(entry._id, 'type', value)
+                          this.onChangeEntry(entry.id, 'type', value)
                         }
                       >
                         {typeList.map(item => (
@@ -105,7 +105,7 @@ class NewTarget extends Component<TargetFormProps> {
                 </Col>
                 <Col span={14} offset={1}>
                   <Form.Item>
-                    {getFieldDecorator(`${entry._id}value`, {
+                    {getFieldDecorator(`${entry.id}value`, {
                       rules: [
                         {
                           required: true,
@@ -119,7 +119,7 @@ class NewTarget extends Component<TargetFormProps> {
                         placeholder="value"
                         onChange={event =>
                           this.onChangeEntry(
-                            entry._id,
+                            entry.id,
                             'value',
                             event.target.value,
                           )
@@ -134,7 +134,7 @@ class NewTarget extends Component<TargetFormProps> {
                       icon="minus"
                       shape="circle"
                       size="small"
-                      onClick={event => this.onReduceEntry(entry._id)}
+                      onClick={event => this.onReduceEntry(entry.id)}
                     />
                   </Form.Item>
                 </Col>
@@ -159,8 +159,8 @@ class NewTarget extends Component<TargetFormProps> {
     );
   }
 
-  // 类似target的entry和password的item是不是也需要添加_id呢，不然怎么做区分
-  // 这个_id能在前端产生吗
+  // 类似target的entry和password的item是不是也需要添加id呢，不然怎么做区分
+  // 这个id能在前端产生吗
 
   private onFormSubmit: FormEventHandler<HTMLFormElement> = event => {
     event.preventDefault();
@@ -172,27 +172,27 @@ class NewTarget extends Component<TargetFormProps> {
   };
 
   private onAddEntry(): void {
-    // 这个_id要怎么生成
+    // 这个id要怎么生成
 
     this.updateData('entries', [
       ...this.data.entries,
       {
-        _id: uuid(),
+        id: uuid(),
         type: 'website URL',
         value: '',
       },
     ]);
   }
 
-  private onReduceEntry(_id: TargetEntry['_id']): void {
+  private onReduceEntry(id: TargetEntry['id']): void {
     this.updateData(
       'entries',
-      this.data.entries.filter(entry => entry._id !== _id),
+      this.data.entries.filter(entry => entry.id !== id),
     );
   }
 
   private onChangeEntry<TKey extends 'type' | 'value'>(
-    id: TargetEntry['_id'],
+    id: TargetEntry['id'],
     key: TKey,
     value: TargetEntry[TKey],
   ): void {
@@ -200,7 +200,7 @@ class NewTarget extends Component<TargetFormProps> {
       'entries',
       this.data.entries.map(
         (entry): TargetEntry => {
-          if (entry._id === id) {
+          if (entry.id === id) {
             return {
               ...entry,
               [key]: value,
@@ -220,8 +220,8 @@ class NewTarget extends Component<TargetFormProps> {
   ): void {
     let {target} = this.props;
 
-    if (this.changedTargetId !== target._id) {
-      this.changedTargetId = target._id;
+    if (this.changedTargetId !== target.id) {
+      this.changedTargetId = target.id;
       this.changedTarget = {};
     }
 
