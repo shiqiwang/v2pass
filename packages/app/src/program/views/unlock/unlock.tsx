@@ -1,6 +1,6 @@
 import {Button, Col, Form, Icon, Input, Row} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
-import {RouteComponentProps} from 'boring-router-react';
+import {Link, RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {
@@ -28,7 +28,6 @@ class UnlockPage extends Component<UnlockPageProps> {
 
     return (
       <div className="unlockPage">
-        {/* <Link to={router.homepage}>home</Link> */}
         <Row type="flex" justify="center" align="middle" className="unlockPage">
           <Col span={24}>
             <Form
@@ -55,6 +54,7 @@ class UnlockPage extends Component<UnlockPageProps> {
                 <Button type="primary" htmlType="submit">
                   Unlock
                 </Button>
+                <Link to={router.register}>Register</Link>
               </Form.Item>
             </Form>
           </Col>

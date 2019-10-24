@@ -2,7 +2,7 @@
 
 import {Button, Form, Input, message} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
-import {RouteComponentProps} from 'boring-router-react';
+import {Link, RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {
@@ -88,9 +88,7 @@ class Login extends Component<LoginPageProps> {
             <Button type="primary" htmlType="submit">
               Login
             </Button>
-            <Button type="link" onClick={() => this.toRegisterPage()}>
-              register
-            </Button>
+            <Link to={router.register}>Register</Link>
           </Form.Item>
         </Form>
       </div>
@@ -136,10 +134,6 @@ class Login extends Component<LoginPageProps> {
       }
     });
   };
-
-  private toRegisterPage(): void {
-    router.register.$push();
-  }
 
   private onInputChange(
     label: FormDataLabelType,
