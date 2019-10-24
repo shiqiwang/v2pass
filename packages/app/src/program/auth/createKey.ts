@@ -2,26 +2,22 @@ import bcrypt from 'bcryptjs';
 import CryptoJS from 'crypto-js';
 import uuid from 'uuid';
 
-interface UnlockKeyFactor {
-  id: string;
-  secretKey: string;
-  password: string;
-  email: string;
-}
+import {
+  DataKeyFactor,
+  DerivedKey,
+  StorageInfo,
+  UnlockKeyVerifyFactor,
+  UserAvailableData,
+  UserSensitiveInfo,
+} from '../types';
 
-interface DataKeyFactor {
-  id: string;
-  secretKey: string;
-  password: string;
-}
-
-// 创建用户的secret key
-export function createSecretKey(): string {
+export function createSecretKey(): UserSensitiveInfo['secretKey'] {
   return uuid();
 }
 
-// 生成用户login, getData, updateData, updateAccount时验证身份的密钥
-export function createUnlockKey(factor: UnlockKeyFactor): string {
+export function createUnlockKey(
+  factor: UnlockKeyVerifyFactor,
+): DerivedKey['unlockKey'] {
   const {id, secretKey, password, email} = factor;
   const hashId = CryptoJS.SHA256(id.trim());
   const hashSecretKey = CryptoJS.SHA256(secretKey.trim());
@@ -31,19 +27,17 @@ export function createUnlockKey(factor: UnlockKeyFactor): string {
   return CryptoJS.SHA256(plaintextKey).toString();
 }
 
-// 生成用户身份密钥的验证器
-export function createVerify(factor: UnlockKeyFactor): string {
+export function createVerify(
+  factor: UnlockKeyVerifyFactor,
+): DerivedKey['verify'] {
   const unlockKey = createUnlockKey(factor);
   const saltRounds = 10;
   const salt = bcrypt.genSaltSync(saltRounds);
   const hash = bcrypt.hashSync(unlockKey, salt);
   return hash;
-  // check unlockKey
-  // bcrypt.compareSync(unlockKey, hash);
 }
 
-// 生成加密，解密数据用的密钥
-export function createDataKey(factor: DataKeyFactor): string {
+export function createDataKey(factor: DataKeyFactor): DerivedKey['dataKey'] {
   const {id, secretKey, password} = factor;
   const hashId = CryptoJS.SHA256(id.trim());
   const hashSecretKey = CryptoJS.SHA256(secretKey.trim());
@@ -52,11 +46,17 @@ export function createDataKey(factor: DataKeyFactor): string {
   return CryptoJS.SHA256(plaintextKey).toString();
 }
 
-export function encryptData(key: string, data: object): string {
-  return CryptoJS.AES.encrypt(JSON.stringify(data), key).toString();
+export function encryptData(
+  dataKey: DerivedKey['dataKey'],
+  data: UserAvailableData['data'],
+): StorageInfo['data'] {
+  return CryptoJS.AES.encrypt(JSON.stringify(data), dataKey).toString();
 }
 
-export function decryptData(key: string, cipherText: string): object {
-  const bytes = CryptoJS.AES.decrypt(cipherText, key);
+export function decryptData(
+  dataKey: DerivedKey['dataKey'],
+  cipherData: StorageInfo['data'],
+): UserAvailableData['data'] {
+  const bytes = CryptoJS.AES.decrypt(cipherData, dataKey);
   return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 }
