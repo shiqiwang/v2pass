@@ -1,9 +1,16 @@
 import lodash from 'lodash';
 
-import Folder, {FolderGist, FolderInfo} from '../types/folder';
-import Password, {PasswordGist} from '../types/password';
-import Target from '../types/target';
-import Vault, {VaultGist, VaultInfo} from '../types/vault';
+import {
+  Folder,
+  FolderGist,
+  FolderInfo,
+  Password,
+  PasswordGist,
+  Target,
+  Vault,
+  VaultGist,
+  VaultInfo,
+} from '../types';
 import {userData} from '../views/homepage/testData';
 
 // 真实数据需要从本地导入并解密
