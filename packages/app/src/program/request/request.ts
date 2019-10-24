@@ -29,7 +29,7 @@ export function registerBaseInfoApi(
 }
 
 export function registerValidatorApi(verify: Verify): Promise<any> {
-  return axios.post(`${serverUrl}registerValidator`, {
+  return axios.post(`${serverUrl}register`, {
     verify,
   });
 }
@@ -52,7 +52,6 @@ export function getDataApi(): Promise<any> {
   return axios.get(`${serverUrl}getData`);
 }
 
-// 这里data应当是加密后的base64
 export function updateDataApi(data: string): Promise<any> {
   return axios.post(`${serverUrl}updateData`, {
     data,
