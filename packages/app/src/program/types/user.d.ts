@@ -1,50 +1,61 @@
 import {Vault, Target} from './index';
 
+export type Id = string;
+export type Username = string;
+export type Email = string;
+export type SecretKey = string;
+export type StoreData = string;
+export type Password = string;
+export type UsageData =
+  | {
+      targets: Target[];
+      vaults: Vault[];
+    }
+  | undefined;
+export type Verify = string;
+export type UnlockKey = string;
+export type DataKey = string;
+
 export interface StorageInfo {
-  id: string;
-  username: string;
-  email: string;
-  secretKey: string;
-  data: string; // encrypt data
+  id: Id;
+  username: Username;
+  email: Email;
+  secretKey: SecretKey;
+  data: StoreData; // encrypt data
 }
 
 export interface UserBaseInfo {
-  id: string;
-  username: string;
-  email: string;
+  id: Id;
+  username: Username;
+  email: Email;
 }
 
 export interface UserSensitiveInfo {
-  password: string;
-  secretKey: string;
+  password: Password;
+  secretKey: SecretKey;
 }
 
 export type UserInfo = UserBaseInfo & UserSensitiveInfo;
 
 export interface UserAvailableData extends UserBaseInfo {
-  data:
-    | {
-        targets: Target[];
-        vaults: Vault[];
-      }
-    | undefined;
+  data: UsageData;
 }
 
 export interface UnlockKeyVerifyFactor {
-  id: string;
-  email: string;
-  password: string;
-  secretKey: string;
+  id: Id;
+  email: Email;
+  password: Password;
+  secretKey: SecretKey;
 }
 
 export interface DataKeyFactor {
-  id: string;
-  password: string;
-  secretKey: string;
+  id: Id;
+  password: Password;
+  secretKey: SecretKey;
 }
 
 export interface DerivedKey {
-  unlockKey: string;
-  verify: string;
-  dataKey: string;
+  unlockKey: UnlockKey;
+  verify: Verify;
+  dataKey: DataKey;
 }

@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-import {UserInfo, Verify} from '../types/user';
+import {Email, Id, StoreData, UnlockKey, Username, Verify} from '../types';
 
 const serverUrl = 'http://localhost:3000/';
 
-export function testUsernameApi(username: UserInfo['username']): Promise<any> {
+export function testUsernameApi(username: Username): Promise<any> {
   return axios.get(
     `${serverUrl}testUsernameAvailability?username=${encodeURIComponent(
       username,
@@ -12,15 +12,15 @@ export function testUsernameApi(username: UserInfo['username']): Promise<any> {
   );
 }
 
-export function testEmailApi(email: UserInfo['email']): Promise<any> {
+export function testEmailApi(email: Email): Promise<any> {
   return axios.get(
     `${serverUrl}testEmailAvailability?email=${encodeURIComponent(email)}`,
   );
 }
 
 export function registerBaseInfoApi(
-  username: UserInfo['username'],
-  email: UserInfo['email'],
+  username: Username,
+  email: Email,
 ): Promise<any> {
   return axios.post(`${serverUrl}registerBaseInfo`, {
     username,
@@ -28,42 +28,53 @@ export function registerBaseInfoApi(
   });
 }
 
-export function registerValidatorApi(verify: Verify): Promise<any> {
+export function registerApi(id: Id, verify: Verify): Promise<any> {
   return axios.post(`${serverUrl}register`, {
+    id,
     verify,
   });
 }
 
-export function loginGetBaseInfo(username: UserInfo['username']): Promise<any> {
+export function loginGetBaseInfo(username: Username): Promise<any> {
   return axios.post(`${serverUrl}loginGetBaseInfo`, {username});
 }
 
-export function loginApi(
-  username: UserInfo['username'],
-  unlockKey: string,
-): Promise<any> {
+export function loginApi(id: Id, unlockKey: UnlockKey): Promise<any> {
   return axios.post(`${serverUrl}login`, {
-    username,
+    id,
     unlockKey,
   });
 }
 
-export function getDataApi(): Promise<any> {
-  return axios.get(`${serverUrl}getData`);
+export function getDataApi(id: Id, unlockKey: UnlockKey): Promise<any> {
+  return axios.post(`${serverUrl}getData`, {
+    id,
+    unlockKey,
+  });
 }
 
-export function updateDataApi(data: string): Promise<any> {
+export function updateDataApi(
+  id: Id,
+  unlockKey: UnlockKey,
+  data: StoreData,
+): Promise<any> {
   return axios.post(`${serverUrl}updateData`, {
+    id,
+    unlockKey,
     data,
   });
 }
 
 export function updateAccountApi(
-  username: UserInfo['username'],
-  email: UserInfo['email'],
+  id: Id,
+  unlockKey: UnlockKey,
+  username: Username,
+  email: Email,
   verify: Verify,
 ): Promise<any> {
   return axios.post(`${serverUrl}updateAccount`, {
+    id,
+    unlockKey,
     username,
     email,
     verify,
