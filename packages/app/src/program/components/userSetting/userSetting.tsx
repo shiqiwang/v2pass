@@ -9,13 +9,13 @@ import React, {
   ReactNode,
 } from 'react';
 
-import {UserInfo} from '../../types';
+import {UserBaseInfo} from '../../types';
 
 interface UserSettingProps extends FormComponentProps {
-  user: UserInfo;
+  user: UserBaseInfo;
 }
 
-interface UserSettingStates extends UserInfo {
+interface UserSettingStates extends UserBaseInfo {
   newPassword: string;
   checkPassword: string;
 }

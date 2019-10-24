@@ -41,9 +41,8 @@ class HomePage extends Component<HomePageProps> {
           <Col span={2} className="options">
             <UserSetting
               user={{
-                _id: userData._id,
+                id: userData.id,
                 username: userData.username,
-                unlockKey: userData.unlockKey,
                 email: userData.email,
               }}
             />
