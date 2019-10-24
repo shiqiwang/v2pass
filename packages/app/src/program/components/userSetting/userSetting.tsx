@@ -9,14 +9,7 @@ import React, {
   ReactNode,
 } from 'react';
 
-import User from '../../types/user';
-
-interface UserInfo {
-  _id: User['_id'];
-  username: User['username'];
-  unlockKey: User['unlockKey'];
-  email: User['email'];
-}
+import {UserInfo} from '../../types';
 
 interface UserSettingProps extends FormComponentProps {
   user: UserInfo;

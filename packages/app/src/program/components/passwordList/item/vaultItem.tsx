@@ -9,15 +9,15 @@ import InductionContainer from './inductionContainer/inductionContainer';
 @observer
 class VaultItem extends Component<VaultProps> {
   render(): ReactNode {
-    const {name, _id} = this.props.vault;
+    const {name, id} = this.props.vault;
     const {activeItem, vault, clickItem} = this.props;
-    const isActive = activeItem.activeVault === vault._id;
+    const isActive = activeItem.activeVault === vault.id;
 
     return (
       <InductionContainer isActive={isActive} isShow>
         <Row
           onClick={() =>
-            clickItem({activeFolder: '', activePassword: '', activeVault: _id})
+            clickItem({activeFolder: '', activePassword: '', activeVault: id})
           }
         >
           <Col span={2}>

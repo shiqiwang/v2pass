@@ -1,10 +1,7 @@
-import Password from '../../../types/password';
-import Target from '../../../types/target';
-import Folder from '../../../types/folder';
-import Vault from '../../../types/vault';
+import {Password, Target, Folder, Vault} from '../../../types';
 
 interface ActiveItem {
-  activePassword: Password['_id'];
+  activePassword: Password['id'];
   activeFolder: Password['folderId'];
   activeVault: Password['vaultId'];
 }

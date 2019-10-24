@@ -1,4 +1,4 @@
-import {UserInfo} from '../../types/user';
+import {UserInfo} from '../../types';
 
 type ValidateStatus = 'success' | 'warning' | 'validating' | 'error';
 type StepStatus = 'error' | 'wait' | 'process' | 'finish' | undefined;
@@ -22,20 +22,11 @@ export interface BaseInfo {
 
 export interface PasswordInfo {
   password: {
-    value: string;
+    value: UserInfo['password'];
     validateStatus: ValidateStatus;
   };
   repeatPassword: {
-    value: string;
+    value: UserInfo['password'];
     validateStatus: ValidateStatus;
   };
-}
-
-export interface Factor {
-  id: UserInfo['_id'];
-  username: UserInfo['username'];
-  password: string;
-  email: UserInfo['email'];
-  secretKey: string;
-  salt: string;
 }

@@ -11,9 +11,9 @@ class FolderItem extends Component<FolderProps> {
   render(): ReactNode {
     const {activeItem, clickItem, folder} = this.props;
     const {activeFolder, activeVault} = activeItem;
-    const {_id, vaultId} = folder;
+    const {id, vaultId} = folder;
     const isShow = vaultId === activeVault;
-    const isActive = _id === activeFolder && isShow;
+    const isActive = id === activeFolder && isShow;
 
     return (
       <InductionContainer isActive={isActive} isShow={isShow}>
@@ -21,7 +21,7 @@ class FolderItem extends Component<FolderProps> {
           onClick={() =>
             clickItem({
               activePassword: '',
-              activeFolder: folder._id,
+              activeFolder: folder.id,
               activeVault: folder.vaultId,
             })
           }

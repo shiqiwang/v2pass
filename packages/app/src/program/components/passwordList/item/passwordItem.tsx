@@ -28,11 +28,11 @@ class PasswordItem extends Component<PasswordProps> {
     );
     const {clickItem, activeItem, asSearch} = this.props;
     const {activePassword, activeFolder, activeVault} = activeItem;
-    const {pass_name, _id, folderId, vaultId} = this.props.password;
+    const {pass_name, id, folderId, vaultId} = this.props.password;
     const isShow =
       asSearch || (activeFolder === folderId && activeVault === vaultId);
     const isActive =
-      activePassword === _id &&
+      activePassword === id &&
       activeFolder === folderId &&
       activeVault === vaultId;
 
@@ -58,7 +58,7 @@ class PasswordItem extends Component<PasswordProps> {
           onClick={() =>
             clickItem({
               activeFolder: folderId,
-              activePassword: _id,
+              activePassword: id,
               activeVault: vaultId,
             })
           }
