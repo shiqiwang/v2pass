@@ -2,8 +2,7 @@ import {computed} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import Target from '../../types/target';
-import Vault from '../../types/vault';
+import {Target, Vault} from '../../types';
 import {findFolder, findPassword, findVault} from '../../util/util';
 import {ActiveItem} from '../passwordList/types/types';
 

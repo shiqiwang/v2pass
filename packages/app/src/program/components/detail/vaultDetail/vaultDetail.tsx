@@ -3,7 +3,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import Vault from '../../../types/vault';
+import {Vault} from '../../../types';
 import NewVault from '../../createDrawer/newVault';
 
 import './vaultDetail.less';
@@ -22,14 +22,14 @@ class VaultDetail extends Component<VaultProps> {
   private modalVisible = false;
 
   render(): ReactNode {
-    const {_id, name, type, describe} = this.props.vault;
+    const {id, name, type, describe} = this.props.vault;
 
     return (
       <div className="vaultDetail">
         <Modal
           title="Delete Vault"
           visible={this.modalVisible}
-          onOk={() => this.deleteVault(_id)}
+          onOk={() => this.deleteVault(id)}
           onCancel={this.cancelDelete}
         >
           <p>you will lost all the data in this vault, continue?</p>
@@ -40,7 +40,7 @@ class VaultDetail extends Component<VaultProps> {
             onClose: this.onDrawerClose,
             title: 'Edit Vault',
           }}
-          vault={{name, _id, type, describe}}
+          vault={{name, id, type, describe}}
         />
         <div className="header">
           <Row>
@@ -54,7 +54,7 @@ class VaultDetail extends Component<VaultProps> {
           <Icon
             type="setting"
             className="setting"
-            onClick={() => this.onDrawerShow(_id)}
+            onClick={() => this.onDrawerShow(id)}
           />
           <Icon type="delete" className="delete" onClick={this.showModal} />
         </div>
@@ -65,8 +65,8 @@ class VaultDetail extends Component<VaultProps> {
     );
   }
 
-  private deleteVault = (_id: string): void => {
-    console.log('delete vault', _id);
+  private deleteVault = (id: string): void => {
+    console.log('delete vault', id);
     this.updateModalVisible(false);
   };
 
@@ -82,8 +82,8 @@ class VaultDetail extends Component<VaultProps> {
     this.updateDrawerVisible(false);
   };
 
-  private onDrawerShow = (_id: Vault['_id']): void => {
-    console.log(_id);
+  private onDrawerShow = (id: Vault['id']): void => {
+    console.log(id);
     this.updateDrawerVisible(true);
   };
 

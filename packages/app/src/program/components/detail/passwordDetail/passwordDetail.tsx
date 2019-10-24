@@ -3,8 +3,7 @@ import {computed} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import Password from '../../../types/password';
-import Target from '../../../types/target';
+import {Password, Target} from '../../../types';
 import {findTarget} from '../../../util/util';
 import CopyableContainer from '../../copyableContainer/copyableContainer';
 

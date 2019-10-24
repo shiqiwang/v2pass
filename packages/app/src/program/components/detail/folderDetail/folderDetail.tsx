@@ -3,7 +3,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import Folder from '../../../types/folder';
+import {Folder} from '../../../types';
 import NewFolder from '../../createDrawer/newFolder';
 
 import './folderDetail.less';
@@ -20,14 +20,14 @@ class FolderDetail extends Component<FolderDetailProps> {
   private modalVisible = false;
 
   render(): ReactNode {
-    const {name, _id, describe, vaultId} = this.props.folder;
+    const {name, id, describe, vaultId} = this.props.folder;
 
     return (
       <div className="folderDetail">
         <Modal
           title="Delete Folder"
           visible={this.modalVisible}
-          onOk={() => this.deleteFolder(_id)}
+          onOk={() => this.deleteFolder(id)}
           onCancel={this.cancelDelete}
         >
           <p>you will lost all the data in this folder, continue?</p>
@@ -38,7 +38,7 @@ class FolderDetail extends Component<FolderDetailProps> {
             onClose: this.onDrawerClose,
             title: 'Edit Folder',
           }}
-          folder={{_id, describe, name, vaultId}}
+          folder={{id, describe, name, vaultId}}
         />
         <div className="header">
           <Row>
@@ -54,7 +54,7 @@ class FolderDetail extends Component<FolderDetailProps> {
           <Icon
             type="setting"
             className="setting"
-            onClick={() => this.onDrawerShow(_id)}
+            onClick={() => this.onDrawerShow(id)}
           />
           <Icon type="delete" className="delete" onClick={this.showModal} />
         </div>
@@ -69,12 +69,12 @@ class FolderDetail extends Component<FolderDetailProps> {
     this.updateDrawerVisible(false);
   };
 
-  private onDrawerShow = (folderId: Folder['_id']): void => {
+  private onDrawerShow = (folderId: Folder['id']): void => {
     console.log(folderId);
     this.updateDrawerVisible(true);
   };
 
-  private deleteFolder = (folderId: Folder['_id']): void => {
+  private deleteFolder = (folderId: Folder['id']): void => {
     console.log('delete folder', folderId);
     this.updateModalVisible(false);
   };
