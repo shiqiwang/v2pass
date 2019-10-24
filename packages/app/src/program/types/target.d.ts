@@ -1,5 +1,5 @@
-export default interface Target {
-  _id: string;
+export interface Target {
+  id: string;
   displayName: string;
   entries: TargetEntry[];
 }
@@ -10,19 +10,19 @@ export type TargetEntry =
   | IOSAppTargetEntry;
 
 interface WebsiteTargetEntry {
-  _id: string;
+  id: string;
   type: 'website URL';
   value: string;
 }
 
 interface AndroidAppTargetEntry {
-  _id: string;
+  id: string;
   type: 'android-app ID';
   value: string;
 }
 
 interface IOSAppTargetEntry {
-  _id: string;
+  id: string;
   type: 'ios-app ID';
   value: string;
 }

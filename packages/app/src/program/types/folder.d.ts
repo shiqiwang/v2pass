@@ -1,7 +1,7 @@
-import Password from './password';
+import {Password} from './index';
 
 export interface FolderGist {
-  _id: string;
+  id: string;
   vaultId: string;
   name: string;
 }
@@ -9,6 +9,6 @@ export interface FolderGist {
 export interface FolderInfo extends FolderGist {
   describe: string;
 }
-export default interface Folder extends FolderInfo {
+export interface Folder extends FolderInfo {
   passwords: Password[];
 }

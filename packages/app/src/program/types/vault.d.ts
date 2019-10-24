@@ -1,9 +1,9 @@
 import {Nominal} from 'tslang';
-import Folder from './folder';
+import {Folder} from './index';
 type UserId = Nominal<string, 'user-id'>;
 
 interface SharedVault {
-  _id: string;
+  id: string;
   name: string;
   type: 'shared';
   describe: string;
@@ -13,7 +13,7 @@ interface SharedVault {
 }
 
 export interface VaultGist {
-  _id: string;
+  id: string;
   name: string;
 }
 
@@ -22,6 +22,6 @@ export interface VaultInfo extends VaultGist {
   describe: string;
 }
 
-export default interface Vault extends VaultInfo {
+export interface Vault extends VaultInfo {
   folders: Folder[];
 }
