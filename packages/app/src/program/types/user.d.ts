@@ -8,7 +8,7 @@ export interface StorageInfo {
   username: string;
   email: string;
   secretKey: string;
-  data: Buffer;
+  data: string;
 }
 
 export interface UserInfo {
