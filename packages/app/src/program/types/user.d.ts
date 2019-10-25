@@ -1,11 +1,11 @@
 import {Vault, Target} from './index';
 
-export type Id = string;
+export type UserId = string;
 export type Username = string;
 export type Email = string;
 export type SecretKey = string;
 export type StoreData = string;
-export type Password = string;
+export type MasterPassword = string;
 export type UsageData =
   | {
       targets: Target[];
@@ -17,7 +17,7 @@ export type UnlockKey = string;
 export type DataKey = string;
 
 export interface StorageInfo {
-  id: Id;
+  id: UserId;
   username: Username;
   email: Email;
   secretKey: SecretKey;
@@ -25,13 +25,13 @@ export interface StorageInfo {
 }
 
 export interface UserBaseInfo {
-  id: Id;
+  id: UserId;
   username: Username;
   email: Email;
 }
 
 export interface UserSensitiveInfo {
-  password: Password;
+  password: MasterPassword;
   secretKey: SecretKey;
 }
 
@@ -42,15 +42,15 @@ export interface UserAvailableData extends UserBaseInfo {
 }
 
 export interface UnlockKeyVerifyFactor {
-  id: Id;
+  id: UserId;
   email: Email;
-  password: Password;
+  password: MasterPassword;
   secretKey: SecretKey;
 }
 
 export interface DataKeyFactor {
-  id: Id;
-  password: Password;
+  id: UserId;
+  password: MasterPassword;
   secretKey: SecretKey;
 }
 

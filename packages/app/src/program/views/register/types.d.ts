@@ -1,4 +1,4 @@
-import {UserInfo} from '../../types';
+import {Username, Email, MasterPassword} from '../../types';
 
 type ValidateStatus = 'success' | 'warning' | 'validating' | 'error';
 type StepStatus = 'error' | 'wait' | 'process' | 'finish' | undefined;
@@ -11,22 +11,30 @@ interface IStepStatus {
 
 export interface BaseInfo {
   username: {
-    value: UserInfo['username'];
+    value: Username;
     validateStatus: ValidateStatus;
+    help: string;
   };
   email: {
-    value: UserInfo['email'];
+    value: Email;
+    validateStatus: ValidateStatus;
+    help: string;
+  };
+}
+
+export interface MasterPasswordInfo {
+  password: {
+    value: MasterPassword;
+    validateStatus: ValidateStatus;
+  };
+  repeatMasterPassword: {
+    value: MasterPassword;
     validateStatus: ValidateStatus;
   };
 }
 
-export interface PasswordInfo {
-  password: {
-    value: UserInfo['password'];
-    validateStatus: ValidateStatus;
-  };
-  repeatPassword: {
-    value: UserInfo['password'];
-    validateStatus: ValidateStatus;
-  };
+export interface EmailVerify {
+  email: Email;
+  code: number;
+  tick: Date;
 }

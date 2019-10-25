@@ -14,7 +14,7 @@ import React, {
 
 import {getDataApi, loginApi, loginGetBaseInfo} from '../../request';
 import {Router, router} from '../../router';
-import {StorageInfo} from '../../types/user';
+import {StorageInfo} from '../../types';
 
 import './login.less';
 
