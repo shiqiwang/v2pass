@@ -4,7 +4,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {DELETE, EDIT} from '../../../const/const';
+import {DELETE, EDIT} from '../../../const';
 import NewItem from '../../createDrawer/newItem';
 import {PasswordProps} from '../types/types';
 

@@ -62,12 +62,19 @@ export async function testUserNameAvailability(
   username: UserFactor['username'],
 ): Promise<Response> {
   const collection = await collectionPromise;
-  const num = await collection.countDocuments({username});
+  const result = await collection.find({username}).toArray();
 
-  if (num) {
+  if (result.length) {
+    if (result[0].verify) {
+      return {
+        code: message.ERROR_CODE,
+        data: message.USERNAME_EXIST,
+      };
+    }
+
     return {
-      code: message.ERROR_CODE,
-      data: message.USERNAME_EXIST,
+      code: message.SUCCESS_CODE,
+      data: message.REGISTRATION_NOT_COMPLETED,
     };
   }
 
@@ -81,12 +88,19 @@ export async function testEmailAvailability(
   email: UserFactor['email'],
 ): Promise<Response> {
   const collection = await collectionPromise;
-  const num = await collection.countDocuments({email});
+  const result = await collection.find({email}).toArray();
 
-  if (num) {
+  if (result.length) {
+    if (result[0].verify) {
+      return {
+        code: message.ERROR_CODE,
+        data: message.EMAIL_EXIST,
+      };
+    }
+
     return {
-      code: message.ERROR_CODE,
-      data: message.EMAIL_EXIST,
+      code: message.SUCCESS_CODE,
+      data: message.REGISTRATION_NOT_COMPLETED,
     };
   }
 
