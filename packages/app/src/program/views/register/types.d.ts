@@ -22,12 +22,12 @@ export interface BaseInfo {
   };
 }
 
-export interface MasterPasswordInfo {
+export interface PasswordInfo {
   password: {
     value: MasterPassword;
     validateStatus: ValidateStatus;
   };
-  repeatMasterPassword: {
+  repeatPassword: {
     value: MasterPassword;
     validateStatus: ValidateStatus;
   };

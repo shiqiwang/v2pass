@@ -95,9 +95,6 @@ class StepTwo extends Component<IStepTwoProps> {
       password.validateStatus === 'success' &&
       repeatPassword.validateStatus === 'success'
     ) {
-      // 生成verify
-      // 提交注册数据 verify
-      // 转步骤3
       this.props.forward(this.data.password.value);
     } else {
       message.error('correct error, submit again');

@@ -1,7 +1,10 @@
 import {Button} from 'antd';
+import {Link} from 'boring-router-react';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
+
+import {router} from '../../../router';
 
 import './step.less';
 
@@ -28,10 +31,19 @@ export default class StepThree extends Component<IStepThreeProps> {
         >
           Backward
         </Button>
-        <Button type="primary" icon="download">
+        <Button
+          type="primary"
+          icon="download"
+          onClick={() => this.onDownload()}
+        >
           download
         </Button>
+        <Link to={router.login}>login</Link>
       </div>
     );
+  }
+
+  private onDownload(): void {
+    // 还要生成pdf文件才行
   }
 }
