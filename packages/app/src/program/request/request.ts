@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import {Email, Id, StoreData, UnlockKey, Username, Verify} from '../types';
+import {Email, StoreData, UnlockKey, UserId, Username, Verify} from '../types';
 
 const serverUrl = 'http://localhost:3000/';
 
@@ -28,7 +28,7 @@ export function registerBaseInfoApi(
   });
 }
 
-export function registerApi(id: Id, verify: Verify): Promise<any> {
+export function registerApi(id: UserId, verify: Verify): Promise<any> {
   return axios.post(`${serverUrl}register`, {
     id,
     verify,
@@ -39,14 +39,14 @@ export function loginGetBaseInfo(username: Username): Promise<any> {
   return axios.post(`${serverUrl}loginGetBaseInfo`, {username});
 }
 
-export function loginApi(id: Id, unlockKey: UnlockKey): Promise<any> {
+export function loginApi(id: UserId, unlockKey: UnlockKey): Promise<any> {
   return axios.post(`${serverUrl}login`, {
     id,
     unlockKey,
   });
 }
 
-export function getDataApi(id: Id, unlockKey: UnlockKey): Promise<any> {
+export function getDataApi(id: UserId, unlockKey: UnlockKey): Promise<any> {
   return axios.post(`${serverUrl}getData`, {
     id,
     unlockKey,
@@ -54,7 +54,7 @@ export function getDataApi(id: Id, unlockKey: UnlockKey): Promise<any> {
 }
 
 export function updateDataApi(
-  id: Id,
+  id: UserId,
   unlockKey: UnlockKey,
   data: StoreData,
 ): Promise<any> {
@@ -66,7 +66,7 @@ export function updateDataApi(
 }
 
 export function updateAccountApi(
-  id: Id,
+  id: UserId,
   unlockKey: UnlockKey,
   username: Username,
   email: Email,
