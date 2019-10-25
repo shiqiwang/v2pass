@@ -2,43 +2,48 @@ import {Button, Form, Input, message} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
-import React, {
-  ChangeEvent,
-  Component,
-  FormEventHandler,
-  ReactNode,
-} from 'react';
+import React, {Component, FormEventHandler, ReactNode} from 'react';
 
-import {testEmailApi, testUsernameApi} from '../../../request';
-import {BaseInfo} from '../types';
+import {REGISTRATION_NOT_COMPLETED} from '../../../const';
+import {
+  registerBaseInfoApi,
+  testEmailApi,
+  testUsernameApi,
+} from '../../../request';
+import {Email, Username} from '../../../types';
+import {BaseInfo, EmailVerify} from '../types';
 
 import './step.less';
 
 type BaseInfoLabel = keyof BaseInfo;
 
 interface IStepOneProps extends FormComponentProps {
-  forward(
-    username: BaseInfo['username']['value'],
-    email: BaseInfo['email']['value'],
-  ): void;
+  forward(username: Username, email: Email): void;
 }
 
 @observer
-class StepOne extends Component<IStepOneProps> {
+export default class StepOne extends Component<IStepOneProps> {
   @observable
   private data: BaseInfo = {
     username: {
       value: '',
       validateStatus: 'warning',
+      help: '',
     },
     email: {
       value: '',
       validateStatus: 'warning',
+      help: '',
     },
   };
 
+  private emailVerify: EmailVerify = {
+    email: '',
+    code: 0,
+    tick: new Date(),
+  };
+
   render(): ReactNode {
-    const {getFieldDecorator} = this.props.form!;
     const {username, email} = this.data;
 
     return (
@@ -48,31 +53,30 @@ class StepOne extends Component<IStepOneProps> {
             label="username"
             hasFeedback
             validateStatus={username.validateStatus}
+            help={username.help}
           >
-            {getFieldDecorator('username', {
-              initialValue: username.value,
-            })(
-              <Input
-                type="text"
-                onChange={event => this.onInputChange('username', event)}
-                onBlur={event => this.onTestUsername(event.target.value)}
-              />,
-            )}
+            <Input
+              type="text"
+              value={username.value}
+              onChange={event => this.onUsernameChange(event.target.value)}
+              onBlur={event => this.onTestUsername(event.target.value)}
+            />
           </Form.Item>
           <Form.Item
             label="email"
             hasFeedback
             validateStatus={email.validateStatus}
+            help={email.help}
           >
-            {getFieldDecorator('email', {
-              initialValue: email.value,
-            })(
-              <Input
-                type="text"
-                onChange={event => this.onInputChange('email', event)}
-                onBlur={event => this.onTestEmail(event.target.value)}
-              />,
-            )}
+            <Input
+              type="text"
+              value={email.value}
+              onChange={event => this.onEmailChange(event.target.value)}
+              onBlur={event => this.onTestEmail(event.target.value)}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button onClick={() => this.onSendVerifyEmail()}>邮箱验证</Button>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
@@ -92,113 +96,97 @@ class StepOne extends Component<IStepOneProps> {
       username.validateStatus === 'success' &&
       email.validateStatus === 'success'
     ) {
-      // 提交注册数据 username email
-      // 服务器返回id
-      // 验证email是该用户的email
-      // 把数据传出至上层组件
-      // 转步骤2
       const {username, email} = this.data;
       this.props.forward(username.value, email.value);
-    } else {
-      message.error('correct error, submit again');
     }
   };
 
-  private onInputChange(
-    label: BaseInfoLabel,
-    event: ChangeEvent<HTMLInputElement>,
-  ): void {
-    this.updateData(label, event.target.value);
-  }
-
-  private onTestUsername(value: BaseInfo['username']['value']): void {
-    this.updateStatus('username', 'validating');
-    const {setFields} = this.props.form!;
+  private onUsernameChange(value: Username): void {
     const pattern = /^\w{5,30}$/;
 
     if (!pattern.test(value)) {
-      this.updateStatus('username', 'error');
-      setFields({
-        username: {
-          errors: [{message: 'length 5~30, contain a-z A-Z _'}],
-        },
+      this.updateData('username', {
+        value,
+        validateStatus: 'error',
+        help: 'length 5~30, contain a-z A-Z _',
       });
     } else {
-      testUsernameApi(value)
-        .then(result => {
-          if (result.data.code === 200) {
-            this.updateStatus('username', 'success');
-            setFields({
-              username: {
-                errors: [{message: ''}],
-              },
-            });
-          } else {
-            this.updateStatus('username', 'error');
-            setFields({
-              username: {
-                errors: [{message: 'username exist, use another one'}],
-              },
-            });
-          }
-        })
-        .catch(error => {
-          console.error('test username', error);
-        });
+      this.updateData('username', {
+        value,
+        validateStatus: 'success',
+        help: '',
+      });
     }
   }
 
-  private onTestEmail(value: BaseInfo['email']['value']): void {
-    this.updateStatus('email', 'validating');
-    const {setFields} = this.props.form!;
+  private onTestUsername(value: Username): void {
+    this.updateData('username', {validateStatus: 'validating', help: ''});
+    testUsernameApi(value)
+      .then(result => {
+        const {code, data} = result.data;
+
+        if (code) {
+          if (data === REGISTRATION_NOT_COMPLETED) {
+            // 未注册完成的账号
+          } else {
+            this.updateData('username', {validateStatus: 'success', help: ''});
+          }
+        } else {
+          this.updateData('username', {validateStatus: 'error', help: data});
+        }
+      })
+      .catch(error => message.error(error));
+  }
+
+  private onEmailChange(value: Email): void {
     const pattern = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$/;
 
     if (!pattern.test(value)) {
-      this.updateStatus('email', 'error');
-      setFields({
-        email: {
-          errors: [{message: 'input valid email address'}],
-        },
+      this.updateData('email', {
+        value,
+        validateStatus: 'error',
+        help: 'wrong format',
       });
     } else {
-      testEmailApi(value)
-        .then(result => {
-          if (result.data.code === 200) {
-            this.updateStatus('email', 'success');
-            setFields({
-              email: {
-                errors: [{message: ''}],
-              },
-            });
-          } else {
-            this.updateStatus('email', 'error');
-            setFields({
-              email: {
-                errors: [{message: 'email exist, use another one'}],
-              },
-            });
-          }
-        })
-        .catch(error => {
-          console.error('test email', error);
-        });
+      this.updateData('email', {
+        value,
+        validateStatus: 'success',
+        help: '',
+      });
     }
+  }
+
+  private onSendVerifyEmail(): void {
+    // 把用户邮箱发送至node，node发送邮件
+  }
+
+  private onTestEmail(value: Email): void {
+    this.updateData('email', {validateStatus: 'validating', help: ''});
+    testEmailApi(value)
+      .then(result => {
+        const {code, data} = result.data;
+
+        if (code) {
+          if (data === REGISTRATION_NOT_COMPLETED) {
+            // 未注册完成的账号
+          } else {
+            this.updateData('email', {validateStatus: 'success', help: ''});
+          }
+        } else {
+          this.updateData('email', {validateStatus: 'error', help: data});
+        }
+      })
+      .catch(error => message.error(error));
   }
 
   @action
   private updateData<TLabel extends BaseInfoLabel>(
     label: TLabel,
-    value: BaseInfo[TLabel]['value'],
+    value: Partial<BaseInfo[TLabel]>,
   ): void {
-    this.data[label]['value'] = value;
-  }
-
-  private updateStatus<TLabel extends BaseInfoLabel>(
-    label: TLabel,
-    value: BaseInfo[TLabel]['validateStatus'],
-  ): void {
-    this.data[label]['validateStatus'] = value;
+    this.data[label] = {
+      ...this.data[label],
+      ...value,
+    };
   }
 }
-
-export default Form.create<IStepOneProps>({name: 'step_one'})(StepOne);
