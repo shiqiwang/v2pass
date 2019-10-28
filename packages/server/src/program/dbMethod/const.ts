@@ -10,3 +10,5 @@ export const SERVER_ERROR = 'internal server error';
 export const PARAMS_VALIDATE_FAILED = 'params type validate failed';
 export const TIME_OUT = 'time out';
 export const REGISTRATION_HAS_COMPLETED = 'registration has completed';
+export const SESSION_EXPIRES = 'session expires';
+export const CODE_ERROR = 'email verify code error';
