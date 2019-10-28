@@ -72,9 +72,19 @@ export async function testUserNameAvailability(
       };
     }
 
+    const removeNotCompleted = await collection.deleteOne({username});
+    const {ok, n} = removeNotCompleted.result;
+
+    if (ok === 1 && n === 1) {
+      return {
+        code: message.SUCCESS_CODE,
+        data: message.SUCCESS,
+      };
+    }
+
     return {
-      code: message.SUCCESS_CODE,
-      data: message.REGISTRATION_NOT_COMPLETED,
+      code: message.ERROR_CODE,
+      data: message.USERNAME_EXIST,
     };
   }
 
@@ -98,9 +108,19 @@ export async function testEmailAvailability(
       };
     }
 
+    const removeNotCompleted = await collection.deleteOne({email});
+    const {n, ok} = removeNotCompleted.result;
+
+    if (ok === 1 && n === 1) {
+      return {
+        code: message.SUCCESS_CODE,
+        data: message.SUCCESS,
+      };
+    }
+
     return {
-      code: message.SUCCESS_CODE,
-      data: message.REGISTRATION_NOT_COMPLETED,
+      code: message.ERROR_CODE,
+      data: message.EMAIL_EXIST,
     };
   }
 
