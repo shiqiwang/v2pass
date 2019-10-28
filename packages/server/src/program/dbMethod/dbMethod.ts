@@ -72,7 +72,10 @@ export async function testUserNameAvailability(
       };
     }
 
-    const removeNotCompleted = await collection.deleteOne({username});
+    const removeNotCompleted = await collection.deleteOne({
+      username,
+      verify: {$exists: false},
+    });
     const {ok, n} = removeNotCompleted.result;
 
     if (ok === 1 && n === 1) {
@@ -108,7 +111,10 @@ export async function testEmailAvailability(
       };
     }
 
-    const removeNotCompleted = await collection.deleteOne({email});
+    const removeNotCompleted = await collection.deleteOne({
+      email,
+      verify: {$exists: false},
+    });
     const {n, ok} = removeNotCompleted.result;
 
     if (ok === 1 && n === 1) {
