@@ -9,6 +9,8 @@ interface IStepStatus {
   three: StepStatus;
 }
 
+export type Code = number | '';
+
 export interface BaseInfo {
   username: {
     value: Username;
@@ -17,6 +19,11 @@ export interface BaseInfo {
   };
   email: {
     value: Email;
+    validateStatus: ValidateStatus;
+    help: string;
+  };
+  code: {
+    value: Code;
     validateStatus: ValidateStatus;
     help: string;
   };
@@ -31,10 +38,4 @@ export interface PasswordInfo {
     value: MasterPassword;
     validateStatus: ValidateStatus;
   };
-}
-
-export interface EmailVerify {
-  email: Email;
-  code: number;
-  tick: Date;
 }

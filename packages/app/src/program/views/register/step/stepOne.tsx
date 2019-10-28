@@ -1,24 +1,20 @@
-import {Button, Form, Input, message} from 'antd';
-import {FormComponentProps} from 'antd/lib/form';
+import {Button, Col, Form, Input, Row, message} from 'antd';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 
-import {REGISTRATION_NOT_COMPLETED} from '../../../const';
-import {
-  registerBaseInfoApi,
-  testEmailApi,
-  testUsernameApi,
-} from '../../../request';
+import {emailVerifyApi, testEmailApi, testUsernameApi} from '../../../request';
 import {Email, Username} from '../../../types';
-import {BaseInfo, EmailVerify} from '../types';
+import {BaseInfo} from '../types';
 
 import './step.less';
 
+import {buttonLayout, formItemLayout} from './layout';
+
 type BaseInfoLabel = keyof BaseInfo;
 
-interface IStepOneProps extends FormComponentProps {
-  forward(username: Username, email: Email): void;
+interface IStepOneProps {
+  forward(username: Username, email: Email, code: number): void;
 }
 
 @observer
@@ -35,20 +31,23 @@ export default class StepOne extends Component<IStepOneProps> {
       validateStatus: 'warning',
       help: '',
     },
-  };
-
-  private emailVerify: EmailVerify = {
-    email: '',
-    code: 0,
-    tick: new Date(),
+    code: {
+      value: '',
+      validateStatus: 'warning',
+      help: '',
+    },
   };
 
   render(): ReactNode {
-    const {username, email} = this.data;
+    const {username, email, code} = this.data;
 
     return (
       <div className="registerPageStep">
-        <Form className="registerPageForm" onSubmit={this.onFormSubmit}>
+        <Form
+          className="registerPageForm"
+          onSubmit={this.onFormSubmit}
+          {...formItemLayout}
+        >
           <Form.Item
             label="username"
             hasFeedback
@@ -56,7 +55,6 @@ export default class StepOne extends Component<IStepOneProps> {
             help={username.help}
           >
             <Input
-              type="text"
               value={username.value}
               onChange={event => this.onUsernameChange(event.target.value)}
               onBlur={event => this.onTestUsername(event.target.value)}
@@ -69,16 +67,31 @@ export default class StepOne extends Component<IStepOneProps> {
             help={email.help}
           >
             <Input
-              type="text"
               value={email.value}
               onChange={event => this.onEmailChange(event.target.value)}
               onBlur={event => this.onTestEmail(event.target.value)}
             />
           </Form.Item>
-          <Form.Item>
-            <Button onClick={() => this.onSendVerifyEmail()}>邮箱验证</Button>
+          <Form.Item
+            label="code"
+            validateStatus={code.validateStatus}
+            help={code.help}
+          >
+            <Row gutter={10}>
+              <Col span={16}>
+                <Input
+                  value={code.value}
+                  onChange={event => this.onCodeChange(event.target.value)}
+                />
+              </Col>
+              <Col span={8}>
+                <Button onClick={() => this.onSendVerifyEmail()}>
+                  获取验证码
+                </Button>
+              </Col>
+            </Row>
           </Form.Item>
-          <Form.Item>
+          <Form.Item {...buttonLayout}>
             <Button type="primary" htmlType="submit">
               Next
             </Button>
@@ -90,14 +103,17 @@ export default class StepOne extends Component<IStepOneProps> {
 
   private onFormSubmit: FormEventHandler<HTMLFormElement> = event => {
     event.preventDefault();
-    const {username, email} = this.data;
+    const {username, email, code} = this.data;
 
     if (
       username.validateStatus === 'success' &&
-      email.validateStatus === 'success'
+      email.validateStatus === 'success' &&
+      code.validateStatus === 'success'
     ) {
       const {username, email} = this.data;
-      this.props.forward(username.value, email.value);
+      this.props.forward(username.value, email.value, Number(code.value));
+    } else {
+      message.error('correct values');
     }
   };
 
@@ -126,11 +142,7 @@ export default class StepOne extends Component<IStepOneProps> {
         const {code, data} = result.data;
 
         if (code) {
-          if (data === REGISTRATION_NOT_COMPLETED) {
-            // 未注册完成的账号
-          } else {
-            this.updateData('username', {validateStatus: 'success', help: ''});
-          }
+          this.updateData('username', {validateStatus: 'success', help: ''});
         } else {
           this.updateData('username', {validateStatus: 'error', help: data});
         }
@@ -156,10 +168,6 @@ export default class StepOne extends Component<IStepOneProps> {
     }
   }
 
-  private onSendVerifyEmail(): void {
-    // 把用户邮箱发送至node，node发送邮件
-  }
-
   private onTestEmail(value: Email): void {
     this.updateData('email', {validateStatus: 'validating', help: ''});
     testEmailApi(value)
@@ -167,16 +175,50 @@ export default class StepOne extends Component<IStepOneProps> {
         const {code, data} = result.data;
 
         if (code) {
-          if (data === REGISTRATION_NOT_COMPLETED) {
-            // 未注册完成的账号
-          } else {
-            this.updateData('email', {validateStatus: 'success', help: ''});
-          }
+          this.updateData('email', {validateStatus: 'success', help: ''});
         } else {
           this.updateData('email', {validateStatus: 'error', help: data});
         }
       })
       .catch(error => message.error(error));
+  }
+
+  private onSendVerifyEmail(): void {
+    const {value} = this.data.email;
+    emailVerifyApi(value)
+      .then(result => {
+        const {code, data} = result.data;
+
+        if (code) {
+          message.success('email send successfully');
+        } else {
+          message.error(data);
+        }
+      })
+      .catch(error => message.error(error));
+  }
+
+  private onCodeChange(value: string): void {
+    const code = Number(value);
+
+    if (code) {
+      this.updateData('code', {
+        value: code,
+        help: '',
+        validateStatus: 'success',
+      });
+    } else if (value === '') {
+      this.updateData('code', {
+        value: '',
+        help: '',
+        validateStatus: 'warning',
+      });
+    } else {
+      this.updateData('code', {
+        help: 'code should be number',
+        validateStatus: 'error',
+      });
+    }
   }
 
   @action

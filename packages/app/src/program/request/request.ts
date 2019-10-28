@@ -18,13 +18,19 @@ export function testEmailApi(email: Email): Promise<any> {
   );
 }
 
+export function emailVerifyApi(email: Email): Promise<any> {
+  return axios.get(`${serverUrl}sendEmail?email=${encodeURIComponent(email)}`);
+}
+
 export function registerBaseInfoApi(
   username: Username,
   email: Email,
+  code: number,
 ): Promise<any> {
   return axios.post(`${serverUrl}registerBaseInfo`, {
     username,
     email,
+    code,
   });
 }
 
