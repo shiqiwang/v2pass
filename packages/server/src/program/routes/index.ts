@@ -5,3 +5,4 @@ export * from './update';
 export * from './pretreat';
 export * from './login';
 export * from './schema';
+export * from './sendEmail';

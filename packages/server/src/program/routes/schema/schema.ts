@@ -4,7 +4,14 @@ import lodash from 'lodash';
 import {ERROR_CODE, PARAMS_VALIDATE_FAILED, SUCCESS_CODE} from '../../dbMethod';
 import {Response, UserFactor} from '../../types';
 
-type Params = 'id' | 'username' | 'email' | 'data' | 'unlockKey' | 'verify';
+type Params =
+  | 'id'
+  | 'username'
+  | 'email'
+  | 'data'
+  | 'unlockKey'
+  | 'verify'
+  | 'code';
 
 const factor = {
   id: Joi.string().required(),
@@ -19,6 +26,10 @@ const factor = {
     .required(),
   unlockKey: Joi.string().required(),
   verify: Joi.string().required(),
+  code: Joi.number()
+    .max(100000)
+    .min(10000)
+    .required(),
 };
 
 export function testSchema(
