@@ -17,41 +17,69 @@ function globalError(str: string): void {
   message.error(str);
 }
 
-export function testUsernameApi(username: Username): Promise<any> {
-  return axios.get(
+export async function testUsernameApi(username: Username): Promise<any> {
+  const result = await axios.get(
     `${serverUrl}testUsernameAvailability?username=${encodeURIComponent(
       username,
     )}`,
   );
+  return result.data;
 }
 
-export function testEmailApi(email: Email): Promise<any> {
-  return axios.get(
+export async function testEmailApi(email: Email): Promise<any> {
+  const result = await axios.get(
     `${serverUrl}testEmailAvailability?email=${encodeURIComponent(email)}`,
   );
+  return result.data;
 }
 
-export function emailVerifyApi(email: Email): Promise<any> {
-  return axios.get(`${serverUrl}sendEmail?email=${encodeURIComponent(email)}`);
+export async function emailVerifyApi(email: Email): Promise<any> {
+  const result = await axios.get(
+    `${serverUrl}sendEmail?email=${encodeURIComponent(email)}`,
+  );
+  const {code, data} = result.data;
+
+  if (code) {
+    return true;
+  }
+
+  globalError(data);
+  return false;
 }
 
-export function registerBaseInfoApi(
+export async function registerBaseInfoApi(
   username: Username,
   email: Email,
   code: EmailVerifyCode,
 ): Promise<any> {
-  return axios.post(`${serverUrl}registerBaseInfo`, {
+  const result = await axios.post(`${serverUrl}registerBaseInfo`, {
     username,
     email,
     code,
   });
+  const {data} = result;
+
+  if (data.code) {
+    return data.data;
+  }
+
+  globalError(data.data);
+  return false;
 }
 
-export function registerApi(id: UserId, verify: Verify): Promise<any> {
-  return axios.post(`${serverUrl}register`, {
+export async function registerApi(id: UserId, verify: Verify): Promise<any> {
+  const result = await axios.post(`${serverUrl}register`, {
     id,
     verify,
   });
+  const {code, data} = result.data;
+
+  if (code) {
+    return true;
+  }
+
+  globalError(data);
+  return false;
 }
 
 export async function loginGetBaseInfo(username: Username): Promise<any> {
