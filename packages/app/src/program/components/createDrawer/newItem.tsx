@@ -6,7 +6,7 @@ import React, {Component, FormEventHandler, ReactNode} from 'react';
 import uuid from 'uuid';
 
 import {Password, PasswordItem} from '../../types';
-import {folderGistArray, targets, vaultGistArray} from '../../util/splitData';
+import {folderGistArray, targets, vaultGistArray} from '../../util';
 
 import {DrawerProps} from './types';
 

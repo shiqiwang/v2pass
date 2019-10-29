@@ -1,2 +1,2 @@
-export * from './splitData';
 export * from './decomposeData';
+export * from './filterData';

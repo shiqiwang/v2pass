@@ -5,7 +5,7 @@ import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 
 import {FolderInfo} from '../../types';
-import {vaultInfoArray} from '../../util/splitData';
+import {vaultInfoArray} from '../../util';
 
 import {DrawerProps} from './types';
 
