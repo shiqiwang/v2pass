@@ -1,5 +1,3 @@
-/*global chrome*/
-
 import {Button, Form, Input, message} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
 import {Link, RouteComponentProps} from 'boring-router-react';
@@ -12,9 +10,10 @@ import React, {
   ReactNode,
 } from 'react';
 
+import {createUnlockKey} from '../../auth';
 import {getDataApi, loginApi, loginGetBaseInfo} from '../../request';
 import {Router, router} from '../../router';
-import {StorageInfo} from '../../types';
+import {MasterPassword, SecretKey, Username} from '../../types';
 
 import './login.less';
 
@@ -23,9 +22,9 @@ export interface LoginPageProps
     RouteComponentProps<Router['login']> {}
 
 interface FormData {
-  username: StorageInfo['username'];
-  password: string;
-  secretKey: StorageInfo['secretKey'];
+  username: Username;
+  password: MasterPassword;
+  secretKey: SecretKey;
 }
 
 type FormDataLabelType = keyof FormData;
@@ -46,14 +45,13 @@ class Login extends Component<LoginPageProps> {
     return (
       <div className="loginPage">
         <Form className="loginForm" onSubmit={this.onFormSubmit}>
-          <Form.Item label="user name">
+          <Form.Item label="username">
             {getFieldDecorator('username', {
               rules: [{required: true, message: 'Please input your username!'}],
               initialValue: username,
             })(
               <Input
                 type="text"
-                placeholder="user name"
                 onChange={event => this.onInputChange('username', event)}
               />,
             )}
@@ -65,7 +63,6 @@ class Login extends Component<LoginPageProps> {
             })(
               <Input
                 type="password"
-                placeholder="password"
                 onChange={event => this.onInputChange('password', event)}
               />,
             )}
@@ -79,13 +76,12 @@ class Login extends Component<LoginPageProps> {
             })(
               <Input
                 type="input"
-                placeholder="secret key"
                 onChange={event => this.onInputChange('secretKey', event)}
               />,
             )}
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" className="loginButton">
               Login
             </Button>
             <Link to={router.register}>Register</Link>
@@ -104,31 +100,51 @@ class Login extends Component<LoginPageProps> {
       if (!error) {
         loginGetBaseInfo(username)
           .then(result => {
-            const {data} = result;
+            const {code, data} = result.data;
 
-            if (data.code === 200) {
-              const {email, id} = data.message;
-              console.log(email, id);
-              // email, id, secret key, password
-              // 这里后面应当是计算出的unlockKey！！！
-              loginApi(username, password)
+            if (code) {
+              const {email, id} = data;
+              const unlockKey = createUnlockKey({
+                id,
+                email,
+                secretKey,
+                password,
+              });
+              loginApi(id, unlockKey)
                 .then(result => {
-                  if (result.data.code === 200) {
-                    // 获取数据
+                  const {data, code} = result.data;
+
+                  if (code) {
+                    getDataApi(id, unlockKey)
+                      .then(result => {
+                        const {data, code} = result.data;
+
+                        if (code) {
+                          chrome.storage.local.set({
+                            username,
+                            email,
+                            id,
+                            secretKey,
+                            data,
+                          });
+                          router.homepage.$push();
+                        } else {
+                          message.error(data);
+                        }
+                      })
+                      .catch(error => message.error(error.message));
                   } else {
-                    message.error(result.data.message);
+                    message.error(data);
                   }
                 })
                 .catch(error => {
-                  console.error('login error', error);
                   message.error(error.message);
                 });
             } else {
-              message.error(data.message);
+              message.error(data);
             }
           })
           .catch(error => {
-            console.error('login error', error);
             message.error(error.message);
           });
       }
