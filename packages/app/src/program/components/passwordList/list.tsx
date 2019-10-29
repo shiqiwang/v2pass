@@ -3,7 +3,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {findByName} from '../../util/util';
+import {findByName} from '../../util';
 
 import PasswordList from './list/passwordList';
 import VaultList from './list/vaultList';
@@ -69,10 +69,10 @@ class List extends Component<ListProps> {
     const result = findByName(value, this.props.vaults);
 
     if (value && result.length) {
-      const {_id, folderId, vaultId} = result[0];
+      const {id, folderId, vaultId} = result[0];
       item = {
         activeFolder: folderId,
-        activePassword: _id,
+        activePassword: id,
         activeVault: vaultId,
       };
     }

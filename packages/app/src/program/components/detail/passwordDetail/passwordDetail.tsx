@@ -4,7 +4,7 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import {Password, Target} from '../../../types';
-import {findTarget} from '../../../util/util';
+import {findTarget} from '../../../util';
 import CopyableContainer from '../../copyableContainer/copyableContainer';
 
 import './passwordDetail.less';
