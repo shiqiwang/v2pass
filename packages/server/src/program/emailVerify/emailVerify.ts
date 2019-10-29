@@ -18,7 +18,7 @@ const resSuccess: Response = {
 
 export async function emailVerify(
   email: UserFactor['email'],
-  code: number,
+  code: string,
 ): Promise<Response> {
   const transporter = nodemailer.createTransport({
     service: 'Hotmail',
@@ -41,6 +41,8 @@ export async function emailVerify(
   return resError;
 }
 
-export function createRandomCode(): number {
-  return Math.floor(Math.random() * 100000);
+export function createRandomCode(): string {
+  const num = Math.floor(Math.random() * 100000).toString();
+  const str = num.toString().padStart(5, '0');
+  return str;
 }

@@ -26,9 +26,8 @@ const factor = {
     .required(),
   unlockKey: Joi.string().required(),
   verify: Joi.string().required(),
-  code: Joi.number()
-    .max(100000)
-    .min(10000)
+  code: Joi.string()
+    .length(5)
     .required(),
 };
 
