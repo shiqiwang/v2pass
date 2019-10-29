@@ -47,3 +47,4 @@
 ## todo list
 
 - debounce，很多接口都要设置 debounce，限制调用频率
+- download，自动生成和下载 secret key

@@ -120,6 +120,7 @@ export default class Register extends Component<RegisterProps> {
         if (code) {
           this.updateFactor({secretKey});
           // 注册成功，自动下载secretKey
+          // session会因为调用api而刷新吗，5分钟
           this.updateStepStatus({
             two: 'finish',
             three: 'process',
