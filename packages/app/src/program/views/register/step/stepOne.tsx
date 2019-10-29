@@ -139,7 +139,7 @@ export default class StepOne extends Component<IStepOneProps> {
     this.updateData('username', {validateStatus: 'validating', help: ''});
     testUsernameApi(value)
       .then(result => {
-        const {code, data} = result.data;
+        const {code, data} = result;
 
         if (code) {
           this.updateData('username', {validateStatus: 'success', help: ''});
@@ -172,7 +172,7 @@ export default class StepOne extends Component<IStepOneProps> {
     this.updateData('email', {validateStatus: 'validating', help: ''});
     testEmailApi(value)
       .then(result => {
-        const {code, data} = result.data;
+        const {code, data} = result;
 
         if (code) {
           this.updateData('email', {validateStatus: 'success', help: ''});
@@ -187,12 +187,8 @@ export default class StepOne extends Component<IStepOneProps> {
     const {value} = this.data.email;
     emailVerifyApi(value)
       .then(result => {
-        const {code, data} = result.data;
-
-        if (code) {
+        if (result) {
           message.success('email send successfully');
-        } else {
-          message.error(data);
         }
       })
       .catch(error => message.error(error));

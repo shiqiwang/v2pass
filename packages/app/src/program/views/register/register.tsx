@@ -89,19 +89,15 @@ export default class Register extends Component<RegisterProps> {
   ): void {
     registerBaseInfoApi(username, email, code)
       .then(result => {
-        const {code, data} = result.data;
-
-        if (code) {
+        if (result) {
           this.updateStepStatus({
             one: 'finish',
             two: 'process',
           });
           this.updateFactor({
             email,
-            id: data.id,
+            id: result.id,
           });
-        } else {
-          message.error(data);
         }
       })
       .catch(error => {
@@ -115,9 +111,7 @@ export default class Register extends Component<RegisterProps> {
     const verify = createVerify({id, email, secretKey, password});
     registerApi(id, verify)
       .then(result => {
-        const {code, data} = result.data;
-
-        if (code) {
+        if (result) {
           this.updateFactor({secretKey});
           // 注册成功，自动下载secretKey
           // session会因为调用api而刷新吗，5分钟
@@ -125,8 +119,6 @@ export default class Register extends Component<RegisterProps> {
             two: 'finish',
             three: 'process',
           });
-        } else {
-          message.error(data);
         }
       })
       .catch(error => {
