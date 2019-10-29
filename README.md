@@ -43,3 +43,7 @@
 1. login 意味着，用户 storage 中丢失了存储的所有东西，用户需要输入 username，password，secretKey 认证身份，获取用户基本信息和数据
 2. unlock 意味着，用户 storage 中有 username，email，id，secretKey, data 这些基础的用户信息，但由于会话过期，，只需要用户输入 password 解密 storage 中的 data 即可。
 3. 数据应存储在 local（只在登录的某一个设备上）中，而不是 sync（会随 google 账号同步至不同设备），数据存储在本地则可以支持离线使用，但在有网络时，需要每隔一段时间进行同步（login/unlock 时如果有网络则可以同步一次？）。
+
+## todo list
+
+- debounce，很多接口都要设置 debounce，限制调用频率
