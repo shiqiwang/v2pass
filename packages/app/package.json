@@ -10,6 +10,9 @@
     "watch:program": "parcel watch --out-dir bld/program --public-url /bld/program src/program/index.html",
     "build:background": "parcel build --out-dir bld/background src/background/background.ts"
   },
+  "browserslist": [
+    "last 1 chrome version"
+  ],
   "dependencies": {
     "@types/axios": "^0.14.0",
     "@types/bcryptjs": "^2.4.2",
