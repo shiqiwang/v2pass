@@ -1,59 +1,41 @@
-import {ActiveItem} from '../components/passwordList/types/types';
-import {Folder, Password, Target, Vault} from '../types';
-// 目前data是用自己的test数据，后面数据应当从sessionStorage本地存储中获取
-// sessionStorage够用吗？
-// sessionStorage中存储的数据也应该是加密的吧，拿出来后再解密到数据变量中？
+import lodash from 'lodash';
 
-// 以下方法需要更改以下，数据在本地后，把util弄成类似于增删查改request的文件
-export function findTarget(targetId: string, targets: Target[]): Target {
-  return targets.filter(target => target.id === targetId)[0];
-}
+import {
+  Folder,
+  FolderGist,
+  FolderInfo,
+  Password,
+  PasswordGist,
+  Target,
+  Vault,
+  VaultGist,
+  VaultInfo,
+} from '../types';
+import {userData} from '../views/homepage/testData';
 
-export function findByName(name: string, vaults: Vault[]): Password[] {
-  return vaults
-    .map(vault => vault.folders.map(folder => folder.passwords))
-    .flat(2)
-    .filter(password => password.pass_name.includes(name));
-}
+// 真实数据需要从本地导入并解密
+// 拆解数据先搁在这里，万一以后想用呢
+export const targets: Target[] = userData.data.targets;
 
-export function findVault(vaults: Vault[], id: Vault['id']): Vault | undefined {
-  return vaults.filter(vault => vault.id === id)[0];
-}
+export const vaults: Vault[] = userData.data.vaults;
+export const vaultInfoArray: VaultInfo[] = vaults.map(vault =>
+  lodash.omit(vault, ['folders']),
+);
+export const vaultGistArray: VaultGist[] = vaultInfoArray.map(vault =>
+  lodash.omit(vault, ['describe', 'type']),
+);
 
-export function findFolder(
-  vaults: Vault[],
-  id: Folder['id'],
-  vaultId: Folder['vaultId'],
-): Folder | undefined {
-  const targetVault = vaults.filter(vault => vault.id === vaultId)[0];
+export const folders: Folder[] = vaults.map(vault => vault.folders).flat();
+export const folderInfoArray: FolderInfo[] = folders.map(folder =>
+  lodash.omit(folder, ['passwords']),
+);
+export const folderGistArray: FolderGist[] = folderInfoArray.map(folder =>
+  lodash.omit(folder, ['describe']),
+);
 
-  if (targetVault) {
-    return targetVault.folders.filter(folder => folder.id === id)[0];
-  }
-
-  return undefined;
-}
-
-export function findPassword(
-  vaults: Vault[],
-  activeItem: ActiveItem,
-): Password | undefined {
-  const {activeFolder, activePassword, activeVault} = activeItem;
-  const targetVault = vaults.filter(vault => vault.id === activeVault)[0];
-
-  if (!targetVault) {
-    return undefined;
-  }
-
-  const targetFolder = targetVault.folders.filter(
-    folder => folder.id === activeFolder,
-  )[0];
-
-  if (!targetFolder) {
-    return undefined;
-  }
-
-  return targetFolder.passwords.filter(
-    password => password.id === activePassword,
-  )[0];
-}
+export const passwords: Password[] = folders
+  .map(folder => folder.passwords)
+  .flat();
+export const passwordInfoArray: PasswordGist[] = passwords.map(password =>
+  lodash.omit(password, ['targetId', 'items']),
+);
