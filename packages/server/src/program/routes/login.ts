@@ -6,7 +6,7 @@ import {testSchema} from './schema';
 
 const resError = {
   code: ERROR_CODE,
-  message: SERVER_ERROR,
+  data: SERVER_ERROR,
 };
 
 export const loginGetBaseInfoRoute: RequestHandler = (req, res) => {

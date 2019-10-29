@@ -98,55 +98,9 @@ class Login extends Component<LoginPageProps> {
       const {password, username, secretKey} = values;
 
       if (!error) {
-        loginGetBaseInfo(username)
-          .then(result => {
-            const {code, data} = result.data;
-
-            if (code) {
-              const {email, id} = data;
-              const unlockKey = createUnlockKey({
-                id,
-                email,
-                secretKey,
-                password,
-              });
-              loginApi(id, unlockKey)
-                .then(result => {
-                  const {data, code} = result.data;
-
-                  if (code) {
-                    getDataApi(id, unlockKey)
-                      .then(result => {
-                        const {data, code} = result.data;
-
-                        if (code) {
-                          chrome.storage.local.set({
-                            username,
-                            email,
-                            id,
-                            secretKey,
-                            data,
-                          });
-                          router.homepage.$push();
-                        } else {
-                          message.error(data);
-                        }
-                      })
-                      .catch(error => message.error(error.message));
-                  } else {
-                    message.error(data);
-                  }
-                })
-                .catch(error => {
-                  message.error(error.message);
-                });
-            } else {
-              message.error(data);
-            }
-          })
-          .catch(error => {
-            message.error(error.message);
-          });
+        this.login(username, password, secretKey).catch(error =>
+          message.error(error),
+        );
       }
     });
   };
@@ -156,6 +110,29 @@ class Login extends Component<LoginPageProps> {
     event: ChangeEvent<HTMLInputElement>,
   ): void {
     this.updateData(label, event.target.value);
+  }
+
+  private async login(
+    username: Username,
+    password: MasterPassword,
+    secretKey: SecretKey,
+  ): Promise<void> {
+    const baseInfo = await loginGetBaseInfo(username);
+
+    if (baseInfo) {
+      const {id, email} = baseInfo;
+      const unlockKey = createUnlockKey({id, email, secretKey, password});
+      const loginResult = await loginApi(id, unlockKey);
+
+      if (loginResult) {
+        const data = await getDataApi(id, unlockKey);
+
+        if (data) {
+          chrome.storage.local.set({username, email, id, secretKey, data});
+          router.homepage.$push();
+        }
+      }
+    }
   }
 
   @action

@@ -1,3 +1,4 @@
+import {message} from 'antd';
 import axios from 'axios';
 
 import {
@@ -11,6 +12,10 @@ import {
 } from '../types';
 
 const serverUrl = 'http://localhost:3000/';
+
+function globalError(str: string): void {
+  message.error(str);
+}
 
 export function testUsernameApi(username: Username): Promise<any> {
   return axios.get(
@@ -49,22 +54,49 @@ export function registerApi(id: UserId, verify: Verify): Promise<any> {
   });
 }
 
-export function loginGetBaseInfo(username: Username): Promise<any> {
-  return axios.post(`${serverUrl}loginGetBaseInfo`, {username});
+export async function loginGetBaseInfo(username: Username): Promise<any> {
+  const result = await axios.post(`${serverUrl}loginGetBaseInfo`, {username});
+  const {code, data} = result.data;
+
+  if (code) {
+    return data;
+  }
+
+  globalError(data);
+  return false;
 }
 
-export function loginApi(id: UserId, unlockKey: UnlockKey): Promise<any> {
-  return axios.post(`${serverUrl}login`, {
+export async function loginApi(id: UserId, unlockKey: UnlockKey): Promise<any> {
+  const result = await axios.post(`${serverUrl}login`, {
     id,
     unlockKey,
   });
+  const {code, data} = result.data;
+
+  if (code) {
+    return true;
+  }
+
+  globalError(data);
+  return false;
 }
 
-export function getDataApi(id: UserId, unlockKey: UnlockKey): Promise<any> {
-  return axios.post(`${serverUrl}getData`, {
+export async function getDataApi(
+  id: UserId,
+  unlockKey: UnlockKey,
+): Promise<any> {
+  const result = await axios.post(`${serverUrl}getData`, {
     id,
     unlockKey,
   });
+  const {code, data} = result.data;
+
+  if (code) {
+    return data;
+  }
+
+  globalError(data);
+  return false;
 }
 
 export function updateDataApi(
