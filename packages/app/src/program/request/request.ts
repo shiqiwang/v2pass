@@ -1,6 +1,14 @@
 import axios from 'axios';
 
-import {Email, StoreData, UnlockKey, UserId, Username, Verify} from '../types';
+import {
+  Email,
+  EmailVerifyCode,
+  StoreData,
+  UnlockKey,
+  UserId,
+  Username,
+  Verify,
+} from '../types';
 
 const serverUrl = 'http://localhost:3000/';
 
@@ -25,7 +33,7 @@ export function emailVerifyApi(email: Email): Promise<any> {
 export function registerBaseInfoApi(
   username: Username,
   email: Email,
-  code: number,
+  code: EmailVerifyCode,
 ): Promise<any> {
   return axios.post(`${serverUrl}registerBaseInfo`, {
     username,

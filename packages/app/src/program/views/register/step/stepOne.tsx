@@ -4,7 +4,7 @@ import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 
 import {emailVerifyApi, testEmailApi, testUsernameApi} from '../../../request';
-import {Email, Username} from '../../../types';
+import {Email, EmailVerifyCode, Username} from '../../../types';
 import {BaseInfo} from '../types';
 
 import './step.less';
@@ -14,7 +14,7 @@ import {buttonLayout, formItemLayout} from './layout';
 type BaseInfoLabel = keyof BaseInfo;
 
 interface IStepOneProps {
-  forward(username: Username, email: Email, code: number): void;
+  forward(username: Username, email: Email, code: EmailVerifyCode): void;
 }
 
 @observer
@@ -111,7 +111,7 @@ export default class StepOne extends Component<IStepOneProps> {
       code.validateStatus === 'success'
     ) {
       const {username, email} = this.data;
-      this.props.forward(username.value, email.value, Number(code.value));
+      this.props.forward(username.value, email.value, code.value);
     } else {
       message.error('correct values');
     }
@@ -201,22 +201,22 @@ export default class StepOne extends Component<IStepOneProps> {
   private onCodeChange(value: string): void {
     const code = Number(value);
 
-    if (code) {
+    if (isNaN(code)) {
       this.updateData('code', {
-        value: code,
-        help: '',
-        validateStatus: 'success',
+        help: 'verification code just contains number',
+        validateStatus: 'error',
       });
     } else if (value === '') {
       this.updateData('code', {
-        value: '',
+        value,
         help: '',
         validateStatus: 'warning',
       });
     } else {
       this.updateData('code', {
-        help: 'code should be number',
-        validateStatus: 'error',
+        value,
+        help: '',
+        validateStatus: 'success',
       });
     }
   }

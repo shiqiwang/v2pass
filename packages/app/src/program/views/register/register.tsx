@@ -1,5 +1,3 @@
-// 如果一个人注册完第一步就退出去了，这种情况应当如何处理？
-
 import {Icon, Steps, message} from 'antd';
 import {RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
@@ -7,13 +5,20 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import {createSecretKey, createVerify} from '../../auth';
-import {registerBaseInfoApi, registerValidatorApi} from '../../request';
-import {Router, router} from '../../router';
+import {registerApi, registerBaseInfoApi} from '../../request';
+import {Router} from '../../router';
+import {
+  Email,
+  EmailVerifyCode,
+  MasterPassword,
+  UnlockKeyVerifyFactor,
+  Username,
+} from '../../types';
 
 import StepOne from './step/stepOne';
 import StepThree from './step/stepThree';
 import StepTwo from './step/stepTwo';
-import {BaseInfo, Factor, IStepStatus} from './types';
+import {IStepStatus} from './types';
 
 interface RegisterProps extends RouteComponentProps<Router['register']> {}
 
@@ -28,12 +33,10 @@ export default class Register extends Component<RegisterProps> {
     three: 'wait',
   };
   @observable
-  private factor: Factor = {
+  private factor: UnlockKeyVerifyFactor = {
     id: '',
-    username: '',
     email: '',
     secretKey: '',
-    salt: '',
     password: '',
   };
 
@@ -51,8 +54,8 @@ export default class Register extends Component<RegisterProps> {
         <div className="mainStep">
           {one === 'process' ? (
             <StepOne
-              forward={(username, email) =>
-                this.stepOneForward(username, email)
+              forward={(username, email, code) =>
+                this.stepOneForward(username, email, code)
               }
             />
           ) : (
@@ -80,23 +83,25 @@ export default class Register extends Component<RegisterProps> {
   }
 
   private stepOneForward(
-    username: BaseInfo['username']['value'],
-    email: Factor['email'],
+    username: Username,
+    email: Email,
+    code: EmailVerifyCode,
   ): void {
-    registerBaseInfoApi(username, email)
+    registerBaseInfoApi(username, email, code)
       .then(result => {
-        if (result.data.code === 200) {
+        const {code, data} = result.data;
+
+        if (code) {
           this.updateStepStatus({
             one: 'finish',
             two: 'process',
           });
           this.updateFactor({
             email,
-            username,
-            id: result.data.message,
+            id: data.id,
           });
         } else {
-          message.error(result.data.message);
+          message.error(data);
         }
       })
       .catch(error => {
@@ -104,26 +109,23 @@ export default class Register extends Component<RegisterProps> {
       });
   }
 
-  private stepTwoForward(password: Factor['password']): void {
+  private stepTwoForward(password: MasterPassword): void {
     const secretKey = createSecretKey();
-    const {username, email, id} = this.factor;
+    const {email, id} = this.factor;
     const verify = createVerify({id, email, secretKey, password});
-    registerValidatorApi(verify)
+    registerApi(id, verify)
       .then(result => {
-        if (result.data.code === 200) {
-          chrome.storage.local.set({
-            username,
-            email,
-            id,
-            secretKey,
-          });
+        const {code, data} = result.data;
+
+        if (code) {
           this.updateFactor({secretKey});
+          // 注册成功，自动下载secretKey
           this.updateStepStatus({
             two: 'finish',
             three: 'process',
           });
         } else {
-          message.error(result.data.message);
+          message.error(data);
         }
       })
       .catch(error => {
@@ -154,7 +156,7 @@ export default class Register extends Component<RegisterProps> {
   }
 
   @action
-  private updateFactor(value: Partial<Factor>): void {
+  private updateFactor(value: Partial<UnlockKeyVerifyFactor>): void {
     this.factor = {
       ...this.factor,
       ...value,

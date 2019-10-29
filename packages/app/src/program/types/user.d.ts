@@ -6,6 +6,7 @@ export type Email = string;
 export type SecretKey = string;
 export type StoreData = string;
 export type MasterPassword = string;
+export type EmailVerifyCode = string;
 export type UsageData =
   | {
       targets: Target[];

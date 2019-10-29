@@ -1,77 +1,79 @@
 import {Button, Form, Input, message} from 'antd';
-import {FormComponentProps} from 'antd/lib/form';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
-import React, {
-  ChangeEvent,
-  Component,
-  FormEventHandler,
-  ReactNode,
-} from 'react';
+import React, {Component, FormEventHandler, ReactNode} from 'react';
 
+import {MasterPassword} from '../../../types';
 import {PasswordInfo} from '../types';
 
 import './step.less';
 
+import {buttonLayout, formItemLayout} from './layout';
+
 type PasswordInfoLabel = keyof PasswordInfo;
 
-interface IStepTwoProps extends FormComponentProps {
-  forward(password: PasswordInfo['password']['value']): void;
+interface IStepTwoProps {
+  forward(password: MasterPassword): void;
   backward(): void;
 }
 
 @observer
-class StepTwo extends Component<IStepTwoProps> {
+export default class StepTwo extends Component<IStepTwoProps> {
   @observable
   private data: PasswordInfo = {
     password: {
       value: '',
       validateStatus: 'warning',
+      help: '',
     },
     repeatPassword: {
       value: '',
       validateStatus: 'warning',
+      help: '',
     },
   };
 
   render(): ReactNode {
-    const {getFieldDecorator} = this.props.form!;
     const {password, repeatPassword} = this.data;
 
     return (
       <div className="registerPageStep">
-        <Form className="registerPageForm" onSubmit={this.onFormSubmit}>
+        <Form
+          className="registerPageForm"
+          onSubmit={this.onFormSubmit}
+          {...formItemLayout}
+        >
           <Form.Item
             label="password"
             hasFeedback
             validateStatus={password.validateStatus}
+            help={password.help}
           >
-            {getFieldDecorator('password', {
-              initialValue: password.value,
-            })(
-              <Input
-                type="password"
-                onChange={event => this.onInputChange('password', event)}
-                onBlur={event => this.onTestPassword(event.target.value)}
-              />,
-            )}
+            <Input
+              type="password"
+              value={password.value}
+              onChange={event =>
+                this.onInputChange('password', event.target.value)
+              }
+              onBlur={event => this.onTestPassword(event.target.value)}
+            />
           </Form.Item>
           <Form.Item
-            label="repeat password"
+            label="repeat"
             hasFeedback
             validateStatus={repeatPassword.validateStatus}
+            help={repeatPassword.help}
           >
-            {getFieldDecorator('repeatPassword', {
-              initialValue: repeatPassword.value,
-            })(
-              <Input
-                type="password"
-                onChange={event => this.onInputChange('repeatPassword', event)}
-                onBlur={event => this.onCheckPassword(event.target.value)}
-              />,
-            )}
+            <Input
+              type="password"
+              value={repeatPassword.value}
+              onChange={event =>
+                this.onInputChange('repeatPassword', event.target.value)
+              }
+              onBlur={event => this.onCheckPassword(event.target.value)}
+            />
           </Form.Item>
-          <Form.Item>
+          <Form.Item {...buttonLayout}>
             <Button
               onClick={() => this.props.backward()}
               className="backwardButton"
@@ -95,58 +97,36 @@ class StepTwo extends Component<IStepTwoProps> {
       password.validateStatus === 'success' &&
       repeatPassword.validateStatus === 'success'
     ) {
-      this.props.forward(this.data.password.value);
+      this.props.forward(password.value);
     } else {
-      message.error('correct error, submit again');
+      message.error('correct values');
     }
   };
 
-  private onInputChange(
-    label: PasswordInfoLabel,
-    event: ChangeEvent<HTMLInputElement>,
-  ): void {
-    this.updateData(label, event.target.value);
+  private onInputChange(label: PasswordInfoLabel, value: string): void {
+    this.updateData(label, {value});
   }
 
   private onTestPassword(value: string): void {
-    this.updateStatus('password', 'validating');
     const pattern = /^\S{10,30}$/;
-    const {setFields} = this.props.form!;
 
     if (!pattern.test(value)) {
-      this.updateStatus('password', 'error');
-      setFields({
-        password: {
-          errors: [{message: 'length 10~30, printable character'}],
-        },
+      this.updateData('password', {
+        validateStatus: 'error',
+        help: 'length 10-30',
       });
     } else {
-      this.updateStatus('password', 'success');
-      setFields({
-        password: {
-          errors: [{message: ''}],
-        },
-      });
+      this.updateData('password', {validateStatus: 'success'});
     }
   }
 
   private onCheckPassword(value: string): void {
-    this.updateStatus('repeatPassword', 'validating');
-    const {setFields} = this.props.form!;
-
     if (value === this.data.password.value) {
-      this.updateStatus('repeatPassword', 'success');
-      setFields({
-        repeatPassword: {
-          errors: [{message: ''}],
-        },
-      });
+      this.updateData('repeatPassword', {validateStatus: 'success'});
     } else {
-      this.updateStatus('repeatPassword', 'error');
-      setFields({
-        repeatPassword: {
-          errors: [{message: 'different from the password'}],
-        },
+      this.updateData('repeatPassword', {
+        validateStatus: 'error',
+        help: 'different from the password',
       });
     }
   }
@@ -154,17 +134,11 @@ class StepTwo extends Component<IStepTwoProps> {
   @action
   private updateData<TLabel extends PasswordInfoLabel>(
     label: TLabel,
-    value: PasswordInfo[TLabel]['value'],
+    value: Partial<PasswordInfo[TLabel]>,
   ): void {
-    this.data[label]['value'] = value;
-  }
-
-  private updateStatus<TLabel extends PasswordInfoLabel>(
-    label: TLabel,
-    value: PasswordInfo[TLabel]['validateStatus'],
-  ): void {
-    this.data[label]['validateStatus'] = value;
+    this.data[label] = {
+      ...this.data[label],
+      ...value,
+    };
   }
 }
-
-export default Form.create<IStepTwoProps>({name: 'step_two'})(StepTwo);
