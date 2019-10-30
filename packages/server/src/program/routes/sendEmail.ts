@@ -23,7 +23,13 @@ export const sendEmailRoute: RequestHandler = (req, res) => {
   const code = createRandomCode();
   emailVerify(email, code)
     .then(result => {
-      req.session!.emailVerifyCode = code;
+      if (result.code) {
+        req.session!.registerEmail = {
+          email,
+          code,
+        };
+      }
+
       res.send(result);
     })
     .catch(error => {

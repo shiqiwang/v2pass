@@ -29,7 +29,7 @@ export const registerBaseInfoRoute: RequestHandler = (req, res) => {
 
   const {session} = req;
 
-  if (!session || !session.emailVerifyCode) {
+  if (!session || !session.registerEmail) {
     res.send({
       code: ERROR_CODE,
       data: SESSION_EXPIRES,
@@ -37,7 +37,11 @@ export const registerBaseInfoRoute: RequestHandler = (req, res) => {
     return;
   }
 
-  if (session.emailVerifyCode !== code) {
+  // 验证码与邮箱需要绑定
+  if (
+    session.registerEmail.code !== code ||
+    session.registerEmail.email !== email
+  ) {
     res.send({
       code: ERROR_CODE,
       data: CODE_ERROR,
@@ -45,6 +49,8 @@ export const registerBaseInfoRoute: RequestHandler = (req, res) => {
     return;
   }
 
+  // 验证码只能用一次
+  session.registerEmail = null;
   registerBaseInfo(username, email)
     .then(result => res.send(result))
     .catch(error => {
