@@ -5,7 +5,7 @@ import React, {Component, ReactNode} from 'react';
 
 import {Password, Target} from '../../../types';
 import {findTarget} from '../../../util';
-import CopyableContainer from '../../copyableContainer/copyableContainer';
+import {CopyableContainer} from '../../copyableContainer';
 
 import './passwordDetail.less';
 
@@ -46,7 +46,7 @@ class PasswordDetail extends Component<PasswordProps> {
             {this.target.entries.map((item, index) => (
               <CopyableContainer
                 key={String(index)}
-                data={{label: item.type, value: item.value, type: 'target'}}
+                data={{label: item.type, value: item.value}}
               />
             ))}
           </div>

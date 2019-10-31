@@ -31,14 +31,13 @@ class HomePage extends Component<HomePageProps> {
     username: '',
     email: '',
     id: '',
+    secretKey: '',
   };
 
   // @observable
   // private data: UsageData = {};
 
   render(): ReactNode {
-    // const {username, email, id} = this.userInfo;
-
     return (
       <div className="homePage">
         <Row className="header">
@@ -65,9 +64,8 @@ class HomePage extends Component<HomePageProps> {
 
   componentWillMount(): void {
     chrome.storage.local.get(items => {
-      console.log('items', items);
-      const {username, email, id, data} = items;
-      this.updateUserInfo({username, email, id});
+      const {username, email, id, data, secretKey} = items;
+      this.updateUserInfo({username, email, id, secretKey});
     });
   }
 

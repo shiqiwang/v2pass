@@ -29,11 +29,11 @@ export interface UserBaseInfo {
   id: UserId;
   username: Username;
   email: Email;
+  secretKey: SecretKey;
 }
 
 export interface UserSensitiveInfo {
   password: MasterPassword;
-  secretKey: SecretKey;
 }
 
 export type UserInfo = UserBaseInfo & UserSensitiveInfo;

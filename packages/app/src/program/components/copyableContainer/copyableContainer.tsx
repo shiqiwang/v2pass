@@ -9,30 +9,30 @@ interface CopyableContainerProps {
   data: {
     label: string;
     value: string | number | Date;
-    type: string;
+    secure?: boolean;
   };
 }
 
 @observer
-class CopyableContainer extends Component<CopyableContainerProps> {
+export class CopyableContainer extends Component<CopyableContainerProps> {
   @observable
   private passwordVisible = false;
 
   render(): ReactNode {
-    const {label, value, type} = this.props.data;
+    const {label, value, secure} = this.props.data;
 
     return (
       <div className="copyableContainer" onClick={this.copyValue}>
         <div className="label">{label}</div>
         <div className="value">
-          {type !== 'password' || this.passwordVisible ? value : '..........'}
+          {!secure || this.passwordVisible ? value : '..........'}
         </div>
         <div className="operations">
           <Button.Group size="large">
             <Button type="primary" onClick={this.copyValue}>
               Copy
             </Button>
-            {type === 'password' && (
+            {secure && (
               <Button
                 type="primary"
                 onClick={() => this.showPassword(!this.passwordVisible)}
@@ -57,5 +57,3 @@ class CopyableContainer extends Component<CopyableContainerProps> {
     this.updatePasswordVisible(status);
   }
 }
-
-export default CopyableContainer;
