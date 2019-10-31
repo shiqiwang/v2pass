@@ -8,13 +8,11 @@ import CreateNew from '../../components/createDrawer/createNew';
 import Detail from '../../components/detail/detail';
 import PasswordList from '../../components/passwordList/list';
 import {ActiveItem} from '../../components/passwordList/types/types';
-import UserSetting from '../../components/userSetting/userSetting';
+import Profile from '../../components/profile/profile';
 import {Router} from '../../router';
+import {UsageData, UserBaseInfo} from '../../types';
 
 import './homepage.less';
-
-import {userData} from './testData';
-const {vaults, targets} = userData.data;
 
 export interface HomePageProps
   extends RouteComponentProps<Router['homepage']> {}
@@ -28,9 +26,18 @@ class HomePage extends Component<HomePageProps> {
     activeVault: '',
   };
 
+  @observable
+  private userInfo: UserBaseInfo = {
+    username: '',
+    email: '',
+    id: '',
+  };
+
+  // @observable
+  // private data: UsageData = {};
+
   render(): ReactNode {
-    // let {match} = this.props;
-    // console.log(match.$params.id); 如果有query等可以用该方式获取
+    // const {username, email, id} = this.userInfo;
 
     return (
       <div className="homePage">
@@ -38,38 +45,43 @@ class HomePage extends Component<HomePageProps> {
           <Col span={4} className="options">
             <CreateNew />
           </Col>
-          <Col span={2} className="options">
-            <UserSetting
-              user={{
-                id: userData.id,
-                username: userData.username,
-                email: userData.email,
-              }}
-            />
-          </Col>
+          <Col span={2} className="options"></Col>
         </Row>
-        <Row className="mainBody">
+        <Profile userInfo={this.userInfo} />
+        {/* <Row className="mainBody">
           <Col span={8}>
             <PasswordList
-              vaults={vaults}
+              vaults={[]}
               select={activeItem => this.updateActiveItem(activeItem)}
             />
           </Col>
           <Col span={16}>
-            <Detail
-              vaults={vaults}
-              activeItem={this.activeItem}
-              targets={targets}
-            />
+            <Detail vaults={[]} activeItem={this.activeItem} targets={[]} />
           </Col>
-        </Row>
+        </Row> */}
       </div>
     );
+  }
+
+  componentWillMount(): void {
+    chrome.storage.local.get(items => {
+      console.log('items', items);
+      const {username, email, id, data} = items;
+      this.updateUserInfo({username, email, id});
+    });
   }
 
   @action
   private updateActiveItem = (states: ActiveItem): void => {
     this.activeItem = states;
+  };
+
+  @action
+  private updateUserInfo = (value: Partial<UserBaseInfo>): void => {
+    this.userInfo = {
+      ...this.userInfo,
+      ...value,
+    };
   };
 }
 
