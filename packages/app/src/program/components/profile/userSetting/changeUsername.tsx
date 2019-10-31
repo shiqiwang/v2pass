@@ -1,4 +1,4 @@
-import {Button, Input, message} from 'antd';
+import {Button, Form, Input, message} from 'antd';
 import {action, computed, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
@@ -34,14 +34,24 @@ export default class ChangeUsername extends Component<OldName> {
   }
 
   render(): ReactNode {
+    const {validateStatus, help} = this.username;
+
     return (
       <div className="changeUsername">
-        <Input
-          value={this.value}
-          onChange={event => this.onUsernameChange(event.target.value)}
-          onBlur={event => this.onTestUsername(event.target.value)}
-        />
-        <Button onClick={() => this.onSave()}>save</Button>
+        <Form>
+          <Form.Item hasFeedback validateStatus={validateStatus} help={help}>
+            <Input
+              value={this.value}
+              onChange={event => this.onUsernameChange(event.target.value)}
+              onBlur={event => this.onTestUsername(event.target.value)}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" onClick={() => this.onSave()}>
+              save
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
     );
   }

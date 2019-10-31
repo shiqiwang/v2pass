@@ -26,6 +26,12 @@ export interface IChangeEmail {
   help: string;
 }
 
+export interface IEmailCode {
+  value: EmailVerifyCode;
+  validateStatus: ValidateStatus;
+  help: string;
+}
+
 export interface IChangePassword {
   password: {
     value: MasterPassword;

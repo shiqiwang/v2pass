@@ -5,6 +5,7 @@ import React, {Component, ReactNode} from 'react';
 
 import {Email, SecretKey, Username} from '../../../types';
 
+import ChangeEmail from './changeEmail';
 import ChangeUsername from './changeUsername';
 
 const {Panel} = Collapse;
@@ -27,7 +28,9 @@ export default class UserSetting extends Component<ICanChangeInfo> {
         <Panel header="change username" key="1">
           <ChangeUsername oldUsername={username} />
         </Panel>
-        <Panel header="change email" key="2"></Panel>
+        <Panel header="change email" key="2">
+          <ChangeEmail oldEmail={email} />
+        </Panel>
         <Panel header="change password" key="3"></Panel>
         <Panel header="change secret key" key="4"></Panel>
       </Collapse>
