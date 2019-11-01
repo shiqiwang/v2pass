@@ -11,6 +11,8 @@ type IChangePasswordLabel = keyof IChangePassword;
 @observer
 export default class ChangePassword extends Component {
   @observable
+  private oldPassword: MasterPassword = '';
+  @observable
   private data: IChangePassword = {
     password: {
       value: '',
@@ -30,6 +32,14 @@ export default class ChangePassword extends Component {
     return (
       <div className="changePassword">
         <Form>
+          <Form.Item>
+            <Input
+              type="password"
+              placeholder="current password"
+              value={this.oldPassword}
+              onChange={event => this.onOldPasswordChange(event.target.value)}
+            />
+          </Form.Item>
           <Form.Item
             hasFeedback
             validateStatus={password.validateStatus}
@@ -72,6 +82,10 @@ export default class ChangePassword extends Component {
 
   private onSave(): void {}
 
+  private onOldPasswordChange = (value: MasterPassword): void => {
+    this.updateOldPassword(value);
+  };
+
   private onDataChange = (
     label: IChangePasswordLabel,
     value: MasterPassword,
@@ -112,5 +126,10 @@ export default class ChangePassword extends Component {
       ...this.data[label],
       ...value,
     };
+  }
+
+  @action
+  private updateOldPassword(value: MasterPassword): void {
+    this.oldPassword = value;
   }
 }
