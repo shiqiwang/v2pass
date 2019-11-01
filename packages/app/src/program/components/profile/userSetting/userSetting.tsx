@@ -7,6 +7,7 @@ import {Email, SecretKey, Username} from '../../../types';
 
 import ChangeEmail from './changeEmail';
 import ChangePassword from './changePassword';
+import ChangeSecretKey from './changeSecretKey';
 import ChangeUsername from './changeUsername';
 
 const {Panel} = Collapse;
@@ -35,7 +36,9 @@ export default class UserSetting extends Component<ICanChangeInfo> {
         <Panel header="change password" key="3">
           <ChangePassword />
         </Panel>
-        <Panel header="change secret key" key="4"></Panel>
+        <Panel header="change secret key" key="4">
+          <ChangeSecretKey />
+        </Panel>
       </Collapse>
     );
   }
