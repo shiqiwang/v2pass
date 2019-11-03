@@ -17,6 +17,17 @@ function globalError(str: string): void {
   message.error(str);
 }
 
+function dealWithResult(result: any): boolean {
+  const {code, data} = result.data;
+
+  if (code) {
+    return true;
+  }
+
+  globalError(data);
+  return false;
+}
+
 export async function testUsernameApi(username: Username): Promise<any> {
   const result = await axios.get(
     `${serverUrl}testUsernameAvailability?username=${encodeURIComponent(
@@ -33,18 +44,11 @@ export async function testEmailApi(email: Email): Promise<any> {
   return result.data;
 }
 
-export async function emailVerifyApi(email: Email): Promise<any> {
+export async function emailVerifyApi(email: Email): Promise<boolean> {
   const result = await axios.get(
     `${serverUrl}sendEmail?email=${encodeURIComponent(email)}`,
   );
-  const {code, data} = result.data;
-
-  if (code) {
-    return true;
-  }
-
-  globalError(data);
-  return false;
+  return dealWithResult(result);
 }
 
 export async function registerBaseInfoApi(
@@ -67,19 +71,15 @@ export async function registerBaseInfoApi(
   return false;
 }
 
-export async function registerApi(id: UserId, verify: Verify): Promise<any> {
+export async function registerApi(
+  id: UserId,
+  verify: Verify,
+): Promise<boolean> {
   const result = await axios.post(`${serverUrl}register`, {
     id,
     verify,
   });
-  const {code, data} = result.data;
-
-  if (code) {
-    return true;
-  }
-
-  globalError(data);
-  return false;
+  return dealWithResult(result);
 }
 
 export async function loginGetBaseInfo(username: Username): Promise<any> {
@@ -94,19 +94,15 @@ export async function loginGetBaseInfo(username: Username): Promise<any> {
   return false;
 }
 
-export async function loginApi(id: UserId, unlockKey: UnlockKey): Promise<any> {
+export async function loginApi(
+  id: UserId,
+  unlockKey: UnlockKey,
+): Promise<boolean> {
   const result = await axios.post(`${serverUrl}login`, {
     id,
     unlockKey,
   });
-  const {code, data} = result.data;
-
-  if (code) {
-    return true;
-  }
-
-  globalError(data);
-  return false;
+  return dealWithResult(result);
 }
 
 export async function getDataApi(
@@ -127,30 +123,54 @@ export async function getDataApi(
   return false;
 }
 
-export function updateDataApi(
+export async function updateDataApi(
   id: UserId,
   unlockKey: UnlockKey,
   data: StoreData,
-): Promise<any> {
-  return axios.post(`${serverUrl}updateData`, {
+): Promise<boolean> {
+  const result = await axios.post(`${serverUrl}updateData`, {
     id,
     unlockKey,
     data,
   });
+  return dealWithResult(result);
 }
 
-export function updateAccountApi(
+export async function updateUsernameApi(
   id: UserId,
   unlockKey: UnlockKey,
   username: Username,
-  email: Email,
-  verify: Verify,
-): Promise<any> {
-  return axios.post(`${serverUrl}updateAccount`, {
+): Promise<boolean> {
+  const result = await axios.post(`${serverUrl}updateUsername`, {
     id,
     unlockKey,
     username,
+  });
+  return dealWithResult(result);
+}
+
+export async function updateEmailApi(
+  id: UserId,
+  unlockKey: UnlockKey,
+  email: Email,
+): Promise<boolean> {
+  const result = await axios.post(`${serverUrl}updateEmail`, {
+    id,
+    unlockKey,
     email,
+  });
+  return dealWithResult(result);
+}
+
+export async function updateVerify(
+  id: UserId,
+  unlockKey: UnlockKey,
+  verify: Verify,
+): Promise<boolean> {
+  const result = await axios.post(`${serverUrl}updateVerify`, {
+    id,
+    unlockKey,
     verify,
   });
+  return dealWithResult(result);
 }
