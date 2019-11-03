@@ -36,7 +36,11 @@ app.post('/login', jsonParser, route.loginRoute);
 
 app.post('/updateData', jsonParser, route.updateDataRoute);
 
-app.post('/updateAccount', jsonParser, route.updateAccountRoute);
+app.post('/updateUsername', jsonParser, route.updateUsernameRoute);
+
+app.post('/updateEmail', jsonParser, route.updateEmailRoute);
+
+app.post('/updateVerify', jsonParser, route.updateVerifyRoute);
 
 app.post('/getData', jsonParser, route.getDataRoute);
 

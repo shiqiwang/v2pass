@@ -24,3 +24,10 @@ export interface Response {
   code: number;
   data: string | Partial<User> | undefined;
 }
+
+export interface CanUpdate {
+  username: string;
+  email: string;
+  data: string | undefined;
+  verify: string;
+}

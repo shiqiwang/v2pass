@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import mongodb, {ObjectId} from 'mongodb';
 
 import {config} from '../customConfig.js';
-import {Response, UserDocument, UserFactor} from '../types';
+import {CanUpdate, Response, UserDocument, UserFactor} from '../types';
 
 import * as message from './const';
 
@@ -271,10 +271,10 @@ export async function getData(
   return getAuth;
 }
 
-export async function updateData(
+export async function updateUserData(
   id: UserFactor['id'],
   unlockKey: UserFactor['unlockKey'],
-  data: UserFactor['data'],
+  data: Partial<CanUpdate>,
 ): Promise<Response> {
   const getAuth = await testAuth(id, unlockKey);
 
@@ -282,7 +282,7 @@ export async function updateData(
     const collection = await collectionPromise;
     const result = await collection.updateOne(
       {_id: new ObjectId(id)},
-      {$set: {data}},
+      {$set: data},
     );
     const {nModified, ok} = result.result;
 
@@ -293,44 +293,7 @@ export async function updateData(
       };
     }
 
-    console.error('update data error', result);
-
-    return {
-      code: message.ERROR_CODE,
-      data: message.SERVER_ERROR,
-    };
-  }
-
-  return getAuth;
-}
-
-export async function updateAccount(
-  id: UserFactor['id'],
-  unlockKey: UserFactor['unlockKey'],
-  newUsername: UserFactor['username'],
-  newEmail: UserFactor['email'],
-  newVerify: UserFactor['verify'],
-): Promise<Response> {
-  const getAuth = await testAuth(id, unlockKey);
-
-  if (getAuth.code) {
-    const collection = await collectionPromise;
-    const result = await collection.updateOne(
-      {_id: new ObjectId(id)},
-      {
-        $set: {username: newUsername, email: newEmail, verify: newVerify},
-      },
-    );
-    const {nModified, ok} = result.result;
-
-    if (nModified === 1 && ok === 1) {
-      return {
-        code: message.SUCCESS_CODE,
-        data: message.SUCCESS,
-      };
-    }
-
-    console.error('update account error', result);
+    console.error(`update one: ${data}`, result);
 
     return {
       code: message.ERROR_CODE,
