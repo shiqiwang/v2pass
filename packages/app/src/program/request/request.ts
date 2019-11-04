@@ -105,14 +105,8 @@ export async function loginApi(
   return dealWithResult(result);
 }
 
-export async function getDataApi(
-  id: UserId,
-  unlockKey: UnlockKey,
-): Promise<any> {
-  const result = await axios.post(`${serverUrl}getData`, {
-    id,
-    unlockKey,
-  });
+export async function getDataApi(): Promise<any> {
+  const result = await axios.get(`${serverUrl}getData`);
   const {code, data} = result.data;
 
   if (code) {
@@ -123,53 +117,29 @@ export async function getDataApi(
   return false;
 }
 
-export async function updateDataApi(
-  id: UserId,
-  unlockKey: UnlockKey,
-  data: StoreData,
-): Promise<boolean> {
+export async function updateDataApi(data: StoreData): Promise<boolean> {
   const result = await axios.post(`${serverUrl}updateData`, {
-    id,
-    unlockKey,
     data,
   });
   return dealWithResult(result);
 }
 
-export async function updateUsernameApi(
-  id: UserId,
-  unlockKey: UnlockKey,
-  username: Username,
-): Promise<boolean> {
+export async function updateUsernameApi(username: Username): Promise<boolean> {
   const result = await axios.post(`${serverUrl}updateUsername`, {
-    id,
-    unlockKey,
     username,
   });
   return dealWithResult(result);
 }
 
-export async function updateEmailApi(
-  id: UserId,
-  unlockKey: UnlockKey,
-  email: Email,
-): Promise<boolean> {
+export async function updateEmailApi(email: Email): Promise<boolean> {
   const result = await axios.post(`${serverUrl}updateEmail`, {
-    id,
-    unlockKey,
     email,
   });
   return dealWithResult(result);
 }
 
-export async function updateVerify(
-  id: UserId,
-  unlockKey: UnlockKey,
-  verify: Verify,
-): Promise<boolean> {
+export async function updateVerify(verify: Verify): Promise<boolean> {
   const result = await axios.post(`${serverUrl}updateVerify`, {
-    id,
-    unlockKey,
     verify,
   });
   return dealWithResult(result);

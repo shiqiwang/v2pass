@@ -125,7 +125,7 @@ class Login extends Component<LoginPageProps> {
       const loginResult = await loginApi(id, unlockKey);
 
       if (loginResult) {
-        const data = await getDataApi(id, unlockKey);
+        const data = await getDataApi();
 
         if (data) {
           chrome.storage.local.set({username, email, id, secretKey, data});
