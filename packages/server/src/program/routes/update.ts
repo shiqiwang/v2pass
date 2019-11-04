@@ -1,9 +1,13 @@
 import {RequestHandler} from 'express';
+import jwt from 'jsonwebtoken';
 
+import {config} from '../customConfig';
 import {ERROR_CODE, SERVER_ERROR, updateUserData} from '../dbMethod';
 import {Response} from '../types';
 
 import {testSchema} from './schema';
+
+const {tokenKeys} = config;
 
 const resError: Response = {
   code: ERROR_CODE,
@@ -11,15 +15,17 @@ const resError: Response = {
 };
 
 export const updateUsernameRoute: RequestHandler = (req, res) => {
-  const paramsTest = testSchema(req.body, ['id', 'unlockKey', 'username']);
+  const paramsTest = testSchema(req.body, ['username']);
 
   if (!paramsTest.code) {
     res.send(paramsTest);
     return;
   }
 
-  const {username, id, unlockKey} = req.body;
-  updateUserData(id, unlockKey, {username})
+  const token = jwt.verify(req.session!.token, tokenKeys);
+  const id = (token as any).data;
+  const {username} = req.body;
+  updateUserData(id, {username})
     .then(result => res.send(result))
     .catch(error => {
       console.error('update username route error', error);
@@ -28,15 +34,17 @@ export const updateUsernameRoute: RequestHandler = (req, res) => {
 };
 
 export const updateVerifyRoute: RequestHandler = (req, res) => {
-  const paramsTest = testSchema(req.body, ['id', 'unlockKey', 'verify']);
+  const paramsTest = testSchema(req.body, ['verify']);
 
   if (!paramsTest.code) {
     res.send(paramsTest);
     return;
   }
 
-  const {verify, id, unlockKey} = req.body;
-  updateUserData(id, unlockKey, {verify})
+  const token = jwt.verify(req.session!.token, tokenKeys);
+  const id = (token as any).data;
+  const {verify} = req.body;
+  updateUserData(id, {verify})
     .then(result => res.send(result))
     .catch(error => {
       console.error('update verify route error', error);
@@ -45,15 +53,17 @@ export const updateVerifyRoute: RequestHandler = (req, res) => {
 };
 
 export const updateEmailRoute: RequestHandler = (req, res) => {
-  const paramsTest = testSchema(req.body, ['id', 'unlockKey', 'email']);
+  const paramsTest = testSchema(req.body, ['email']);
 
   if (!paramsTest.code) {
     res.send(paramsTest);
     return;
   }
 
-  const {email, id, unlockKey} = req.body;
-  updateUserData(id, unlockKey, {email})
+  const token = jwt.verify(req.session!.token, tokenKeys);
+  const id = (token as any).data;
+  const {email} = req.body;
+  updateUserData(id, {email})
     .then(result => res.send(result))
     .catch(error => {
       console.error('update email route error', error);
@@ -62,16 +72,18 @@ export const updateEmailRoute: RequestHandler = (req, res) => {
 };
 
 export const updateDataRoute: RequestHandler = (req, res) => {
-  const paramsTest = testSchema(req.body, ['id', 'unlockKey', 'data']);
+  const paramsTest = testSchema(req.body, ['data']);
 
   if (!paramsTest.code) {
     res.send(paramsTest);
     return;
   }
 
-  const {id, unlockKey, data} = req.body;
+  const token = jwt.verify(req.session!.token, tokenKeys);
+  const id = (token as any).data;
+  const {data} = req.body;
 
-  updateUserData(id, unlockKey, {data})
+  updateUserData(id, {data})
     .then(result => res.send(result))
     .catch(error => {
       console.error('update data route error', error);

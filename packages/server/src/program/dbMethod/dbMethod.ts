@@ -250,56 +250,40 @@ export async function login(
   return result;
 }
 
-export async function getData(
-  id: UserFactor['id'],
-  unlockKey: UserFactor['unlockKey'],
-): Promise<Response> {
-  const getAuth = await testAuth(id, unlockKey);
+export async function getData(id: UserFactor['id']): Promise<Response> {
+  const collection = await collectionPromise;
+  const result = await collection.find({_id: new ObjectId(id)}).toArray();
 
-  if (getAuth.code) {
-    const collection = await collectionPromise;
-    const result = await collection.find({_id: new ObjectId(id)}).toArray();
-
-    return {
-      code: message.SUCCESS_CODE,
-      data: {
-        data: result[0].data,
-      },
-    };
-  }
-
-  return getAuth;
+  return {
+    code: message.SUCCESS_CODE,
+    data: {
+      data: result[0].data,
+    },
+  };
 }
 
 export async function updateUserData(
   id: UserFactor['id'],
-  unlockKey: UserFactor['unlockKey'],
   data: Partial<CanUpdate>,
 ): Promise<Response> {
-  const getAuth = await testAuth(id, unlockKey);
+  const collection = await collectionPromise;
+  const result = await collection.updateOne(
+    {_id: new ObjectId(id)},
+    {$set: data},
+  );
+  const {nModified, ok} = result.result;
 
-  if (getAuth.code) {
-    const collection = await collectionPromise;
-    const result = await collection.updateOne(
-      {_id: new ObjectId(id)},
-      {$set: data},
-    );
-    const {nModified, ok} = result.result;
-
-    if (nModified === 1 && ok === 1) {
-      return {
-        code: message.SUCCESS_CODE,
-        data: message.SUCCESS,
-      };
-    }
-
-    console.error(`update one: ${data}`, result);
-
+  if (nModified === 1 && ok === 1) {
     return {
-      code: message.ERROR_CODE,
-      data: message.SERVER_ERROR,
+      code: message.SUCCESS_CODE,
+      data: message.SUCCESS,
     };
   }
 
-  return getAuth;
+  console.error(`update one: ${data}`, result);
+
+  return {
+    code: message.ERROR_CODE,
+    data: message.SERVER_ERROR,
+  };
 }

@@ -42,7 +42,7 @@ app.post('/updateEmail', jsonParser, route.updateEmailRoute);
 
 app.post('/updateVerify', jsonParser, route.updateVerifyRoute);
 
-app.post('/getData', jsonParser, route.getDataRoute);
+app.get('/getData', route.getDataRoute);
 
 app.use((req, res, next) => {
   console.error('no such route', req.url);
