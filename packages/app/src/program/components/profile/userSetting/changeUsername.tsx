@@ -3,12 +3,13 @@ import {action, computed, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {testUsernameApi} from '../../../request';
+import {testUsernameApi, updateUsernameApi} from '../../../request';
 import {Username} from '../../../types';
 import {IChangeUsername} from '../type';
 
 interface OldName {
   oldUsername: Username;
+  refresh(): void;
 }
 
 @observer
@@ -88,7 +89,22 @@ export default class ChangeUsername extends Component<OldName> {
       .catch(error => message.error(error));
   };
 
-  private onSave = (): void => {};
+  private onSave = (): void => {
+    const {validateStatus, value} = this.username;
+
+    if (validateStatus === 'success') {
+      updateUsernameApi(value)
+        .then(result => {
+          if (result) {
+            chrome.storage.local.set({username: value});
+            this.updateUsername({validateStatus: undefined});
+            message.success('update username successfully');
+            this.props.refresh();
+          }
+        })
+        .catch(error => message.error(error));
+    }
+  };
 
   @action
   private updateUsername = (value: Partial<IChangeUsername>): void => {

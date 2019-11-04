@@ -18,6 +18,7 @@ interface ICanChangeInfo {
     secretKey: SecretKey;
     username: Username;
   };
+  refresh(): void;
 }
 
 @observer
@@ -28,7 +29,10 @@ export default class UserSetting extends Component<ICanChangeInfo> {
     return (
       <Collapse accordion>
         <Panel header="change username" key="1">
-          <ChangeUsername oldUsername={username} />
+          <ChangeUsername
+            oldUsername={username}
+            refresh={() => this.props.refresh()}
+          />
         </Panel>
         <Panel header="change email" key="2">
           <ChangeEmail oldEmail={email} />

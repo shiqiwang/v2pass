@@ -10,17 +10,21 @@ import './index.less';
 
 import UserSetting from './userSetting/userSetting';
 
-interface UserBaseInfoProps {
-  userInfo: UserBaseInfo;
-}
-
 @observer
-export default class Profile extends Component<UserBaseInfoProps> {
+export default class Profile extends Component {
   @observable
   private visible: boolean = false;
 
+  @observable
+  private userInfo: UserBaseInfo = {
+    username: '',
+    email: '',
+    id: '',
+    secretKey: '',
+  };
+
   render(): ReactNode {
-    const {username, email, secretKey} = this.props.userInfo;
+    const {username, email, secretKey} = this.userInfo;
 
     return (
       <div className="profile">
@@ -38,10 +42,28 @@ export default class Profile extends Component<UserBaseInfoProps> {
             <CopyableContainer data={{label: 'email', value: email}} />
             <CopyableContainer data={{label: 'secretKey', value: secretKey}} />
           </div>
-          <UserSetting canChange={{username, email, secretKey}} />
+          <UserSetting
+            canChange={{username, email, secretKey}}
+            refresh={() => this.refresh()}
+          />
         </Drawer>
       </div>
     );
+  }
+
+  componentWillMount(): void {
+    this.getData();
+  }
+
+  private refresh(): void {
+    this.getData();
+  }
+
+  private getData(): void {
+    chrome.storage.local.get(items => {
+      const {username, email, id, secretKey} = items;
+      this.updateUserInfo({username, email, id, secretKey});
+    });
   }
 
   private onShow = (): void => {
@@ -55,5 +77,13 @@ export default class Profile extends Component<UserBaseInfoProps> {
   @action
   private updateVisible = (value: boolean): void => {
     this.visible = value;
+  };
+
+  @action
+  private updateUserInfo = (value: Partial<UserBaseInfo>): void => {
+    this.userInfo = {
+      ...this.userInfo,
+      ...value,
+    };
   };
 }
