@@ -44,7 +44,7 @@ export function pretreatRoute(
     }
   }
 
-  if (path === '/register') {
+  if (path === '/registerBaseInfo') {
     if (!req.session || !req.session.registerEmail) {
       res.send(authError);
       return;
