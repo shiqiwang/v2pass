@@ -2,7 +2,14 @@ import {RequestHandler} from 'express';
 import jwt from 'jsonwebtoken';
 
 import {config} from '../customConfig';
-import {ERROR_CODE, SERVER_ERROR, updateUserData} from '../dbMethod';
+import {
+  CODE_ERROR,
+  ERROR_CODE,
+  SERVER_ERROR,
+  SESSION_EXPIRES,
+  testAuth,
+  updateUserData,
+} from '../dbMethod';
 import {Response} from '../types';
 
 import {testSchema} from './schema';
@@ -33,40 +40,59 @@ export const updateUsernameRoute: RequestHandler = (req, res) => {
     });
 };
 
-export const updateVerifyRoute: RequestHandler = (req, res) => {
-  const paramsTest = testSchema(req.body, ['verify']);
-
-  if (!paramsTest.code) {
-    res.send(paramsTest);
-    return;
-  }
-
-  const token = jwt.verify(req.session!.token, tokenKeys);
-  const id = (token as any).data;
-  const {verify} = req.body;
-  updateUserData(id, {verify})
-    .then(result => res.send(result))
-    .catch(error => {
-      console.error('update verify route error', error);
-      res.send(resError);
-    });
-};
-
 export const updateEmailRoute: RequestHandler = (req, res) => {
-  const paramsTest = testSchema(req.body, ['email']);
+  const paramsTest = testSchema(req.body, [
+    'email',
+    'unlockKey',
+    'verify',
+    'code',
+  ]);
 
   if (!paramsTest.code) {
     res.send(paramsTest);
     return;
   }
 
-  const token = jwt.verify(req.session!.token, tokenKeys);
+  const {email, unlockKey, verify, code} = req.body;
+  const {session} = req;
+
+  if (!session || !session.registerEmail) {
+    res.send({code: ERROR_CODE, data: SESSION_EXPIRES});
+    return;
+  }
+
+  // 验证码与邮箱需要绑定
+  if (
+    session.registerEmail.code !== code ||
+    session.registerEmail.email !== email
+  ) {
+    res.send({
+      code: ERROR_CODE,
+      data: CODE_ERROR,
+    });
+    return;
+  }
+
+  // 验证码只能用一次
+  session.registerEmail = null;
+
+  const token = jwt.verify(session.token, tokenKeys);
   const id = (token as any).data;
-  const {email} = req.body;
-  updateUserData(id, {email})
-    .then(result => res.send(result))
+  testAuth(id, unlockKey)
+    .then(result => {
+      if (result.code) {
+        updateUserData(id, {email, verify})
+          .then(result => res.send(result))
+          .catch(error => {
+            console.error('update email route error', error);
+            res.send(resError);
+          });
+      } else {
+        res.send(result);
+      }
+    })
     .catch(error => {
-      console.error('update email route error', error);
+      console.error('update email test auth error', error);
       res.send(resError);
     });
 };

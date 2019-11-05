@@ -3,13 +3,17 @@ import {action, computed, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {emailVerifyApi, testEmailApi} from '../../../request';
-import {Email, EmailVerifyCode} from '../../../types';
-import {IChangeEmail, IEmailCode} from '../type';
+import {createUnlockKey, createVerify} from '../../../auth';
+import {emailVerifyApi, testEmailApi, updateEmailApi} from '../../../request';
+import {Email, EmailVerifyCode, MasterPassword} from '../../../types';
+import {IChangeEmail} from '../type';
 
 interface OldEmail {
   oldEmail: Email;
+  refresh(): void;
 }
+
+type IChangeEmailLabel = keyof IChangeEmail;
 
 @observer
 export default class ChangeEmail extends Component<OldEmail> {
@@ -18,48 +22,68 @@ export default class ChangeEmail extends Component<OldEmail> {
     const {oldEmail} = this.props;
 
     if (this.isChanged) {
-      return this.email.value;
+      return this.data.email.value;
     }
 
     return oldEmail;
   }
 
   @observable
-  private email: IChangeEmail = {
-    value: '',
-    validateStatus: undefined,
-    help: '',
-  };
-  @observable
-  private code: IEmailCode = {
-    value: '',
-    validateStatus: undefined,
-    help: '',
+  private data: IChangeEmail = {
+    email: {
+      value: '',
+      validateStatus: undefined,
+      help: '',
+    },
+    code: {
+      value: '',
+      validateStatus: undefined,
+      help: '',
+    },
+    password: {
+      value: '',
+      validateStatus: undefined,
+      help: '',
+    },
   };
   @observable
   private isChanged: boolean = false;
 
   render(): ReactNode {
-    const {validateStatus, help} = this.email;
+    const {email, password, code} = this.data;
 
     return (
       <div className="changeEmail">
         <Form>
-          <Form.Item hasFeedback validateStatus={validateStatus} help={help}>
+          <Form.Item
+            hasFeedback
+            validateStatus={password.validateStatus}
+            help={password.help}
+          >
+            <Input
+              value={password.value}
+              onChange={event => this.onPasswordInput(event.target.value)}
+              onBlur={event => this.onTestPassword(event.target.value)}
+              placeholder="confirm password"
+              type="password"
+            />
+          </Form.Item>
+          <Form.Item
+            hasFeedback
+            validateStatus={email.validateStatus}
+            help={email.help}
+          >
             <Input
               value={this.value}
               onChange={event => this.onEmailChange(event.target.value)}
               onBlur={event => this.onTestEmail(event.target.value)}
             />
           </Form.Item>
-          <Form.Item
-            validateStatus={this.code.validateStatus}
-            help={this.code.help}
-          >
+          <Form.Item validateStatus={code.validateStatus} help={code.help}>
             <Row>
               <Col span={12}>
                 <Input
-                  value={this.code.value}
+                  value={code.value}
                   onChange={event => this.onCodeChange(event.target.value)}
                 />
               </Col>
@@ -84,13 +108,13 @@ export default class ChangeEmail extends Component<OldEmail> {
     const pattern = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$/;
 
     if (!pattern.test(value)) {
-      this.updateEmail({
+      this.updateData('email', {
         value,
         validateStatus: 'error',
         help: 'wrong format',
       });
     } else {
-      this.updateEmail({
+      this.updateData('email', {
         value,
         validateStatus: 'success',
         help: '',
@@ -99,15 +123,15 @@ export default class ChangeEmail extends Component<OldEmail> {
   }
 
   private onTestEmail(value: Email): void {
-    this.updateEmail({validateStatus: 'validating', help: ''});
+    this.updateData('email', {validateStatus: 'validating', help: ''});
     testEmailApi(value)
       .then(result => {
         const {code, data} = result;
 
         if (code) {
-          this.updateEmail({validateStatus: 'success', help: ''});
+          this.updateData('email', {validateStatus: 'success', help: ''});
         } else {
-          this.updateEmail({validateStatus: 'error', help: data});
+          this.updateData('email', {validateStatus: 'error', help: data});
         }
       })
       .catch(error => message.error(error));
@@ -117,18 +141,18 @@ export default class ChangeEmail extends Component<OldEmail> {
     const code = Number(value);
 
     if (isNaN(code)) {
-      this.updateEmailCode({
+      this.updateData('code', {
         help: 'verification code just contains number',
         validateStatus: 'error',
       });
     } else if (value === '') {
-      this.updateEmailCode({
+      this.updateData('code', {
         value,
         help: '',
         validateStatus: 'warning',
       });
     } else {
-      this.updateEmailCode({
+      this.updateData('code', {
         value,
         help: '',
         validateStatus: 'success',
@@ -136,35 +160,82 @@ export default class ChangeEmail extends Component<OldEmail> {
     }
   }
 
+  private onPasswordInput(value: MasterPassword): void {
+    this.updateData('password', {value});
+  }
+
+  private onTestPassword(value: MasterPassword): void {
+    const pattern = /^\S{10,30}$/;
+
+    if (!pattern.test(value)) {
+      this.updateData('password', {
+        validateStatus: 'error',
+        help: 'length 10-30',
+      });
+    } else {
+      this.updateData('password', {validateStatus: 'success'});
+    }
+  }
+
   private onSendVerifyEmail(): void {
-    const {value} = this.email;
-    emailVerifyApi(value)
-      .then(result => {
-        if (result) {
-          message.success('email send successfully');
-        }
-      })
-      .catch(error => message.error(error));
+    const {value, validateStatus} = this.data.email;
+
+    if (validateStatus === 'success') {
+      emailVerifyApi(value)
+        .then(result => {
+          if (result) {
+            message.success('email send successfully');
+          }
+        })
+        .catch(error => message.error(error));
+    }
   }
 
   private onSave(): void {
-    // email更改涉及unlockKey和verify的更改
-    // store中存储的数据也应该修改
+    const {email, code, password} = this.data;
+
+    if (
+      email.validateStatus === 'success' &&
+      code.validateStatus === 'success' &&
+      password.validateStatus === 'success'
+    ) {
+      chrome.storage.local.get(items => {
+        const {id, secretKey} = items;
+        const unlockKey = createUnlockKey({
+          id,
+          password: password.value,
+          secretKey,
+          email: items.email,
+        });
+        const newVerify = createVerify({
+          id,
+          secretKey,
+          email: email.value,
+          password: password.value,
+        });
+        updateEmailApi(email.value, unlockKey, newVerify, code.value)
+          .then(result => {
+            if (result) {
+              chrome.storage.local.set({email: email.value});
+              message.success('update email successfully');
+            }
+          })
+          .catch(error => message.error(error));
+      });
+    }
   }
 
   @action
-  private updateEmail(value: Partial<IChangeEmail>): void {
-    this.isChanged = true;
-    this.email = {
-      ...this.email,
-      ...value,
-    };
-  }
+  private updateData<TLabel extends IChangeEmailLabel>(
+    label: TLabel,
+    value: Partial<IChangeEmail[TLabel]>,
+  ): void {
+    if (label === 'email') {
+      this.isChanged = true;
+    }
 
-  @action
-  private updateEmailCode(value: Partial<IEmailCode>): void {
-    this.code = {
-      ...this.code,
+    this.data[label] = {
+      ...this.data[label],
       ...value,
     };
   }

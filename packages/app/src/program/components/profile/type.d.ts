@@ -14,6 +14,12 @@ type ValidateStatus =
   | 'error'
   | undefined;
 
+interface IPassword {
+  value: MasterPassword;
+  validateStatus: ValidateStatus;
+  help: string;
+}
+
 export interface IChangeUsername {
   value: Username;
   validateStatus: ValidateStatus;
@@ -21,28 +27,22 @@ export interface IChangeUsername {
 }
 
 export interface IChangeEmail {
-  value: Email;
-  validateStatus: ValidateStatus;
-  help: string;
-}
-
-export interface IEmailCode {
-  value: EmailVerifyCode;
-  validateStatus: ValidateStatus;
-  help: string;
+  email: {
+    value: Email;
+    validateStatus: ValidateStatus;
+    help: string;
+  };
+  code: {
+    value: EmailVerifyCode;
+    validateStatus: ValidateStatus;
+    help: string;
+  };
+  password: IPassword;
 }
 
 export interface IChangePassword {
-  password: {
-    value: MasterPassword;
-    validateStatus: ValidateStatus;
-    help: string;
-  };
-  repeatPassword: {
-    value: MasterPassword;
-    validateStatus: ValidateStatus;
-    help: string;
-  };
+  password: IPassword;
+  repeatPassword: IPassword;
 }
 
 export interface IChangeSecretKey {

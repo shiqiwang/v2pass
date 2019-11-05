@@ -131,16 +131,17 @@ export async function updateUsernameApi(username: Username): Promise<boolean> {
   return dealWithResult(result);
 }
 
-export async function updateEmailApi(email: Email): Promise<boolean> {
+export async function updateEmailApi(
+  email: Email,
+  unlockKey: UnlockKey,
+  verify: Verify,
+  code: EmailVerifyCode,
+): Promise<boolean> {
   const result = await axios.post(`${serverUrl}updateEmail`, {
     email,
-  });
-  return dealWithResult(result);
-}
-
-export async function updateVerify(verify: Verify): Promise<boolean> {
-  const result = await axios.post(`${serverUrl}updateVerify`, {
+    unlockKey,
     verify,
+    code,
   });
   return dealWithResult(result);
 }

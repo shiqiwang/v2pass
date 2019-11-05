@@ -24,7 +24,7 @@ const collectionPromise = clientPromise.then(client =>
     .catch(console.error);
 })().catch(error => console.error('collection createIndex error', error));
 
-async function testAuth(
+export async function testAuth(
   id: UserFactor['id'],
   unlockKey: UserFactor['unlockKey'],
 ): Promise<Response> {

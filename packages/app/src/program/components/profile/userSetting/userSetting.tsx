@@ -25,17 +25,15 @@ interface ICanChangeInfo {
 export default class UserSetting extends Component<ICanChangeInfo> {
   render(): ReactNode {
     const {email, secretKey, username} = this.props.canChange;
+    const {refresh} = this.props;
 
     return (
       <Collapse accordion>
         <Panel header="change username" key="1">
-          <ChangeUsername
-            oldUsername={username}
-            refresh={() => this.props.refresh()}
-          />
+          <ChangeUsername oldUsername={username} refresh={refresh} />
         </Panel>
         <Panel header="change email" key="2">
-          <ChangeEmail oldEmail={email} />
+          <ChangeEmail oldEmail={email} refresh={refresh} />
         </Panel>
         <Panel header="change password" key="3">
           <ChangePassword />
