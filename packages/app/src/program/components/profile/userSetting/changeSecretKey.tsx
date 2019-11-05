@@ -1,27 +1,61 @@
-import {Button, Form, Input} from 'antd';
+import {Button, Form, Input, message} from 'antd';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {createSecretKey} from '../../../auth';
+import {createSecretKey, createUnlockKey, createVerify} from '../../../auth';
+import {updateVerify} from '../../../request';
 import {MasterPassword, SecretKey} from '../../../types';
+import {IChangeSecretKey} from '../type';
 
-export default class ChangeSecretKey extends Component {
+import './index.less';
+
+interface IProps {
+  refresh(): void;
+}
+
+@observer
+export default class ChangeSecretKey extends Component<IProps> {
   @observable
-  private password: MasterPassword = '';
+  private data: IChangeSecretKey = {
+    value: '',
+    password: {
+      value: '',
+      validateStatus: undefined,
+      help: '',
+    },
+  };
+
   @observable
-  private secretKey: SecretKey = '';
+  private disable: boolean = false;
 
   render(): ReactNode {
+    const {value, validateStatus, help} = this.data.password;
+
     return (
       <div className="changeSecretKey">
         <Form>
-          <Form.Item>
-            <Input value={this.password} placeholder="check password" />
+          <Form.Item hasFeedback validateStatus={validateStatus} help={help}>
+            <Input
+              value={value}
+              placeholder="confirm password"
+              type="password"
+              onChange={event => this.onPasswordInput(event.target.value)}
+              onBlur={event => this.onTestPassword(event.target.value)}
+            />
           </Form.Item>
+          <div className="newSecretKeyBox">{this.data.value}</div>
           <Form.Item>
-            <Button type="primary" onClick={() => this.createNewSecretKey()}>
+            <Button
+              type="primary"
+              onClick={() => this.createNewSecretKey()}
+              disabled={this.disable}
+              className="createNewSecretKey"
+            >
               create secret key
+            </Button>
+            <Button type="primary" onClick={() => this.onUpdateVerify()}>
+              save
             </Button>
           </Form.Item>
         </Form>
@@ -29,5 +63,76 @@ export default class ChangeSecretKey extends Component {
     );
   }
 
-  private createNewSecretKey(): void {}
+  private onPasswordInput(value: MasterPassword): void {
+    this.updatePassword({value});
+  }
+
+  private onTestPassword(value: MasterPassword): void {
+    const pattern = /^\S{10,30}$/;
+
+    if (!pattern.test(value)) {
+      this.updatePassword({
+        validateStatus: 'error',
+        help: 'length 10-30',
+      });
+    } else {
+      this.updatePassword({validateStatus: 'success'});
+    }
+  }
+
+  private createNewSecretKey(): void {
+    this.updateSecretKey(createSecretKey());
+  }
+
+  private onUpdateVerify(): void {
+    this.updateDisable(true);
+    const {password, value} = this.data;
+
+    if (password.validateStatus === 'success' && value) {
+      chrome.storage.local.get(items => {
+        const {id, email, secretKey} = items;
+        const newVerify = createVerify({
+          id,
+          email,
+          password: password.value,
+          secretKey: value,
+        });
+        const unlockKey = createUnlockKey({
+          id,
+          email,
+          secretKey,
+          password: password.value,
+        });
+        updateVerify(unlockKey, newVerify)
+          .then(result => {
+            if (result) {
+              // 如果成功了要下载该secret key让用户保存
+              chrome.storage.local.set({secretKey: value});
+              message.success('update successfully');
+            }
+          })
+          .catch(error => message.error(error))
+          .finally(() => this.updateDisable(false))
+          .catch();
+      });
+    }
+  }
+
+  @action
+  private updatePassword(value: Partial<IChangeSecretKey['password']>): void {
+    this.data.password = {
+      ...this.data.password,
+      ...value,
+    };
+  }
+
+  @action
+  private updateSecretKey(value: SecretKey): void {
+    this.data.value = value;
+  }
+
+  @action
+  private updateDisable(value: boolean): void {
+    this.disable = value;
+  }
 }

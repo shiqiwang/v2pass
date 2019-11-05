@@ -39,7 +39,7 @@ export default class UserSetting extends Component<ICanChangeInfo> {
           <ChangePassword />
         </Panel>
         <Panel header="change secret key" key="4">
-          <ChangeSecretKey />
+          <ChangeSecretKey refresh={refresh} />
         </Panel>
       </Collapse>
     );

@@ -145,3 +145,14 @@ export async function updateEmailApi(
   });
   return dealWithResult(result);
 }
+
+export async function updateVerify(
+  unlockKey: UnlockKey,
+  verify: Verify,
+): Promise<boolean> {
+  const result = await axios.post(`${serverUrl}updateVerify`, {
+    unlockKey,
+    verify,
+  });
+  return dealWithResult(result);
+}

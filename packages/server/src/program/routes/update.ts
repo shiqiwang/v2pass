@@ -116,3 +116,32 @@ export const updateDataRoute: RequestHandler = (req, res) => {
       res.send(resError);
     });
 };
+
+export const updateVerifyRoute: RequestHandler = (req, res) => {
+  const paramsTest = testSchema(req.body, ['unlockKey', 'verify']);
+
+  if (!paramsTest.code) {
+    res.send(paramsTest);
+    return;
+  }
+
+  const token = jwt.verify(req.session!.token, tokenKeys);
+  const id = (token as any).data;
+  const {unlockKey, verify} = req.body;
+  testAuth(id, unlockKey)
+    .then(result => {
+      if (result.code) {
+        updateUserData(id, {verify})
+          .then(result => res.send(result))
+          .catch(error => {
+            console.error('update verify route error', error);
+          });
+      } else {
+        res.send(result);
+      }
+    })
+    .catch(error => {
+      console.error('update verify route test auth error', error);
+      res.send(resError);
+    });
+};

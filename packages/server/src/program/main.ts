@@ -40,6 +40,8 @@ app.post('/updateUsername', jsonParser, route.updateUsernameRoute);
 
 app.post('/updateEmail', jsonParser, route.updateEmailRoute);
 
+app.post('/updateVerify', jsonParser, route.updateVerifyRoute);
+
 app.get('/getData', route.getDataRoute);
 
 app.use((req, res, next) => {

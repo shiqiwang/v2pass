@@ -47,4 +47,5 @@ export interface IChangePassword {
 
 export interface IChangeSecretKey {
   value: SecretKey;
+  password: IPassword;
 }
