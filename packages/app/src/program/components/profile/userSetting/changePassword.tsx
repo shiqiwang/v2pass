@@ -1,8 +1,10 @@
-import {Button, Form, Input} from 'antd';
+import {Button, Form, Input, message} from 'antd';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import {createUnlockKey, createVerify} from '../../../auth';
+import {updateVerify} from '../../../request';
 import {MasterPassword} from '../../../types';
 import {IChangePassword} from '../type';
 
@@ -11,15 +13,18 @@ type IChangePasswordLabel = keyof IChangePassword;
 @observer
 export default class ChangePassword extends Component {
   @observable
-  private oldPassword: MasterPassword = '';
-  @observable
   private data: IChangePassword = {
+    old: {
+      validateStatus: undefined,
+      value: '',
+      help: '',
+    },
     password: {
       value: '',
       validateStatus: undefined,
       help: '',
     },
-    repeatPassword: {
+    repeat: {
       value: '',
       validateStatus: undefined,
       help: '',
@@ -27,7 +32,7 @@ export default class ChangePassword extends Component {
   };
 
   render(): ReactNode {
-    const {password, repeatPassword} = this.data;
+    const {password, repeat, old} = this.data;
 
     return (
       <div className="changePassword">
@@ -36,8 +41,9 @@ export default class ChangePassword extends Component {
             <Input
               type="password"
               placeholder="current password"
-              value={this.oldPassword}
-              onChange={event => this.onOldPasswordChange(event.target.value)}
+              value={old.value}
+              onChange={event => this.onDataChange('old', event.target.value)}
+              onBlur={event => this.onTestPassword('old', event.target.value)}
             />
           </Form.Item>
           <Form.Item
@@ -52,20 +58,22 @@ export default class ChangePassword extends Component {
               onChange={event =>
                 this.onDataChange('password', event.target.value)
               }
-              onBlur={event => this.onTestPassword(event.target.value)}
+              onBlur={event =>
+                this.onTestPassword('password', event.target.value)
+              }
             />
           </Form.Item>
           <Form.Item
             hasFeedback
-            validateStatus={repeatPassword.validateStatus}
-            help={repeatPassword.help}
+            validateStatus={repeat.validateStatus}
+            help={repeat.help}
           >
             <Input
-              value={repeatPassword.value}
+              value={repeat.value}
               placeholder="check password"
               type="password"
               onChange={event =>
-                this.onDataChange('repeatPassword', event.target.value)
+                this.onDataChange('repeat', event.target.value)
               }
               onBlur={event => this.onCheckPassword(event.target.value)}
             />
@@ -80,11 +88,38 @@ export default class ChangePassword extends Component {
     );
   }
 
-  private onSave(): void {}
+  private onSave(): void {
+    const {old, password, repeat} = this.data;
 
-  private onOldPasswordChange = (value: MasterPassword): void => {
-    this.updateOldPassword(value);
-  };
+    if (
+      old.validateStatus === 'success' &&
+      password.validateStatus === 'success' &&
+      repeat.validateStatus === 'success'
+    ) {
+      chrome.storage.local.get(items => {
+        const {id, email, secretKey} = items;
+        const unlockKey = createUnlockKey({
+          id,
+          email,
+          secretKey,
+          password: old.value,
+        });
+        const verify = createVerify({
+          id,
+          email,
+          secretKey,
+          password: password.value,
+        });
+        updateVerify(unlockKey, verify)
+          .then(result => {
+            if (result) {
+              message.success('update successfully');
+            }
+          })
+          .catch(error => message.error(error));
+      });
+    }
+  }
 
   private onDataChange = (
     label: IChangePasswordLabel,
@@ -93,24 +128,27 @@ export default class ChangePassword extends Component {
     this.updateData(label, {value});
   };
 
-  private onTestPassword = (value: MasterPassword): void => {
+  private onTestPassword = (
+    label: 'password' | 'old',
+    value: MasterPassword,
+  ): void => {
     const pattern = /^\S{10,30}$/;
 
     if (!pattern.test(value)) {
-      this.updateData('password', {
+      this.updateData(label, {
         validateStatus: 'error',
         help: 'length 10-30',
       });
     } else {
-      this.updateData('password', {validateStatus: 'success', help: ''});
+      this.updateData(label, {validateStatus: 'success', help: ''});
     }
   };
 
   private onCheckPassword = (value: MasterPassword): void => {
     if (value === this.data.password.value) {
-      this.updateData('repeatPassword', {validateStatus: 'success', help: ''});
+      this.updateData('repeat', {validateStatus: 'success', help: ''});
     } else {
-      this.updateData('repeatPassword', {
+      this.updateData('repeat', {
         validateStatus: 'error',
         help: 'different from the password',
       });
@@ -126,10 +164,5 @@ export default class ChangePassword extends Component {
       ...this.data[label],
       ...value,
     };
-  }
-
-  @action
-  private updateOldPassword(value: MasterPassword): void {
-    this.oldPassword = value;
   }
 }

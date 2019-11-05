@@ -41,8 +41,9 @@ export interface IChangeEmail {
 }
 
 export interface IChangePassword {
+  old: IPassword;
   password: IPassword;
-  repeatPassword: IPassword;
+  repeat: IPassword;
 }
 
 export interface IChangeSecretKey {
