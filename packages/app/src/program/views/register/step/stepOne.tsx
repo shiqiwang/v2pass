@@ -147,7 +147,7 @@ export default class StepOne extends Component<IStepOneProps> {
           this.updateData('username', {validateStatus: 'error', help: data});
         }
       })
-      .catch(error => message.error(error));
+      .catch(error => message.error(error.message));
   }
 
   private onEmailChange(value: Email): void {
@@ -180,7 +180,7 @@ export default class StepOne extends Component<IStepOneProps> {
           this.updateData('email', {validateStatus: 'error', help: data});
         }
       })
-      .catch(error => message.error(error));
+      .catch(error => message.error(error.message));
   }
 
   private onSendVerifyEmail(): void {
@@ -191,7 +191,7 @@ export default class StepOne extends Component<IStepOneProps> {
           message.success('email send successfully');
         }
       })
-      .catch(error => message.error(error));
+      .catch(error => message.error(error.message));
   }
 
   private onCodeChange(value: string): void {

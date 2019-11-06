@@ -3,7 +3,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {createSecretKey, createUnlockKey, createVerify} from '../../../auth';
+import {KeyGenerator, createSecretKey} from '../../../auth';
 import {updateVerify} from '../../../request';
 import {MasterPassword, SecretKey} from '../../../types';
 import {IChangeSecretKey} from '../type';
@@ -91,18 +91,18 @@ export default class ChangeSecretKey extends Component<IProps> {
     if (password.validateStatus === 'success' && value) {
       chrome.storage.local.get(items => {
         const {id, email, secretKey} = items;
-        const newVerify = createVerify({
-          id,
-          email,
-          password: password.value,
-          secretKey: value,
-        });
-        const unlockKey = createUnlockKey({
+        const unlockKey = new KeyGenerator({
           id,
           email,
           secretKey,
           password: password.value,
-        });
+        }).createUnlockKey();
+        const newVerify = new KeyGenerator({
+          id,
+          email,
+          password: password.value,
+          secretKey: value,
+        }).createVerify();
         updateVerify(unlockKey, newVerify)
           .then(result => {
             if (result) {
@@ -111,7 +111,7 @@ export default class ChangeSecretKey extends Component<IProps> {
               message.success('update successfully');
             }
           })
-          .catch(error => message.error(error))
+          .catch(error => message.error(error.message))
           .finally(() => this.updateDisable(false))
           .catch();
       });

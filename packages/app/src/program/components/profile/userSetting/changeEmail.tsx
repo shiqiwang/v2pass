@@ -3,7 +3,7 @@ import {action, computed, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {createUnlockKey, createVerify} from '../../../auth';
+import {KeyGenerator} from '../../../auth';
 import {emailVerifyApi, testEmailApi, updateEmailApi} from '../../../request';
 import {Email, EmailVerifyCode, MasterPassword} from '../../../types';
 import {IChangeEmail} from '../type';
@@ -134,7 +134,7 @@ export default class ChangeEmail extends Component<OldEmail> {
           this.updateData('email', {validateStatus: 'error', help: data});
         }
       })
-      .catch(error => message.error(error));
+      .catch(error => message.error(error.message));
   }
 
   private onCodeChange(value: EmailVerifyCode): void {
@@ -187,7 +187,7 @@ export default class ChangeEmail extends Component<OldEmail> {
             message.success('email send successfully');
           }
         })
-        .catch(error => message.error(error));
+        .catch(error => message.error(error.message));
     }
   }
 
@@ -201,18 +201,18 @@ export default class ChangeEmail extends Component<OldEmail> {
     ) {
       chrome.storage.local.get(items => {
         const {id, secretKey} = items;
-        const unlockKey = createUnlockKey({
+        const unlockKey = new KeyGenerator({
           id,
           password: password.value,
           secretKey,
           email: items.email,
-        });
-        const newVerify = createVerify({
+        }).createUnlockKey();
+        const newVerify = new KeyGenerator({
           id,
           secretKey,
           email: email.value,
           password: password.value,
-        });
+        }).createVerify();
         updateEmailApi(email.value, unlockKey, newVerify, code.value)
           .then(result => {
             if (result) {
@@ -220,7 +220,7 @@ export default class ChangeEmail extends Component<OldEmail> {
               message.success('update email successfully');
             }
           })
-          .catch(error => message.error(error));
+          .catch(error => message.error(error.message));
       });
     }
   }

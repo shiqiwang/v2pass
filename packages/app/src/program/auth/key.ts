@@ -46,10 +46,16 @@ export class KeyGenerator {
     return CryptoJS.AES.encrypt(JSON.stringify(data), dataKey).toString();
   }
 
-  decryptData(cipherData: StoreData): UsageData {
+  decryptData(cipherData: StoreData): UsageData | boolean {
     const dataKey = this.createDataKey();
     const bytes = CryptoJS.AES.decrypt(cipherData, dataKey);
-    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    const json = bytes.toString(CryptoJS.enc.Utf8);
+
+    if (json) {
+      return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    }
+
+    return false;
   }
 
   private createDataKey(): DataKey {

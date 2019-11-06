@@ -99,7 +99,7 @@ class Login extends Component<LoginPageProps> {
 
       if (!error) {
         this.login(username, password, secretKey).catch(error =>
-          message.error(error),
+          message.error(error.message),
         );
       }
     });

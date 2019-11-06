@@ -86,7 +86,7 @@ export default class ChangeUsername extends Component<OldName> {
           this.updateUsername({validateStatus: 'error', help: data});
         }
       })
-      .catch(error => message.error(error));
+      .catch(error => message.error(error.message));
   };
 
   private onSave = (): void => {
@@ -102,7 +102,7 @@ export default class ChangeUsername extends Component<OldName> {
             this.props.refresh();
           }
         })
-        .catch(error => message.error(error));
+        .catch(error => message.error(error.message));
     }
   };
 

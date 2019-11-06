@@ -110,7 +110,7 @@ export default class Register extends Component<RegisterProps> {
     const {email, id} = this.factor;
     const keyGenerator = new KeyGenerator({id, email, secretKey, password});
     const verify = keyGenerator.createVerify();
-    const cipherData = keyGenerator.encryptData(undefined);
+    const cipherData = keyGenerator.encryptData({vaults: [], targets: []});
     registerApi(id, verify, cipherData)
       .then(result => {
         if (result) {
@@ -124,7 +124,7 @@ export default class Register extends Component<RegisterProps> {
         }
       })
       .catch(error => {
-        console.error('register validator api', error);
+        message.error(error.message);
       });
   }
 
