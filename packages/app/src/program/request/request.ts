@@ -112,7 +112,7 @@ export async function getDataApi(): Promise<any> {
   const {code, data} = result.data;
 
   if (code) {
-    return result.data;
+    return data;
   }
 
   globalError(data);

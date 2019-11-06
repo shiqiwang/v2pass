@@ -10,7 +10,7 @@ import React, {
   ReactNode,
 } from 'react';
 
-import {createUnlockKey} from '../../auth';
+import {KeyGenerator} from '../../auth';
 import {getDataApi, loginApi, loginGetBaseInfo} from '../../request';
 import {Router, router} from '../../router';
 import {MasterPassword, SecretKey, Username} from '../../types';
@@ -121,14 +121,25 @@ class Login extends Component<LoginPageProps> {
 
     if (baseInfo) {
       const {id, email} = baseInfo;
-      const unlockKey = createUnlockKey({id, email, secretKey, password});
+      const unlockKey = new KeyGenerator({
+        id,
+        email,
+        secretKey,
+        password,
+      }).createUnlockKey();
       const loginResult = await loginApi(id, unlockKey);
 
       if (loginResult) {
-        const data = await getDataApi();
+        const result = await getDataApi();
 
-        if (data) {
-          chrome.storage.local.set({username, email, id, secretKey, data});
+        if (result) {
+          chrome.storage.local.set({
+            username,
+            email,
+            id,
+            secretKey,
+            data: result,
+          });
           router.homepage.$push();
         }
       }
