@@ -4,7 +4,7 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  data: string | undefined;
+  data: string;
 }
 
 export interface UserFactor extends User {

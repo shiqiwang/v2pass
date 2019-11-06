@@ -7,12 +7,10 @@ export type SecretKey = string;
 export type StoreData = string;
 export type MasterPassword = string;
 export type EmailVerifyCode = string;
-export type UsageData =
-  | {
-      targets: Target[];
-      vaults: Vault[];
-    }
-  | undefined;
+export type UsageData = {
+  targets: Target[];
+  vaults: Vault[];
+};
 export type Verify = string;
 export type UnlockKey = string;
 export type DataKey = string;
