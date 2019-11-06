@@ -1,16 +1,14 @@
-import {Button, Col, Form, Icon, Input, Row} from 'antd';
+import {Button, Col, Form, Icon, Input, Row, message} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
-import {Link, RouteComponentProps} from 'boring-router-react';
+import {RouteComponentProps} from 'boring-router-react';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
-import React, {
-  ChangeEventHandler,
-  Component,
-  FormEventHandler,
-  ReactNode,
-} from 'react';
+import React, {Component, FormEventHandler, ReactNode} from 'react';
 
+import {KeyGenerator} from '../../auth';
+import {loginApi} from '../../request';
 import {Router, router} from '../../router';
+import {MasterPassword} from '../../types';
 
 import './unlock.less';
 
@@ -21,7 +19,7 @@ export interface UnlockPageProps
 @observer
 class UnlockPage extends Component<UnlockPageProps> {
   @observable
-  private password = '';
+  private password: MasterPassword = '';
 
   render(): ReactNode {
     const {getFieldDecorator} = this.props.form!;
@@ -46,7 +44,7 @@ class UnlockPage extends Component<UnlockPageProps> {
                     prefix={<Icon type="lock" />}
                     type="password"
                     placeholder="password"
-                    onChange={this.onInputChange}
+                    onChange={event => this.onInputChange(event.target.value)}
                   />,
                 )}
               </Form.Item>
@@ -54,7 +52,6 @@ class UnlockPage extends Component<UnlockPageProps> {
                 <Button type="primary" htmlType="submit">
                   Unlock
                 </Button>
-                <Link to={router.register}>Register</Link>
               </Form.Item>
             </Form>
           </Col>
@@ -63,35 +60,59 @@ class UnlockPage extends Component<UnlockPageProps> {
     );
   }
 
-  private onInputChange: ChangeEventHandler<HTMLInputElement> = event => {
-    this.updatePassword(event.target.value);
-  };
+  private onInputChange(value: MasterPassword): void {
+    this.updatePassword(value);
+  }
 
   private onFormSubmit: FormEventHandler<HTMLFormElement> = event => {
     event.preventDefault();
     const {validateFields, setFields} = this.props.form!;
-    validateFields((error, values) => {
-      // 假设密码为123
-      // 后面删除
-      router.homepage.$push();
+    validateFields((error, value) => {
+      if (!error) {
+        const {password} = value;
+        chrome.storage.local.get(items => {
+          const {id, secretKey, email, data} = items;
+          const keyGenerator = new KeyGenerator({
+            id,
+            secretKey,
+            password,
+            email,
+          });
+          const unlockKey = keyGenerator.createUnlockKey();
+          const decrypt = keyGenerator.decryptData(data);
 
-      if (!error && values.password === '123') {
-        // 加密
-        // 测试
-        router.homepage.$push();
+          if (decrypt) {
+            router.homepage.$push();
+            loginApi(id, unlockKey)
+              .then(result => {
+                if (result) {
+                  // 隐式登录成功
+                  // 做个全局记录？
+                }
+
+                // 没有成功的话，那连网/后端的服务就没法提供
+                message.warning('server error');
+              })
+              .catch(error => {
+                message.warning(error.message);
+              });
+          } else {
+            message.error('password error');
+          }
+        });
+      } else {
+        setFields({
+          password: {
+            value: '',
+            errors: [new Error('password error!')],
+          },
+        });
       }
-
-      setFields({
-        password: {
-          value: '',
-          errors: [new Error('password error!')],
-        },
-      });
     });
   };
 
   @action
-  private updatePassword(password: string): void {
+  private updatePassword(password: MasterPassword): void {
     this.password = password;
   }
 }
