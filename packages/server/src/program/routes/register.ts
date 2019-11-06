@@ -60,15 +60,15 @@ export const registerBaseInfoRoute: RequestHandler = (req, res) => {
 };
 
 export const registerRoute: RequestHandler = (req, res) => {
-  const paramsTest = testSchema(req.body, ['id', 'verify']);
+  const paramsTest = testSchema(req.body, ['id', 'verify', 'data']);
 
   if (!paramsTest.code) {
     res.send(paramsTest);
     return;
   }
 
-  const {verify, id} = req.body;
-  register(id, verify)
+  const {verify, id, data} = req.body;
+  register(id, verify, data)
     .then(result => res.send(result))
     .catch(error => {
       console.error('register validator error', error);

@@ -4,7 +4,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {createSecretKey, createVerify} from '../../auth';
+import {KeyGenerator, createSecretKey} from '../../auth';
 import {registerApi, registerBaseInfoApi} from '../../request';
 import {Router} from '../../router';
 import {
@@ -108,8 +108,10 @@ export default class Register extends Component<RegisterProps> {
   private stepTwoForward(password: MasterPassword): void {
     const secretKey = createSecretKey();
     const {email, id} = this.factor;
-    const verify = createVerify({id, email, secretKey, password});
-    registerApi(id, verify)
+    const keyGenerator = new KeyGenerator({id, email, secretKey, password});
+    const verify = keyGenerator.createVerify();
+    const cipherData = keyGenerator.encryptData(undefined);
+    registerApi(id, verify, cipherData)
       .then(result => {
         if (result) {
           this.updateFactor({secretKey});

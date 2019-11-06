@@ -74,10 +74,12 @@ export async function registerBaseInfoApi(
 export async function registerApi(
   id: UserId,
   verify: Verify,
+  data: StoreData,
 ): Promise<boolean> {
   const result = await axios.post(`${serverUrl}register`, {
     id,
     verify,
+    data,
   });
   return dealWithResult(result);
 }
@@ -110,7 +112,7 @@ export async function getDataApi(): Promise<any> {
   const {code, data} = result.data;
 
   if (code) {
-    return data;
+    return result.data;
   }
 
   globalError(data);

@@ -181,6 +181,7 @@ export async function registerBaseInfo(
 export async function register(
   id: UserFactor['id'],
   verify: UserFactor['verify'],
+  data: UserDocument['data'],
 ): Promise<Response> {
   const collection = await collectionPromise;
   const _id = new ObjectId(id);
@@ -200,7 +201,7 @@ export async function register(
     };
   }
 
-  const result = await collection.updateOne({_id}, {$set: {verify}});
+  const result = await collection.updateOne({_id}, {$set: {verify, data}});
   const {nModified, ok} = result.result;
 
   if (nModified === 1 && ok === 1) {
@@ -256,9 +257,7 @@ export async function getData(id: UserFactor['id']): Promise<Response> {
 
   return {
     code: message.SUCCESS_CODE,
-    data: {
-      data: result[0].data,
-    },
+    data: result[0].data,
   };
 }
 
