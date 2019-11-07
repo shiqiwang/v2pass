@@ -8,7 +8,7 @@ import PasswordList from './passwordList';
 
 export default class VaultList extends Component<VaultListProps> {
   render(): ReactNode {
-    const {vaults, activeItem, clickItem} = this.props;
+    const {vaults, activeItem, clickItem, dataProcess} = this.props;
 
     return (
       <div className="vaultLists">
@@ -35,6 +35,7 @@ export default class VaultList extends Component<VaultListProps> {
                       activeItem={activeItem}
                       clickItem={clickItem}
                       asSearch={false}
+                      dataProcess={dataProcess}
                     />
                   </div>
                 );

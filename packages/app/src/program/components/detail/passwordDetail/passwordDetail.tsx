@@ -3,23 +3,23 @@ import {computed} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import DataProcess from '../../../dataProcess';
 import {Password, Target} from '../../../types';
-import {findTarget} from '../../../util';
 import {CopyableContainer} from '../../copyableContainer';
 
 import './passwordDetail.less';
 
 interface PasswordProps {
   password: Password;
-  targets: Target[];
+  dataProcess: DataProcess;
 }
 
 @observer
 class PasswordDetail extends Component<PasswordProps> {
   @computed
-  private get target(): Target {
+  private get target(): Target | undefined {
     const {targetId} = this.props.password;
-    const target = findTarget(targetId, this.props.targets);
+    const target = this.props.dataProcess.findTarget(targetId);
     return target;
   }
 
@@ -42,13 +42,15 @@ class PasswordDetail extends Component<PasswordProps> {
             {password.items.map((item, index) => (
               <CopyableContainer key={String(index)} data={item} />
             ))}
-            <h5>Target：{this.target.displayName}</h5>
-            {this.target.entries.map((item, index) => (
-              <CopyableContainer
-                key={String(index)}
-                data={{label: item.type, value: item.value}}
-              />
-            ))}
+            <h5>Target：{this.target ? this.target.displayName : null}</h5>
+            {this.target
+              ? this.target.entries.map((item, index) => (
+                  <CopyableContainer
+                    key={String(index)}
+                    data={{label: item.type, value: item.value}}
+                  />
+                ))
+              : null}
           </div>
         </div>
       </div>

@@ -1,4 +1,6 @@
 import {Password, Target, Folder, Vault} from '../../../types';
+import {ClassType} from 'react';
+import DataProcess from '../../../dataProcess';
 
 interface ActiveItem {
   activePassword: Password['id'];
@@ -14,6 +16,7 @@ interface ItemUIProps {
 export interface PasswordProps extends ItemUIProps {
   password: Password;
   asSearch: boolean;
+  dataProcess: DataProcess;
 }
 
 export interface FolderProps extends ItemUIProps {
@@ -27,14 +30,16 @@ export interface VaultProps extends ItemUIProps {
 export interface PasswordListProps extends ItemUIProps {
   passwords: Password[];
   asSearch: boolean;
+  dataProcess: DataProcess;
 }
 
 export interface VaultListProps extends ItemUIProps {
   vaults: Vault[];
+  dataProcess: DataProcess;
 }
 
 export interface ListProps {
-  vaults: Vault[];
+  dataProcess: DataProcess;
   select(activeItem: ActiveItem): void;
 }
 

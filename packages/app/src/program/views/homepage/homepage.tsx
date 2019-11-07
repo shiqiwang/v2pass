@@ -9,8 +9,9 @@ import Detail from '../../components/detail/detail';
 import PasswordList from '../../components/passwordList/list';
 import {ActiveItem} from '../../components/passwordList/types/types';
 import Profile from '../../components/profile/profile';
+import DataProcess from '../../dataProcess';
 import {Router} from '../../router';
-import {UsageData, UserBaseInfo} from '../../types';
+import {UsageData} from '../../types';
 
 import './homepage.less';
 
@@ -27,59 +28,88 @@ class HomePage extends Component<HomePageProps> {
   };
 
   @observable
-  private userInfo: UserBaseInfo = {
-    username: '',
-    email: '',
-    id: '',
-    secretKey: '',
+  private data: UsageData = {
+    vaults: [
+      {
+        id: '1',
+        name: 'vault1',
+        type: 'private',
+        describe: 'test',
+        folders: [
+          {
+            id: '1',
+            vaultId: '1',
+            name: 'folder1',
+            describe: 'test',
+            passwords: [
+              {
+                id: '1',
+                folderId: '1',
+                vaultId: '1',
+                pass_name: 'password',
+                collect: true,
+                targetId: '1',
+                items: [
+                  {
+                    id: '1',
+                    type: 'userName',
+                    label: 'username',
+                    value: 'emi wang',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: '2',
+            vaultId: '1',
+            name: 'folder2',
+            describe: 'test',
+            passwords: [],
+          },
+        ],
+      },
+    ],
+    targets: [
+      {
+        id: '1',
+        displayName: 'target',
+        entries: [{id: '1', type: 'website URL', value: 'baidu.com'}],
+      },
+    ],
   };
 
-  // @observable
-  // private data: UsageData = {};
-
   render(): ReactNode {
+    const dataProcess = new DataProcess(this.data);
+
     return (
       <div className="homePage">
         <Row className="header">
           <Col span={4} className="options">
-            <CreateNew />
+            <CreateNew dataProcess={dataProcess} />
           </Col>
-          <Col span={2} className="options"></Col>
+          <Col span={4} className="options">
+            <Profile />
+          </Col>
         </Row>
-        <Profile userInfo={this.userInfo} />
-        {/* <Row className="mainBody">
+        <Row className="mainBody">
           <Col span={8}>
             <PasswordList
-              vaults={[]}
+              dataProcess={dataProcess}
               select={activeItem => this.updateActiveItem(activeItem)}
             />
           </Col>
           <Col span={16}>
-            <Detail vaults={[]} activeItem={this.activeItem} targets={[]} />
+            <Detail activeItem={this.activeItem} dataProcess={dataProcess} />
           </Col>
-        </Row> */}
+        </Row>
       </div>
     );
-  }
-
-  componentWillMount(): void {
-    chrome.storage.local.get(items => {
-      const {username, email, id, data, secretKey} = items;
-      this.updateUserInfo({username, email, id, secretKey});
-    });
   }
 
   @action
   private updateActiveItem = (states: ActiveItem): void => {
     this.activeItem = states;
-  };
-
-  @action
-  private updateUserInfo = (value: Partial<UserBaseInfo>): void => {
-    this.userInfo = {
-      ...this.userInfo,
-      ...value,
-    };
   };
 }
 

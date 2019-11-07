@@ -4,8 +4,7 @@ import {action, computed, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 
-import {FolderInfo} from '../../types';
-import {vaultInfoArray} from '../../util';
+import {FolderInfo, VaultInfo} from '../../types';
 
 import {DrawerProps} from './types';
 
@@ -14,6 +13,7 @@ type FolderStateKey = keyof FolderInfo;
 interface FolderFormProps extends FormComponentProps {
   folder: FolderInfo;
   drawer: DrawerProps;
+  vaultInfoArray: VaultInfo[];
 }
 
 @observer
@@ -67,7 +67,7 @@ class NewFolder extends Component<FolderFormProps> {
               <Select
                 onChange={value => this.onDataChange('vaultId', String(value))}
               >
-                {vaultInfoArray.map((item, index) => (
+                {this.props.vaultInfoArray.map((item, index) => (
                   <Option value={item.id} key={String(index)}>
                     {item.name}
                   </Option>

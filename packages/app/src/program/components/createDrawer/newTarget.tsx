@@ -1,6 +1,5 @@
 import {Button, Col, Drawer, Form, Input, Row, Select} from 'antd';
 import {FormComponentProps} from 'antd/lib/form';
-import lodash from 'lodash';
 import {action, computed, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';

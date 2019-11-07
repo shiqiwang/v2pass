@@ -5,14 +5,15 @@ import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 import uuid from 'uuid';
 
+import DataProcess from '../../dataProcess';
 import {Password, PasswordItem} from '../../types';
-import {folderGistArray, targets, vaultGistArray} from '../../util';
 
 import {DrawerProps} from './types';
 
 interface NewItemProps extends FormComponentProps {
   drawer: DrawerProps;
   password: Password;
+  dataProcess: DataProcess;
 }
 
 type FormDataLabelType = keyof Password;
@@ -64,6 +65,9 @@ class NewItem extends Component<NewItemProps> {
     const {title, visible, onClose} = this.props.drawer;
     const {getFieldDecorator} = this.props.form!;
     const {pass_name, folderId, vaultId, targetId, items, collect} = this.data;
+    const {dataProcess} = this.props;
+    console.log('props', this.props);
+    console.log('new Item dataProcess', dataProcess);
 
     return (
       <Drawer
@@ -103,7 +107,7 @@ class NewItem extends Component<NewItemProps> {
               <Select
                 onChange={value => this.onDataChange('vaultId', String(value))}
               >
-                {vaultGistArray.map((vault, index) => (
+                {dataProcess.vaultGistArray.map((vault, index) => (
                   <Option value={vault.id} key={String(index)}>
                     {vault.name}
                   </Option>
@@ -119,7 +123,7 @@ class NewItem extends Component<NewItemProps> {
               <Select
                 onChange={value => this.onDataChange('folderId', String(value))}
               >
-                {folderGistArray.map((folder, index) => (
+                {dataProcess.folderGistArray.map((folder, index) => (
                   <Option value={folder.id} key={String(index)}>
                     {folder.name}
                   </Option>
@@ -135,7 +139,7 @@ class NewItem extends Component<NewItemProps> {
               <Select
                 onChange={value => this.onDataChange('targetId', String(value))}
               >
-                {targets.map((target, index) => (
+                {dataProcess.targets.map((target, index) => (
                   <Option value={target.id} key={String(index)}>
                     {target.displayName}
                   </Option>

@@ -2,8 +2,7 @@ import {computed} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {Target, Vault} from '../../types';
-import {findFolder, findPassword, findVault} from '../../util';
+import DataProcess from '../../dataProcess';
 import {ActiveItem} from '../passwordList/types/types';
 
 import FolderDetail from './folderDetail/folderDetail';
@@ -11,9 +10,8 @@ import PasswordDetail from './passwordDetail/passwordDetail';
 import VaultDetail from './vaultDetail/vaultDetail';
 
 interface DetailProps {
-  vaults: Vault[];
   activeItem: ActiveItem;
-  targets: Target[];
+  dataProcess: DataProcess;
 }
 
 interface Select {
@@ -40,27 +38,28 @@ class Detail extends Component<DetailProps> {
 
   render(): ReactNode {
     const {vaultSelect, folderSelect, passwordSelect} = this.select;
-    const {vaults, activeItem} = this.props;
+    const {dataProcess, activeItem} = this.props;
     const {activeFolder, activeVault} = activeItem;
 
     return (
       <div className="detail">
         {vaultSelect ? (
-          <VaultDetail vault={findVault(vaults, activeVault)!} />
+          <VaultDetail vault={dataProcess.findVault(activeVault)!} />
         ) : (
           undefined
         )}
         {folderSelect ? (
           <FolderDetail
-            folder={findFolder(vaults, activeFolder, activeVault)!}
+            folder={dataProcess.findFolder(activeFolder, activeVault)!}
+            vaultInfoArray={dataProcess.vaultInfoArray}
           />
         ) : (
           undefined
         )}
         {passwordSelect ? (
           <PasswordDetail
-            password={findPassword(vaults, this.props.activeItem)!}
-            targets={this.props.targets}
+            password={dataProcess.findPassword(activeItem)!}
+            dataProcess={dataProcess}
           />
         ) : (
           undefined

@@ -5,7 +5,13 @@ import {PasswordListProps} from '../types/types';
 
 class PasswordList extends Component<PasswordListProps> {
   render(): ReactNode {
-    const {passwords, activeItem, clickItem, asSearch} = this.props;
+    const {
+      passwords,
+      activeItem,
+      clickItem,
+      asSearch,
+      dataProcess,
+    } = this.props;
 
     return (
       <div className="passwordLists">
@@ -16,6 +22,7 @@ class PasswordList extends Component<PasswordListProps> {
               password={password}
               clickItem={clickItem}
               asSearch={asSearch}
+              dataProcess={dataProcess}
             />
           </div>
         ))}

@@ -3,14 +3,10 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {findByName} from '../../util';
-
 import PasswordList from './list/passwordList';
 import VaultList from './list/vaultList';
 import {ActiveItem, ForSearch, ListProps} from './types/types';
 
-// 看看是否能把clickItem放到InductionContainer上
-// 加入targets
 @observer
 class List extends Component<ListProps> {
   @observable
@@ -26,7 +22,7 @@ class List extends Component<ListProps> {
   };
 
   render(): ReactNode {
-    const {vaults} = this.props;
+    const {dataProcess} = this.props;
     const {text, result} = this.search;
 
     return (
@@ -37,9 +33,10 @@ class List extends Component<ListProps> {
         />
         {!text ? (
           <VaultList
-            vaults={vaults}
+            vaults={dataProcess.vaults}
             activeItem={this.activeItem}
             clickItem={activeItem => this.onItemClick(activeItem)}
+            dataProcess={dataProcess}
           />
         ) : result.length ? (
           <PasswordList
@@ -47,6 +44,7 @@ class List extends Component<ListProps> {
             activeItem={this.activeItem}
             clickItem={activeItem => this.onItemClick(activeItem)}
             asSearch={true}
+            dataProcess={dataProcess}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -66,7 +64,8 @@ class List extends Component<ListProps> {
       activeFolder: '',
       activePassword: '',
     };
-    const result = findByName(value, this.props.vaults);
+    const {dataProcess} = this.props;
+    const result = dataProcess.findPasswordsByName(value);
 
     if (value && result.length) {
       const {id, folderId, vaultId} = result[0];
