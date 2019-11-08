@@ -2,7 +2,7 @@ import {computed} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import DataProcess from '../../dataProcess';
+import {PlainDataContext} from '../../store';
 import {ActiveItem} from '../passwordList/types/types';
 
 import FolderDetail from './folderDetail/folderDetail';
@@ -11,7 +11,6 @@ import VaultDetail from './vaultDetail/vaultDetail';
 
 interface DetailProps {
   activeItem: ActiveItem;
-  dataProcess: DataProcess;
 }
 
 interface Select {
@@ -36,10 +35,14 @@ class Detail extends Component<DetailProps> {
     };
   }
 
+  context!: React.ContextType<typeof PlainDataContext>;
+
   render(): ReactNode {
     const {vaultSelect, folderSelect, passwordSelect} = this.select;
-    const {dataProcess, activeItem} = this.props;
+    const {activeItem} = this.props;
     const {activeFolder, activeVault} = activeItem;
+
+    const dataProcess = this.context.dataProcess();
 
     return (
       <div className="detail">
@@ -67,6 +70,8 @@ class Detail extends Component<DetailProps> {
       </div>
     );
   }
+
+  static contextType = PlainDataContext;
 }
 
 export default Detail;
