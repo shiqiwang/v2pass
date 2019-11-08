@@ -4,7 +4,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {KeyGenerator, createSecretKey} from '../../auth';
+import {KeyGenerator, createSecretKey, encryptData} from '../../auth';
 import {registerApi, registerBaseInfoApi} from '../../request';
 import {Router} from '../../router';
 import {
@@ -110,7 +110,8 @@ export default class Register extends Component<RegisterProps> {
     const {email, id} = this.factor;
     const keyGenerator = new KeyGenerator({id, email, secretKey, password});
     const verify = keyGenerator.createVerify();
-    const cipherData = keyGenerator.encryptData({vaults: [], targets: []});
+    const dataKey = keyGenerator.createDataKey();
+    const cipherData = encryptData(dataKey, {vaults: [], targets: []});
     registerApi(id, verify, cipherData)
       .then(result => {
         if (result) {

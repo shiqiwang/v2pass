@@ -5,10 +5,8 @@ import uuid from 'uuid';
 import {
   DataKey,
   SecretKey,
-  StoreData,
   UnlockKey,
   UnlockKeyVerifyFactor,
-  UsageData,
   Verify,
 } from '../types';
 
@@ -41,24 +39,7 @@ export class KeyGenerator {
     return hash;
   }
 
-  encryptData(data: UsageData): StoreData {
-    const dataKey = this.createDataKey();
-    return CryptoJS.AES.encrypt(JSON.stringify(data), dataKey).toString();
-  }
-
-  decryptData(cipherData: StoreData): UsageData | boolean {
-    const dataKey = this.createDataKey();
-    const bytes = CryptoJS.AES.decrypt(cipherData, dataKey);
-    const json = bytes.toString(CryptoJS.enc.Utf8);
-
-    if (json) {
-      return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-    }
-
-    return false;
-  }
-
-  private createDataKey(): DataKey {
+  createDataKey(): DataKey {
     const {id, secretKey, password} = this.factor;
     const hashId = CryptoJS.SHA256(id.trim());
     const hashSecretKey = CryptoJS.SHA256(secretKey.trim());

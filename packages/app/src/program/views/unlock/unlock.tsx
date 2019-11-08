@@ -5,7 +5,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 
-import {KeyGenerator} from '../../auth';
+import {KeyGenerator, decryptData} from '../../auth';
 import {loginApi} from '../../request';
 import {Router, router} from '../../router';
 import {MasterPassword} from '../../types';
@@ -79,7 +79,8 @@ class UnlockPage extends Component<UnlockPageProps> {
             email,
           });
           const unlockKey = keyGenerator.createUnlockKey();
-          const decrypt = keyGenerator.decryptData(data);
+          const dataKey = keyGenerator.createDataKey();
+          const decrypt = decryptData(dataKey, data);
 
           if (decrypt) {
             router.homepage.$push();
