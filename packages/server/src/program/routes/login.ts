@@ -1,7 +1,7 @@
 import {RequestHandler} from 'express';
 import jwt from 'jsonwebtoken';
 
-import {config} from '../../../../config/server';
+import {config} from '../config';
 import {ERROR_CODE, SERVER_ERROR, login, loginGetBaseInfo} from '../dbMethod';
 
 import {testSchema} from './schema';

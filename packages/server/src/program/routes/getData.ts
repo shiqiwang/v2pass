@@ -1,7 +1,7 @@
 import {RequestHandler} from 'express';
 import jwt from 'jsonwebtoken';
 
-import {config} from '../../../../config/server';
+import {config} from '../config';
 import {ERROR_CODE, SERVER_ERROR, getData} from '../dbMethod';
 import {Response} from '../types';
 

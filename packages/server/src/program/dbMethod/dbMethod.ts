@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import mongodb, {ObjectId} from 'mongodb';
 
-import {config} from '../../../../config/server';
+import {config} from '../config';
 import {CanUpdate, Response, UserDocument, UserFactor} from '../types';
 
 import * as message from './const';

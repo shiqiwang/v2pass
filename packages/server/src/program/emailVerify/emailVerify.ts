@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-import {config} from '../../../../config/server';
+import {config} from '../config';
 import {ERROR_CODE, SERVER_ERROR, SUCCESS, SUCCESS_CODE} from '../dbMethod';
 import {Response, UserFactor} from '../types';
 
