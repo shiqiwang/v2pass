@@ -3,7 +3,8 @@ import session from 'cookie-session';
 import express from 'express';
 import helmet from 'helmet';
 
-import {config} from './customConfig';
+import {config} from '../../../config/server';
+
 import * as route from './routes';
 
 const app = express();
