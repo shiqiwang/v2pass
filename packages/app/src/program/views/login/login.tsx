@@ -10,9 +10,10 @@ import React, {
   ReactNode,
 } from 'react';
 
-import {KeyGenerator} from '../../auth';
+import {KeyGenerator, decryptData} from '../../auth';
 import {getDataApi, loginApi, loginGetBaseInfo} from '../../request';
 import {Router, router} from '../../router';
+import {PlainDataContext} from '../../store';
 import {MasterPassword, SecretKey, Username} from '../../types';
 
 import './login.less';
@@ -37,6 +38,7 @@ class Login extends Component<LoginPageProps> {
     password: '',
     secretKey: '',
   };
+  context!: React.ContextType<typeof PlainDataContext>;
 
   render(): ReactNode {
     const {getFieldDecorator} = this.props.form!;
@@ -121,12 +123,14 @@ class Login extends Component<LoginPageProps> {
 
     if (baseInfo) {
       const {id, email} = baseInfo;
-      const unlockKey = new KeyGenerator({
+      const keyGenerator = new KeyGenerator({
         id,
         email,
         secretKey,
         password,
-      }).createUnlockKey();
+      });
+      const unlockKey = keyGenerator.createUnlockKey();
+      const dataKey = keyGenerator.createDataKey();
       const loginResult = await loginApi(id, unlockKey);
 
       if (loginResult) {
@@ -140,6 +144,13 @@ class Login extends Component<LoginPageProps> {
             secretKey,
             data: result,
           });
+          const plainData = decryptData(dataKey, result);
+
+          if (plainData) {
+            this.context.updateData(decryptData(dataKey, result) as any);
+          }
+
+          this.context.updateDataKey(dataKey);
           router.homepage.$push();
         }
       }
@@ -153,6 +164,8 @@ class Login extends Component<LoginPageProps> {
   ): void {
     this.data[label] = value;
   }
+
+  static contextType = PlainDataContext;
 }
 
 export default Form.create<LoginPageProps>({name: 'login'})(Login);

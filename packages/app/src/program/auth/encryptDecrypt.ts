@@ -14,7 +14,7 @@ export function decryptData(
   const json = bytes.toString(CryptoJS.enc.Utf8);
 
   if (json) {
-    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    return JSON.parse(json);
   }
 
   return false;
