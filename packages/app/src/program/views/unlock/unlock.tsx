@@ -89,10 +89,10 @@ class UnlockPage extends Component<UnlockPageProps> {
                 if (result) {
                   // 隐式登录成功
                   // 做个全局记录？
+                } else {
+                  // 没有成功的话，那连网/后端的服务就没法提供
+                  message.warning('server error');
                 }
-
-                // 没有成功的话，那连网/后端的服务就没法提供
-                message.warning('server error');
               })
               .catch(error => {
                 message.warning(error.message);
