@@ -5,7 +5,7 @@ import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 import uuid from 'uuid';
 
-import DataProcess from '../../dataProcess';
+import {PlainDataContext} from '../../store';
 import {Password, PasswordItem} from '../../types';
 
 import {DrawerProps} from './types';
@@ -13,7 +13,6 @@ import {DrawerProps} from './types';
 interface NewItemProps extends FormComponentProps {
   drawer: DrawerProps;
   password: Password;
-  dataProcess: DataProcess;
 }
 
 type FormDataLabelType = keyof Password;
@@ -61,13 +60,17 @@ class NewItem extends Component<NewItemProps> {
     };
   }
 
+  context!: React.ContextType<typeof PlainDataContext>;
+
   render(): ReactNode {
     const {title, visible, onClose} = this.props.drawer;
     const {getFieldDecorator} = this.props.form!;
     const {pass_name, folderId, vaultId, targetId, items, collect} = this.data;
-    const {dataProcess} = this.props;
-    console.log('props', this.props);
-    console.log('new Item dataProcess', dataProcess);
+    const {
+      vaultGistArray,
+      folderGistArray,
+      targets,
+    } = this.context.dataProcess();
 
     return (
       <Drawer
@@ -107,7 +110,7 @@ class NewItem extends Component<NewItemProps> {
               <Select
                 onChange={value => this.onDataChange('vaultId', String(value))}
               >
-                {dataProcess.vaultGistArray.map((vault, index) => (
+                {vaultGistArray.map((vault, index) => (
                   <Option value={vault.id} key={String(index)}>
                     {vault.name}
                   </Option>
@@ -123,7 +126,7 @@ class NewItem extends Component<NewItemProps> {
               <Select
                 onChange={value => this.onDataChange('folderId', String(value))}
               >
-                {dataProcess.folderGistArray.map((folder, index) => (
+                {folderGistArray.map((folder, index) => (
                   <Option value={folder.id} key={String(index)}>
                     {folder.name}
                   </Option>
@@ -139,7 +142,7 @@ class NewItem extends Component<NewItemProps> {
               <Select
                 onChange={value => this.onDataChange('targetId', String(value))}
               >
-                {dataProcess.targets.map((target, index) => (
+                {targets.map((target, index) => (
                   <Option value={target.id} key={String(index)}>
                     {target.displayName}
                   </Option>
@@ -336,6 +339,8 @@ class NewItem extends Component<NewItemProps> {
 
     this.changedItemInfo![label] = value;
   }
+
+  static contextType = PlainDataContext;
 }
 
 export default Form.create<NewItemProps>({name: 'new_item'})(NewItem);

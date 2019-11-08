@@ -5,8 +5,6 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 import uuid from 'uuid';
 
-import DataProcess from '../../dataProcess';
-
 import NewFolder from './newFolder';
 import NewItem from './newItem';
 import NewRandomPass from './newRandomPass';
@@ -20,12 +18,8 @@ interface DrawerStates {
   type: string;
 }
 
-interface IProps {
-  dataProcess: DataProcess;
-}
-
 @observer
-class CreateNew extends Component<IProps> {
+class CreateNew extends Component {
   @observable
   private drawer: DrawerStates = {
     visible: false,
@@ -41,8 +35,6 @@ class CreateNew extends Component<IProps> {
       </Menu>
     );
     const {visible, type} = this.drawer;
-
-    const {dataProcess} = this.props;
 
     return (
       <div>
@@ -63,14 +55,12 @@ class CreateNew extends Component<IProps> {
               collect: false,
               targetId: '',
             }}
-            dataProcess={dataProcess}
           />
         )}
         {type === 'Folder' && (
           <NewFolder
             drawer={{visible, onClose: this.onClose}}
             folder={{name: '', describe: '', id: uuid(), vaultId: ''}}
-            vaultInfoArray={dataProcess.vaultInfoArray}
           />
         )}
         {type === 'Vault' && (
