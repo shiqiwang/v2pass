@@ -16,7 +16,6 @@ interface ItemUIProps {
 export interface PasswordProps extends ItemUIProps {
   password: Password;
   asSearch: boolean;
-  dataProcess: DataProcess;
 }
 
 export interface FolderProps extends ItemUIProps {
@@ -30,16 +29,13 @@ export interface VaultProps extends ItemUIProps {
 export interface PasswordListProps extends ItemUIProps {
   passwords: Password[];
   asSearch: boolean;
-  dataProcess: DataProcess;
 }
 
 export interface VaultListProps extends ItemUIProps {
-  vaults: Vault[];
   dataProcess: DataProcess;
 }
 
 export interface ListProps {
-  dataProcess: DataProcess;
   select(activeItem: ActiveItem): void;
 }
 

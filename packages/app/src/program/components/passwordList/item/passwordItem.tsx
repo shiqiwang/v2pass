@@ -45,7 +45,6 @@ class PasswordItem extends Component<PasswordProps> {
             title: 'Edit Item',
           }}
           password={this.props.password}
-          dataProcess={this.props.dataProcess}
         />
         <Modal
           title={DELETE}

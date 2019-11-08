@@ -3,6 +3,8 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import {PlainDataContext} from '../../store';
+
 import PasswordList from './list/passwordList';
 import VaultList from './list/vaultList';
 import {ActiveItem, ForSearch, ListProps} from './types/types';
@@ -20,10 +22,11 @@ class List extends Component<ListProps> {
     text: '',
     result: [],
   };
+  context!: React.ContextType<typeof PlainDataContext>;
 
   render(): ReactNode {
-    const {dataProcess} = this.props;
     const {text, result} = this.search;
+    const dataProcess = this.context.dataProcess();
 
     return (
       <div className="list">
@@ -33,7 +36,6 @@ class List extends Component<ListProps> {
         />
         {!text ? (
           <VaultList
-            vaults={dataProcess.vaults}
             activeItem={this.activeItem}
             clickItem={activeItem => this.onItemClick(activeItem)}
             dataProcess={dataProcess}
@@ -44,7 +46,6 @@ class List extends Component<ListProps> {
             activeItem={this.activeItem}
             clickItem={activeItem => this.onItemClick(activeItem)}
             asSearch={true}
-            dataProcess={dataProcess}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -64,7 +65,7 @@ class List extends Component<ListProps> {
       activeFolder: '',
       activePassword: '',
     };
-    const {dataProcess} = this.props;
+    const dataProcess = this.context.dataProcess();
     const result = dataProcess.findPasswordsByName(value);
 
     if (value && result.length) {
@@ -90,6 +91,8 @@ class List extends Component<ListProps> {
   private updateSearch(states: ForSearch): void {
     this.search = states;
   }
+
+  static contextType = PlainDataContext;
 }
 
 export default List;
