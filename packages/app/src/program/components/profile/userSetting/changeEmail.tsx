@@ -217,6 +217,7 @@ export default class ChangeEmail extends Component<OldEmail> {
           .then(result => {
             if (result) {
               chrome.storage.local.set({email: email.value});
+              this.props.refresh();
               message.success('update email successfully');
             }
           })

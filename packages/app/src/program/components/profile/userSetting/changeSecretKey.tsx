@@ -108,6 +108,7 @@ export default class ChangeSecretKey extends Component<IProps> {
             if (result) {
               // 如果成功了要下载该secret key让用户保存
               chrome.storage.local.set({secretKey: value});
+              this.props.refresh();
               message.success('update successfully');
             }
           })
