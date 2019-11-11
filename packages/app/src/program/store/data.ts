@@ -15,6 +15,7 @@ interface Record {
 // 明文数据
 export class PlainData {
   @observable record: Record;
+  @observable hasService: boolean = false;
 
   constructor(newRecord: Record) {
     this.record = newRecord;
@@ -24,8 +25,16 @@ export class PlainData {
     return this.record;
   }
 
+  getHasService(): boolean {
+    return this.hasService;
+  }
+
   updateRecord(newRecord: Record): void {
     this.record = newRecord;
+  }
+
+  updateHasService(has: boolean): void {
+    this.hasService = has;
   }
 
   updateAllFormOfData(record: Record): void {

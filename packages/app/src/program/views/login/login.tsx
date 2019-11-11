@@ -14,7 +14,7 @@ import {KeyGenerator, decryptData} from '../../auth';
 import {getDataApi, loginApi, loginGetBaseInfo} from '../../request';
 import {Router, router} from '../../router';
 import {PlainDataContext} from '../../store';
-import {MasterPassword, SecretKey, Username} from '../../types';
+import {MasterPassword, SecretKey, UsageData, Username} from '../../types';
 
 import './login.less';
 
@@ -144,6 +144,7 @@ class Login extends Component<LoginPageProps> {
             secretKey,
             data: result,
           });
+          this.context.updateHasService(true);
           const plainData = decryptData(dataKey, result);
 
           if (plainData) {

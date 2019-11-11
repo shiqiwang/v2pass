@@ -9,8 +9,13 @@ export function encryptData(dataKey: DataKey, data: UsageData): StoreData {
 export function decryptData(
   dataKey: DataKey,
   cipherData: StoreData,
-): UsageData {
+): UsageData | false {
   const bytes = CryptoJS.AES.decrypt(cipherData, dataKey);
   const json = bytes.toString(CryptoJS.enc.Utf8);
-  return JSON.parse(json);
+
+  if (json) {
+    return JSON.parse(json);
+  }
+
+  return false;
 }

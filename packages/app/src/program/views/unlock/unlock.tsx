@@ -8,6 +8,7 @@ import React, {Component, FormEventHandler, ReactNode} from 'react';
 import {KeyGenerator, decryptData} from '../../auth';
 import {loginApi} from '../../request';
 import {Router, router} from '../../router';
+import {PlainDataContext} from '../../store';
 import {MasterPassword} from '../../types';
 
 import './unlock.less';
@@ -20,6 +21,7 @@ export interface UnlockPageProps
 class UnlockPage extends Component<UnlockPageProps> {
   @observable
   private password: MasterPassword = '';
+  context!: React.ContextType<typeof PlainDataContext>;
 
   render(): ReactNode {
     const {getFieldDecorator} = this.props.form!;
@@ -80,21 +82,21 @@ class UnlockPage extends Component<UnlockPageProps> {
           });
           const unlockKey = keyGenerator.createUnlockKey();
           const dataKey = keyGenerator.createDataKey();
-          const decrypt = decryptData(dataKey, data);
+          const plainData = decryptData(dataKey, data);
 
-          if (decrypt) {
+          if (plainData) {
             router.homepage.$push();
+            this.context.updateRecord({plainData, dataKey});
             loginApi(id, unlockKey)
               .then(result => {
                 if (result) {
-                  // 隐式登录成功
-                  // 做个全局记录？
+                  this.context.updateHasService(true);
                 } else {
-                  // 没有成功的话，那连网/后端的服务就没法提供
-                  message.warning('server error');
+                  this.context.updateHasService(false);
                 }
               })
               .catch(error => {
+                this.context.updateHasService(false);
                 message.warning(error.message);
               });
           } else {
@@ -116,6 +118,8 @@ class UnlockPage extends Component<UnlockPageProps> {
   private updatePassword(password: MasterPassword): void {
     this.password = password;
   }
+
+  static contextType = PlainDataContext;
 }
 
 export default Form.create<UnlockPageProps>({name: 'unlock_page'})(UnlockPage);
