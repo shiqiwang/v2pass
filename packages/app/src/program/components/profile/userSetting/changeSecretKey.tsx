@@ -3,9 +3,14 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {KeyGenerator, createSecretKey} from '../../../auth';
+import {
+  KeyGenerator,
+  createSecretKey,
+  decryptData,
+  encryptData,
+} from '../../../auth';
 import {updateVerify} from '../../../request';
-import {MasterPassword, SecretKey} from '../../../types';
+import {MasterPassword, SecretKey, UsageData} from '../../../types';
 import {IChangeSecretKey} from '../type';
 
 import './index.less';
@@ -90,24 +95,30 @@ export default class ChangeSecretKey extends Component<IProps> {
 
     if (password.validateStatus === 'success' && value) {
       chrome.storage.local.get(items => {
-        const {id, email, secretKey} = items;
-        const unlockKey = new KeyGenerator({
+        const {id, email, secretKey, data} = items;
+        const oldKeyGenerator = new KeyGenerator({
           id,
           email,
           secretKey,
           password: password.value,
-        }).createUnlockKey();
-        const newVerify = new KeyGenerator({
+        });
+        const unlockKey = oldKeyGenerator.createUnlockKey();
+        const oldDataKey = oldKeyGenerator.createDataKey();
+        const plainData = decryptData(oldDataKey, data) as UsageData;
+        const newKeyGenerator = new KeyGenerator({
           id,
           email,
           password: password.value,
           secretKey: value,
-        }).createVerify();
-        updateVerify(unlockKey, newVerify)
+        });
+        const newVerify = newKeyGenerator.createVerify();
+        const newDataKey = newKeyGenerator.createDataKey();
+        const newData = encryptData(newDataKey, plainData);
+        updateVerify(unlockKey, newVerify, newData)
           .then(result => {
             if (result) {
               // 如果成功了要下载该secret key让用户保存
-              chrome.storage.local.set({secretKey: value});
+              chrome.storage.local.set({secretKey: value, data: newData});
               this.props.refresh();
               message.success('update successfully');
             }

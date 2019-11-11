@@ -118,7 +118,7 @@ export const updateDataRoute: RequestHandler = (req, res) => {
 };
 
 export const updateVerifyRoute: RequestHandler = (req, res) => {
-  const paramsTest = testSchema(req.body, ['unlockKey', 'verify']);
+  const paramsTest = testSchema(req.body, ['unlockKey', 'verify', 'data']);
 
   if (!paramsTest.code) {
     res.send(paramsTest);
@@ -127,11 +127,11 @@ export const updateVerifyRoute: RequestHandler = (req, res) => {
 
   const token = jwt.verify(req.session!.token, tokenKeys);
   const id = (token as any).data;
-  const {unlockKey, verify} = req.body;
+  const {unlockKey, verify, data} = req.body;
   testAuth(id, unlockKey)
     .then(result => {
       if (result.code) {
-        updateUserData(id, {verify})
+        updateUserData(id, {verify, data})
           .then(result => res.send(result))
           .catch(error => {
             console.error('update verify route error', error);

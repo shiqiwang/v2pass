@@ -151,10 +151,12 @@ export async function updateEmailApi(
 export async function updateVerify(
   unlockKey: UnlockKey,
   verify: Verify,
+  data: StoreData,
 ): Promise<boolean> {
   const result = await axios.post(`${serverUrl}updateVerify`, {
     unlockKey,
     verify,
+    data,
   });
   return dealWithResult(result);
 }

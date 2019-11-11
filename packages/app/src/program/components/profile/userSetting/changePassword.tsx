@@ -3,9 +3,9 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {KeyGenerator} from '../../../auth';
-import {updateVerify} from '../../../request';
-import {MasterPassword} from '../../../types';
+import {KeyGenerator, decryptData, encryptData} from '../../../auth';
+import {updateDataApi, updateVerify} from '../../../request';
+import {MasterPassword, UsageData} from '../../../types';
 import {IChangePassword} from '../type';
 
 type IChangePasswordLabel = keyof IChangePassword;
@@ -97,23 +97,30 @@ export default class ChangePassword extends Component {
       repeat.validateStatus === 'success'
     ) {
       chrome.storage.local.get(items => {
-        const {id, email, secretKey} = items;
-        const unlockKey = new KeyGenerator({
+        const {id, email, secretKey, data} = items;
+        const oldKeyGenerator = new KeyGenerator({
           id,
           email,
           secretKey,
           password: old.value,
-        }).createUnlockKey();
-        const verify = new KeyGenerator({
+        });
+        const unlockKey = oldKeyGenerator.createUnlockKey();
+        const oldDataKey = oldKeyGenerator.createDataKey();
+        const plainData = decryptData(oldDataKey, data) as UsageData;
+        const newKeyGenerator = new KeyGenerator({
           id,
           email,
           secretKey,
           password: password.value,
-        }).createVerify();
-        updateVerify(unlockKey, verify)
+        });
+        const verify = newKeyGenerator.createVerify();
+        const newDataKey = newKeyGenerator.createDataKey();
+        const newData = encryptData(newDataKey, plainData);
+        updateVerify(unlockKey, verify, newData)
           .then(result => {
             if (result) {
               message.success('update successfully');
+              chrome.storage.local.set({data: newData});
             }
           })
           .catch(error => message.error(error.message));
