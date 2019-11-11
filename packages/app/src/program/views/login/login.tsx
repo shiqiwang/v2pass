@@ -147,10 +147,9 @@ class Login extends Component<LoginPageProps> {
           const plainData = decryptData(dataKey, result);
 
           if (plainData) {
-            this.context.updateData(decryptData(dataKey, result) as any);
+            this.context.updateRecord({plainData, dataKey});
           }
 
-          this.context.updateDataKey(dataKey);
           router.homepage.$push();
         }
       }

@@ -7,28 +7,31 @@ import DataProcess from '../dataProcess';
 import {updateDataApi} from '../request';
 import {DataKey, UsageData} from '../types';
 
+interface Record {
+  plainData: UsageData;
+  dataKey: DataKey;
+}
+
 // 明文数据
 export class PlainData {
-  @observable data: UsageData;
-  @observable dataKey: DataKey;
+  @observable record: Record;
 
-  constructor(newData: UsageData, newDataKey: DataKey) {
-    this.data = newData;
-    this.dataKey = newDataKey;
+  constructor(newRecord: Record) {
+    this.record = newRecord;
   }
 
-  getData(): UsageData {
-    return this.data;
+  getRecord(): Record {
+    return this.record;
   }
 
-  updateDataKey(newDataKey: DataKey): void {
-    this.dataKey = newDataKey;
+  updateRecord(newRecord: Record): void {
+    this.record = newRecord;
   }
 
-  updateData(newData: UsageData): void {
-    this.data = newData;
-    chrome.storage.local.set({data: newData});
-    const cipherData = encryptData(this.dataKey, newData); // 加密后的数据
+  updateAllFormOfData(record: Record): void {
+    const {plainData, dataKey} = record;
+    const cipherData = encryptData(dataKey, plainData);
+    chrome.storage.local.set({data: cipherData});
     updateDataApi(cipherData)
       .then(result => {
         if (result) {
@@ -42,10 +45,10 @@ export class PlainData {
   }
 
   dataProcess(): DataProcess {
-    return new DataProcess(this.data);
+    return new DataProcess(this.record.plainData);
   }
 }
 
 export const PlainDataContext = React.createContext(
-  new PlainData({vaults: [], targets: []}, ''),
+  new PlainData({plainData: {vaults: [], targets: []}, dataKey: ''}),
 );
