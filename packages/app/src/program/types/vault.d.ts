@@ -11,17 +11,10 @@ import {Folder} from './index';
 //   member: UserId[];
 //   folders: Folder[];
 // }
-
-export interface VaultGist {
+export interface Vault {
   id: string;
   name: string;
-}
-
-export interface VaultInfo extends VaultGist {
   type: 'private';
   describe: string;
-}
-
-export interface Vault extends VaultInfo {
   folders: Folder[];
 }

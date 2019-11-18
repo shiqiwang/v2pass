@@ -1,12 +1,9 @@
-export interface PasswordGist {
+export interface Password {
   id: string;
   folderId: string;
   vaultId: string;
   pass_name: string;
   collect: boolean;
-}
-
-export interface Password extends PasswordGist {
   targetId: string;
   items: PasswordItem[];
 }
