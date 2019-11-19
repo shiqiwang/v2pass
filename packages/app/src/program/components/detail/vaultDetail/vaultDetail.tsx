@@ -12,8 +12,6 @@ interface VaultProps {
   vault: Vault;
 }
 
-// 目前只有private的vault，暂时不考虑权限问题，好难思考
-// 例如：shared文件有些人没有删除和编辑权限等
 @observer
 class VaultDetail extends Component<VaultProps> {
   @observable
