@@ -58,10 +58,7 @@ class CreateNew extends Component {
           />
         )}
         {type === 'Folder' && (
-          <NewFolder
-            drawer={{visible, onClose: this.onClose}}
-            folder={{name: '', describe: '', id: uuid(), vaultId: ''}}
-          />
+          <NewFolder drawer={{visible, onClose: this.onClose}} />
         )}
         {type === 'Vault' && (
           <NewVault drawer={{visible, onClose: this.onClose}} />
