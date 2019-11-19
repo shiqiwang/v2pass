@@ -22,14 +22,14 @@ class VaultDetail extends Component<VaultProps> {
   private modalVisible = false;
 
   render(): ReactNode {
-    const {id, name, type, describe} = this.props.vault;
+    const {vault} = this.props;
 
     return (
       <div className="vaultDetail">
         <Modal
           title="Delete Vault"
           visible={this.modalVisible}
-          onOk={() => this.deleteVault(id)}
+          onOk={() => this.deleteVault(vault.id)}
           onCancel={this.cancelDelete}
         >
           <p>you will lost all the data in this vault, continue?</p>
@@ -40,7 +40,7 @@ class VaultDetail extends Component<VaultProps> {
             onClose: this.onDrawerClose,
             title: 'Edit Vault',
           }}
-          vault={{name, id, type, describe}}
+          vault={vault}
         />
         <div className="header">
           <Row>
@@ -54,12 +54,12 @@ class VaultDetail extends Component<VaultProps> {
           <Icon
             type="setting"
             className="setting"
-            onClick={() => this.onDrawerShow(id)}
+            onClick={() => this.onDrawerShow(vault.id)}
           />
           <Icon type="delete" className="delete" onClick={this.showModal} />
         </div>
         <div className="detail">
-          {describe || <Empty description="No description" />}
+          {vault.describe || <Empty description="No description" />}
         </div>
       </div>
     );

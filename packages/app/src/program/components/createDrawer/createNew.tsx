@@ -64,10 +64,7 @@ class CreateNew extends Component {
           />
         )}
         {type === 'Vault' && (
-          <NewVault
-            drawer={{visible, onClose: this.onClose}}
-            vault={{name: '', describe: '', id: uuid(), type: 'private'}}
-          />
+          <NewVault drawer={{visible, onClose: this.onClose}} />
         )}
         {type === 'Target' && (
           <NewTarget

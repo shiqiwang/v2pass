@@ -4,15 +4,15 @@ import {action, computed, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 
-import {PlainDataContext} from '../../store';
-import {FolderInfo} from '../../types';
+import {DataContext} from '../../store';
+import {Folder} from '../../types';
 
 import {DrawerProps} from './types';
 
-type FolderStateKey = keyof FolderInfo;
+type FolderStateKey = keyof Folder;
 
 interface FolderFormProps extends FormComponentProps {
-  folder: FolderInfo;
+  folder: Partial<Folder>;
   drawer: DrawerProps;
 }
 
@@ -24,10 +24,10 @@ class NewFolder extends Component<FolderFormProps> {
   @observable
   private changedFolderId: string | undefined;
   @observable
-  private changedFolderInfo: Partial<FolderInfo> | undefined;
+  private changedFolderInfo: Partial<Folder> | undefined;
 
   @computed
-  get data(): FolderInfo {
+  get data(): Partial<Folder> {
     let {folder} = this.props;
 
     if (!this.changedFolderId || this.changedFolderId !== folder.id) {
@@ -40,13 +40,13 @@ class NewFolder extends Component<FolderFormProps> {
     };
   }
 
-  context!: React.ContextType<typeof PlainDataContext>;
+  context!: React.ContextType<typeof DataContext>;
 
   render(): ReactNode {
     const {getFieldDecorator} = this.props.form!;
     const {name, describe, vaultId} = this.props.folder;
     const {visible, onClose, title} = this.props.drawer;
-    const {vaultInfoArray} = this.context.dataProcess();
+    const {vaults} = this.context;
 
     return (
       <Drawer
@@ -71,7 +71,7 @@ class NewFolder extends Component<FolderFormProps> {
               <Select
                 onChange={value => this.onDataChange('vaultId', String(value))}
               >
-                {vaultInfoArray.map((item, index) => (
+                {vaults.map((item, index) => (
                   <Option value={item.id} key={String(index)}>
                     {item.name}
                   </Option>
@@ -133,7 +133,7 @@ class NewFolder extends Component<FolderFormProps> {
   @action
   private updateData<TLabel extends FolderStateKey>(
     label: TLabel,
-    value: FolderInfo[TLabel],
+    value: Folder[TLabel],
   ): void {
     let {folder} = this.props;
 
@@ -145,7 +145,7 @@ class NewFolder extends Component<FolderFormProps> {
     this.changedFolderInfo![label] = value;
   }
 
-  static contextType = PlainDataContext;
+  static contextType = DataContext;
 }
 
 export default Form.create<FolderFormProps>({name: 'new_folder'})(NewFolder);

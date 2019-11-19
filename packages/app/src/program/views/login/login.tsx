@@ -13,7 +13,7 @@ import React, {
 import {KeyGenerator, decryptData} from '../../auth';
 import {getDataApi, loginApi, loginGetBaseInfo} from '../../request';
 import {Router, router} from '../../router';
-import {PlainDataContext} from '../../store';
+import {DataContext} from '../../store';
 import {MasterPassword, SecretKey, UsageData, Username} from '../../types';
 
 import './login.less';
@@ -38,7 +38,7 @@ class Login extends Component<LoginPageProps> {
     password: '',
     secretKey: '',
   };
-  context!: React.ContextType<typeof PlainDataContext>;
+  context!: React.ContextType<typeof DataContext>;
 
   render(): ReactNode {
     const {getFieldDecorator} = this.props.form!;
@@ -148,7 +148,8 @@ class Login extends Component<LoginPageProps> {
           const plainData = decryptData(dataKey, result);
 
           if (plainData) {
-            this.context.updateRecord({plainData, dataKey});
+            this.context.updateData(plainData);
+            this.context.updateDataKey(dataKey);
           }
 
           router.homepage.$push();
@@ -165,7 +166,7 @@ class Login extends Component<LoginPageProps> {
     this.data[label] = value;
   }
 
-  static contextType = PlainDataContext;
+  static contextType = DataContext;
 }
 
 export default Form.create<LoginPageProps>({name: 'login'})(Login);

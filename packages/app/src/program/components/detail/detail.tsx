@@ -2,7 +2,7 @@ import {computed} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {PlainDataContext} from '../../store';
+import {DataContext} from '../../store';
 import {ActiveItem} from '../passwordList/types/types';
 
 import FolderDetail from './folderDetail/folderDetail';
@@ -35,35 +35,29 @@ class Detail extends Component<DetailProps> {
     };
   }
 
-  context!: React.ContextType<typeof PlainDataContext>;
+  context!: React.ContextType<typeof DataContext>;
 
   render(): ReactNode {
     const {vaultSelect, folderSelect, passwordSelect} = this.select;
     const {activeItem} = this.props;
     const {activeFolder, activeVault} = activeItem;
 
-    const dataProcess = this.context.dataProcess();
-
     return (
       <div className="detail">
         {vaultSelect ? (
-          <VaultDetail vault={dataProcess.findVault(activeVault)!} />
+          <VaultDetail vault={this.context.findVault(activeVault)!} />
         ) : (
           undefined
         )}
         {folderSelect ? (
           <FolderDetail
-            folder={dataProcess.findFolder(activeFolder, activeVault)!}
-            vaultInfoArray={dataProcess.vaultInfoArray}
+            folder={this.context.findFolder(activeFolder, activeVault)!}
           />
         ) : (
           undefined
         )}
         {passwordSelect ? (
-          <PasswordDetail
-            password={dataProcess.findPassword(activeItem)!}
-            dataProcess={dataProcess}
-          />
+          <PasswordDetail password={this.context.findPassword(activeItem)!} />
         ) : (
           undefined
         )}
@@ -71,7 +65,7 @@ class Detail extends Component<DetailProps> {
     );
   }
 
-  static contextType = PlainDataContext;
+  static contextType = DataContext;
 }
 
 export default Detail;

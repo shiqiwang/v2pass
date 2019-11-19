@@ -3,7 +3,7 @@ import {computed} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import DataProcess from '../../../dataProcess';
+import {DataContext} from '../../../store';
 import {Password, Target} from '../../../types';
 import {CopyableContainer} from '../../copyableContainer';
 
@@ -11,15 +11,16 @@ import './passwordDetail.less';
 
 interface PasswordProps {
   password: Password;
-  dataProcess: DataProcess;
 }
 
 @observer
 class PasswordDetail extends Component<PasswordProps> {
+  context!: React.ContextType<typeof DataContext>;
+
   @computed
   private get target(): Target | undefined {
     const {targetId} = this.props.password;
-    const target = this.props.dataProcess.findTarget(targetId);
+    const target = this.context.findTarget(targetId);
     return target;
   }
 
@@ -56,6 +57,8 @@ class PasswordDetail extends Component<PasswordProps> {
       </div>
     );
   }
+
+  static contextType = DataContext;
 }
 
 export default PasswordDetail;

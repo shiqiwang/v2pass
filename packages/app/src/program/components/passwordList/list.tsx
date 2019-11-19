@@ -3,7 +3,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {PlainDataContext} from '../../store';
+import {DataContext} from '../../store';
 
 import PasswordList from './list/passwordList';
 import VaultList from './list/vaultList';
@@ -22,11 +22,10 @@ class List extends Component<ListProps> {
     text: '',
     result: [],
   };
-  context!: React.ContextType<typeof PlainDataContext>;
+  context!: React.ContextType<typeof DataContext>;
 
   render(): ReactNode {
     const {text, result} = this.search;
-    const dataProcess = this.context.dataProcess();
 
     return (
       <div className="list">
@@ -38,7 +37,7 @@ class List extends Component<ListProps> {
           <VaultList
             activeItem={this.activeItem}
             clickItem={activeItem => this.onItemClick(activeItem)}
-            dataProcess={dataProcess}
+            vaults={this.context.vaults}
           />
         ) : result.length ? (
           <PasswordList
@@ -65,8 +64,7 @@ class List extends Component<ListProps> {
       activeFolder: '',
       activePassword: '',
     };
-    const dataProcess = this.context.dataProcess();
-    const result = dataProcess.findPasswordsByName(value);
+    const result = this.context.findPasswordsByName(value);
 
     if (value && result.length) {
       const {id, folderId, vaultId} = result[0];
@@ -92,7 +90,7 @@ class List extends Component<ListProps> {
     this.search = states;
   }
 
-  static contextType = PlainDataContext;
+  static contextType = DataContext;
 }
 
 export default List;

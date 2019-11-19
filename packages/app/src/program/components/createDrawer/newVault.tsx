@@ -1,55 +1,44 @@
 import {Button, Drawer, Form, Input, Radio} from 'antd';
-import {FormComponentProps} from 'antd/lib/form';
-import {action, computed, observable} from 'mobx';
+import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
-import React, {
-  ChangeEvent,
-  Component,
-  FormEventHandler,
-  ReactNode,
-} from 'react';
+import React, {Component, ReactNode} from 'react';
+import uuid from 'uuid';
 
-import {VaultInfo} from '../../types';
+import {DataContext} from '../../store';
+import {Vault} from '../../types';
 
-import {DrawerProps} from './types';
+import {DrawerProps, IValidate} from './types';
 
-interface VaultFormProps extends FormComponentProps {
-  vault: VaultInfo;
+interface VaultFormProps {
+  vault?: Vault;
   drawer: DrawerProps;
 }
 
-type VaultStateKey = keyof VaultInfo;
+type VaultStateKey = keyof Vault;
 
 @observer
-class NewVault extends Component<VaultFormProps> {
-  // @observable
-  // private data: VaultInfo = lodash.cloneDeep(this.props.vault);
+export default class NewVault extends Component<VaultFormProps> {
+  @observable
+  private data: Vault = {
+    name: '',
+    type: 'private',
+    describe: '',
+    id: uuid(),
+    folders: [],
+  };
 
   @observable
-  private changedVaultId: string | undefined;
-
-  @observable
-  private changedVaultInfo: Partial<VaultInfo> | undefined;
-
-  @computed
-  get data(): VaultInfo {
-    let {vault} = this.props;
-
-    if (!this.changedVaultId || this.changedVaultId !== vault.id) {
-      return vault;
-    }
-
-    return {
-      ...vault,
-      ...this.changedVaultInfo,
-    };
-  }
+  private nameValidate: IValidate = {
+    status: undefined,
+    help: '',
+  };
+  context!: React.ContextType<typeof DataContext>;
 
   render(): ReactNode {
-    const {getFieldDecorator} = this.props.form!;
     const {TextArea} = Input;
-    const {name, type, describe} = this.props.vault;
+    const {name, type, describe} = this.data;
     const {visible, title, onClose} = this.props.drawer;
+    const {status, help} = this.nameValidate;
 
     return (
       <Drawer
@@ -60,23 +49,20 @@ class NewVault extends Component<VaultFormProps> {
         title={title ? title : `New Vault`}
         onClose={onClose}
       >
-        <Form onSubmit={this.onFormSubmit} className="newVaultForm">
-          <Form.Item label="vault name">
-            {getFieldDecorator('name', {
-              rules: [
-                {
-                  required: true,
-                  message: 'Please input your vault name!',
-                },
-              ],
-              initialValue: name,
-            })(
-              <Input
-                type="text"
-                placeholder="vault name"
-                onChange={event => this.onDataChange('name', event)}
-              />,
-            )}
+        <Form className="newVaultForm">
+          <Form.Item
+            label="vault name"
+            hasFeedback
+            validateStatus={status}
+            help={help}
+          >
+            <Input
+              value={name}
+              type="text"
+              placeholder="vault name"
+              onChange={event => this.onNameChange(event.target.value)}
+              onBlur={event => this.onCheckName(event.target.value)}
+            />
           </Form.Item>
           <Form.Item label="type">
             <Radio.Group value={type}>
@@ -87,17 +73,14 @@ class NewVault extends Component<VaultFormProps> {
             </Radio.Group>
           </Form.Item>
           <Form.Item label="describe">
-            {getFieldDecorator('describe', {
-              initialValue: describe,
-            })(
-              <TextArea
-                placeholder="describe"
-                onChange={event => this.onDataChange('describe', event)}
-              />,
-            )}
+            <TextArea
+              value={describe}
+              placeholder="describe"
+              onChange={event => this.onDescribeChange(event.target.value)}
+            />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" onClick={() => this.onSave()}>
               save
             </Button>
           </Form.Item>
@@ -106,36 +89,63 @@ class NewVault extends Component<VaultFormProps> {
     );
   }
 
-  private onFormSubmit: FormEventHandler<HTMLFormElement> = event => {
-    event.preventDefault();
-    this.props.form!.validateFields((error, values) => {
-      if (!error) {
-        console.log('submit', values);
-      }
-    });
-  };
+  componentWillMount(): void {
+    const {vault} = this.props;
 
-  private onDataChange(
-    label: VaultStateKey,
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ): void {
-    this.updateData(label, event.target.value);
+    if (vault) {
+      this.data = vault;
+    }
   }
 
   @action
-  private updateData<TLabel extends VaultStateKey>(
-    label: TLabel,
-    value: VaultInfo[TLabel],
-  ): void {
-    let {vault} = this.props;
+  private onSave(): void {
+    const {status} = this.nameValidate;
 
-    if (this.changedVaultId !== vault.id) {
-      this.changedVaultId = vault.id;
-      this.changedVaultInfo = {};
+    if (status === 'success') {
+      this.context.addVault({
+        ...this.data,
+        folders: [],
+      });
     }
-
-    this.changedVaultInfo![label] = value;
   }
-}
 
-export default Form.create<VaultFormProps>({name: 'new_vault'})(NewVault);
+  @action
+  private onDescribeChange(value: Vault['describe']): void {
+    this.updateData('describe', value);
+  }
+
+  @action
+  private onNameChange(value: Vault['name']): void {
+    this.updateData('name', value);
+  }
+
+  @action
+  private onCheckName(value: Vault['name']): void {
+    if (value) {
+      const {vaults} = this.context;
+
+      if (vaults.findIndex(item => item.name === value) >= 0) {
+        this.updateNameValidate({status: 'error', help: 'name occupied'});
+      } else {
+        this.updateNameValidate({status: 'success', help: ''});
+      }
+    } else {
+      this.updateNameValidate({status: 'error', help: 'name required'});
+    }
+  }
+
+  @action
+  private updateData<Label extends VaultStateKey>(
+    label: Label,
+    value: Vault[Label],
+  ): void {
+    this.data[label] = value;
+  }
+
+  @action
+  private updateNameValidate(value: IValidate): void {
+    this.nameValidate = value;
+  }
+
+  static contextType = DataContext;
+}

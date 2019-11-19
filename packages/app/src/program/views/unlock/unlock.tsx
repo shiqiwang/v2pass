@@ -8,7 +8,7 @@ import React, {Component, FormEventHandler, ReactNode} from 'react';
 import {KeyGenerator, decryptData} from '../../auth';
 import {loginApi} from '../../request';
 import {Router, router} from '../../router';
-import {PlainDataContext} from '../../store';
+import {DataContext} from '../../store';
 import {MasterPassword} from '../../types';
 
 import './unlock.less';
@@ -21,7 +21,7 @@ export interface UnlockPageProps
 class UnlockPage extends Component<UnlockPageProps> {
   @observable
   private password: MasterPassword = '';
-  context!: React.ContextType<typeof PlainDataContext>;
+  context!: React.ContextType<typeof DataContext>;
 
   render(): ReactNode {
     const {getFieldDecorator} = this.props.form!;
@@ -86,7 +86,8 @@ class UnlockPage extends Component<UnlockPageProps> {
 
           if (plainData) {
             router.homepage.$push();
-            this.context.updateRecord({plainData, dataKey});
+            this.context.updateData(plainData);
+            this.context.updateDataKey(dataKey);
             loginApi(id, unlockKey)
               .then(result => {
                 if (result) {
@@ -119,7 +120,7 @@ class UnlockPage extends Component<UnlockPageProps> {
     this.password = password;
   }
 
-  static contextType = PlainDataContext;
+  static contextType = DataContext;
 }
 
 export default Form.create<UnlockPageProps>({name: 'unlock_page'})(UnlockPage);

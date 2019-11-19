@@ -5,7 +5,7 @@ import {observer} from 'mobx-react';
 import React, {Component, FormEventHandler, ReactNode} from 'react';
 import uuid from 'uuid';
 
-import {PlainDataContext} from '../../store';
+import {DataContext} from '../../store';
 import {Password, PasswordItem} from '../../types';
 
 import {DrawerProps} from './types';
@@ -60,17 +60,13 @@ class NewItem extends Component<NewItemProps> {
     };
   }
 
-  context!: React.ContextType<typeof PlainDataContext>;
+  context!: React.ContextType<typeof DataContext>;
 
   render(): ReactNode {
     const {title, visible, onClose} = this.props.drawer;
     const {getFieldDecorator} = this.props.form!;
     const {pass_name, folderId, vaultId, targetId, items, collect} = this.data;
-    const {
-      vaultGistArray,
-      folderGistArray,
-      targets,
-    } = this.context.dataProcess();
+    const {vaults, folders, targets} = this.context;
 
     return (
       <Drawer
@@ -110,7 +106,7 @@ class NewItem extends Component<NewItemProps> {
               <Select
                 onChange={value => this.onDataChange('vaultId', String(value))}
               >
-                {vaultGistArray.map((vault, index) => (
+                {vaults.map((vault, index) => (
                   <Option value={vault.id} key={String(index)}>
                     {vault.name}
                   </Option>
@@ -126,7 +122,7 @@ class NewItem extends Component<NewItemProps> {
               <Select
                 onChange={value => this.onDataChange('folderId', String(value))}
               >
-                {folderGistArray.map((folder, index) => (
+                {folders.map((folder, index) => (
                   <Option value={folder.id} key={String(index)}>
                     {folder.name}
                   </Option>
@@ -340,7 +336,7 @@ class NewItem extends Component<NewItemProps> {
     this.changedItemInfo![label] = value;
   }
 
-  static contextType = PlainDataContext;
+  static contextType = DataContext;
 }
 
 export default Form.create<NewItemProps>({name: 'new_item'})(NewItem);

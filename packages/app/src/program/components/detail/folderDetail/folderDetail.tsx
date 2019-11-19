@@ -3,14 +3,13 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {Folder, VaultInfo} from '../../../types';
+import {Folder} from '../../../types';
 import NewFolder from '../../createDrawer/newFolder';
 
 import './folderDetail.less';
 
 interface FolderDetailProps {
   folder: Folder;
-  vaultInfoArray: VaultInfo[];
 }
 
 @observer
@@ -22,7 +21,6 @@ class FolderDetail extends Component<FolderDetailProps> {
 
   render(): ReactNode {
     const {name, id, describe, vaultId} = this.props.folder;
-    const {vaultInfoArray} = this.props;
 
     return (
       <div className="folderDetail">
@@ -41,7 +39,6 @@ class FolderDetail extends Component<FolderDetailProps> {
             title: 'Edit Folder',
           }}
           folder={{id, describe, name, vaultId}}
-          vaultInfoArray={vaultInfoArray}
         />
         <div className="header">
           <Row>
