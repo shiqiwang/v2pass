@@ -1,3 +1,4 @@
+import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import FolderItem from '../item/folderItem';
@@ -6,6 +7,7 @@ import {VaultListProps} from '../types/types';
 
 import PasswordList from './passwordList';
 
+@observer
 export default class VaultList extends Component<VaultListProps> {
   render(): ReactNode {
     const {activeItem, clickItem, vaults} = this.props;

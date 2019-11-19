@@ -1,8 +1,10 @@
+import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import PasswordItem from '../item/passwordItem';
 import {PasswordListProps} from '../types/types';
 
+@observer
 class PasswordList extends Component<PasswordListProps> {
   render(): ReactNode {
     const {passwords, activeItem, clickItem, asSearch} = this.props;
