@@ -1,18 +1,16 @@
 import {Button, Drawer, Form, Input, Select} from 'antd';
-import {FormComponentProps} from 'antd/lib/form';
-import {action, computed, observable} from 'mobx';
+import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
-import React, {Component, FormEventHandler, ReactNode} from 'react';
+import React, {Component, ReactNode} from 'react';
+import uuid from 'uuid';
 
 import {DataContext} from '../../store';
 import {Folder} from '../../types';
 
-import {DrawerProps} from './types';
+import {DrawerProps, IValidate} from './types';
 
-type FolderStateKey = keyof Folder;
-
-interface FolderFormProps extends FormComponentProps {
-  folder: Partial<Folder>;
+interface FolderFormProps {
+  folder?: Folder;
   drawer: DrawerProps;
 }
 
@@ -20,31 +18,32 @@ const {TextArea} = Input;
 const {Option} = Select;
 
 @observer
-class NewFolder extends Component<FolderFormProps> {
+export default class NewFolder extends Component<FolderFormProps> {
   @observable
-  private changedFolderId: string | undefined;
+  private data: Folder = {
+    name: '',
+    vaultId: '',
+    describe: '',
+    passwords: [],
+    id: uuid(),
+  };
+
   @observable
-  private changedFolderInfo: Partial<Folder> | undefined;
+  private vaultValidate: IValidate = {
+    status: undefined,
+    help: '',
+  };
 
-  @computed
-  get data(): Partial<Folder> {
-    let {folder} = this.props;
-
-    if (!this.changedFolderId || this.changedFolderId !== folder.id) {
-      return folder;
-    }
-
-    return {
-      ...folder,
-      ...this.changedFolderInfo,
-    };
-  }
+  @observable
+  private nameValidate: IValidate = {
+    status: undefined,
+    help: '',
+  };
 
   context!: React.ContextType<typeof DataContext>;
 
   render(): ReactNode {
-    const {getFieldDecorator} = this.props.form!;
-    const {name, describe, vaultId} = this.props.folder;
+    const {name, describe, vaultId} = this.data;
     const {visible, onClose, title} = this.props.drawer;
     const {vaults} = this.context;
 
@@ -57,58 +56,48 @@ class NewFolder extends Component<FolderFormProps> {
         closable={false}
         placement="right"
       >
-        <Form onSubmit={this.onFormSubmit} className="newFolderForm">
-          <Form.Item label="vault">
-            {getFieldDecorator('vaultName', {
-              rules: [
-                {
-                  required: true,
-                  message: 'Please select the vault',
-                },
-              ],
-              initialValue: vaultId,
-            })(
-              <Select
-                onChange={value => this.onDataChange('vaultId', String(value))}
-              >
-                {vaults.map((item, index) => (
-                  <Option value={item.id} key={String(index)}>
-                    {item.name}
-                  </Option>
-                ))}
-              </Select>,
-            )}
+        <Form className="newFolderForm">
+          <Form.Item
+            label="vault"
+            validateStatus={this.vaultValidate.status}
+            help={this.vaultValidate.help}
+          >
+            <Select
+              value={vaultId}
+              onChange={(value: any) =>
+                this.onDataUpdate({vaultId: String(value)})
+              }
+            >
+              {vaults.map((item, index) => (
+                <Option value={item.id} key={String(index)}>
+                  {item.name}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
-          <Form.Item label="folder name">
-            {getFieldDecorator('folderName', {
-              rules: [
-                {required: true, message: 'Please input your folder name!'},
-              ],
-              initialValue: name,
-            })(
-              <Input
-                type="text"
-                placeholder="folder name"
-                onChange={event =>
-                  this.onDataChange('name', event.target.value)
-                }
-              />,
-            )}
+          <Form.Item
+            label="folder name"
+            validateStatus={this.nameValidate.status}
+            help={this.nameValidate.help}
+          >
+            <Input
+              value={name}
+              type="text"
+              placeholder="folder name"
+              onChange={event => this.onDataUpdate({name: event.target.value})}
+            />
           </Form.Item>
           <Form.Item label="describe">
-            {getFieldDecorator('describe', {
-              initialValue: describe,
-            })(
-              <TextArea
-                placeholder="describe"
-                onChange={event =>
-                  this.onDataChange('describe', event.target.value)
-                }
-              />,
-            )}
+            <TextArea
+              value={describe}
+              placeholder="describe"
+              onChange={event =>
+                this.onDataUpdate({describe: event.target.value})
+              }
+            />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button onClick={() => this.onSave()} type="primary">
               save
             </Button>
           </Form.Item>
@@ -117,35 +106,74 @@ class NewFolder extends Component<FolderFormProps> {
     );
   }
 
-  private onFormSubmit: FormEventHandler<HTMLFormElement> = event => {
-    event.preventDefault();
-    this.props.form!.validateFields((error, values) => {
-      if (!error) {
-        console.log('submit', values);
-      }
-    });
-  };
+  componentWillMount(): void {
+    const {folder} = this.props;
 
-  private onDataChange(label: FolderStateKey, value: string): void {
-    this.updateData(label, value);
+    if (folder) {
+      this.data = folder;
+    }
   }
 
   @action
-  private updateData<TLabel extends FolderStateKey>(
-    label: TLabel,
-    value: Folder[TLabel],
-  ): void {
-    let {folder} = this.props;
+  private onSave(): void {
+    const {name, vaultId} = this.data;
+    const nameStatus = this.onValidateName(name);
+    const vaultStatus = this.onValidateVault(vaultId);
 
-    if (this.changedFolderId !== folder.id) {
-      this.changedFolderId = folder.id;
-      this.changedFolderInfo = {};
+    if (nameStatus && vaultStatus) {
+      this.context.addFolder(this.data);
     }
+  }
 
-    this.changedFolderInfo![label] = value;
+  @action
+  private updateVaultValidate(value: IValidate): void {
+    this.vaultValidate = value;
+  }
+
+  @action
+  private updateNameValidate(value: IValidate): void {
+    this.nameValidate = value;
+  }
+
+  @action
+  private onValidateVault(value: Folder['vaultId']): boolean {
+    if (!value) {
+      this.updateVaultValidate({
+        status: 'error',
+        help: 'folder should be in vault',
+      });
+      return false;
+    } else {
+      this.updateVaultValidate({status: 'success', help: ''});
+      return true;
+    }
+  }
+
+  @action
+  private onValidateName(value: Folder['name']): boolean {
+    const {folders} = this.context;
+
+    if (value) {
+      if (folders.findIndex(item => item.name === value) >= 0) {
+        this.updateNameValidate({status: 'error', help: 'name is occupied'});
+        return false;
+      } else {
+        this.updateNameValidate({status: 'success', help: ''});
+        return true;
+      }
+    } else {
+      this.updateNameValidate({status: 'error', help: 'name is required'});
+      return false;
+    }
+  }
+
+  @action
+  private onDataUpdate(value: Partial<Folder>): void {
+    this.data = {
+      ...this.data,
+      ...value,
+    };
   }
 
   static contextType = DataContext;
 }
-
-export default Form.create<FolderFormProps>({name: 'new_folder'})(NewFolder);

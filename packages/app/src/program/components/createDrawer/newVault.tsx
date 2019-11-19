@@ -61,7 +61,6 @@ export default class NewVault extends Component<VaultFormProps> {
               type="text"
               placeholder="vault name"
               onChange={event => this.onNameChange(event.target.value)}
-              onBlur={event => this.onCheckName(event.target.value)}
             />
           </Form.Item>
           <Form.Item label="type">
@@ -99,13 +98,11 @@ export default class NewVault extends Component<VaultFormProps> {
 
   @action
   private onSave(): void {
-    const {status} = this.nameValidate;
+    const {name} = this.data;
+    const nameStatus = this.onCheckName(name);
 
-    if (status === 'success') {
-      this.context.addVault({
-        ...this.data,
-        folders: [],
-      });
+    if (nameStatus) {
+      this.context.addVault(this.data);
     }
   }
 
@@ -120,17 +117,20 @@ export default class NewVault extends Component<VaultFormProps> {
   }
 
   @action
-  private onCheckName(value: Vault['name']): void {
+  private onCheckName(value: Vault['name']): boolean {
     if (value) {
       const {vaults} = this.context;
 
       if (vaults.findIndex(item => item.name === value) >= 0) {
         this.updateNameValidate({status: 'error', help: 'name occupied'});
+        return false;
       } else {
         this.updateNameValidate({status: 'success', help: ''});
+        return true;
       }
     } else {
       this.updateNameValidate({status: 'error', help: 'name required'});
+      return false;
     }
   }
 
