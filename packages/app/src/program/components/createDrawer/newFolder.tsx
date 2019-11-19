@@ -114,7 +114,11 @@ export default class NewFolder extends Component<FolderFormProps> {
     const vaultStatus = this.onValidateVault(vaultId);
 
     if (nameStatus && vaultStatus) {
-      this.context.addFolder(this.data);
+      if (this.props.folder) {
+        this.context.updateFolder(this.data);
+      } else {
+        this.context.addFolder(this.data);
+      }
     }
   }
 

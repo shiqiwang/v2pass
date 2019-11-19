@@ -95,7 +95,11 @@ export default class NewVault extends Component<VaultFormProps> {
     const nameStatus = this.onCheckName(name);
 
     if (nameStatus) {
-      this.context.addVault(this.data);
+      if (this.props.vault) {
+        this.context.updateVault(this.data);
+      } else {
+        this.context.addVault(this.data);
+      }
     }
   }
 
