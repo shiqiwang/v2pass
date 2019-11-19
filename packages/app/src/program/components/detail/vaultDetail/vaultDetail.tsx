@@ -3,6 +3,7 @@ import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import {DataContext} from '../../../store';
 import {Vault} from '../../../types';
 import NewVault from '../../createDrawer/newVault';
 
@@ -18,6 +19,8 @@ class VaultDetail extends Component<VaultProps> {
   private drawerVisible = false;
   @observable
   private modalVisible = false;
+
+  context!: React.ContextType<typeof DataContext>;
 
   render(): ReactNode {
     const {vault} = this.props;
@@ -53,7 +56,7 @@ class VaultDetail extends Component<VaultProps> {
           <Icon
             type="setting"
             className="setting"
-            onClick={() => this.onDrawerShow(vault.id)}
+            onClick={() => this.onDrawerShow()}
           />
           <Icon type="delete" className="delete" onClick={this.showModal} />
         </div>
@@ -65,7 +68,7 @@ class VaultDetail extends Component<VaultProps> {
   }
 
   private deleteVault = (id: string): void => {
-    console.log('delete vault', id);
+    this.context.deleteVault(id);
     this.updateModalVisible(false);
   };
 
@@ -81,8 +84,7 @@ class VaultDetail extends Component<VaultProps> {
     this.updateDrawerVisible(false);
   };
 
-  private onDrawerShow = (id: Vault['id']): void => {
-    console.log(id);
+  private onDrawerShow = (): void => {
     this.updateDrawerVisible(true);
   };
 
@@ -95,6 +97,8 @@ class VaultDetail extends Component<VaultProps> {
   private updateDrawerVisible(status: boolean): void {
     this.drawerVisible = status;
   }
+
+  static contextType = DataContext;
 }
 
 export default VaultDetail;
