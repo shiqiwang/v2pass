@@ -20,14 +20,14 @@ class FolderDetail extends Component<FolderDetailProps> {
   private modalVisible = false;
 
   render(): ReactNode {
-    const {name, id, describe, vaultId} = this.props.folder;
+    const {folder} = this.props;
 
     return (
       <div className="folderDetail">
         <Modal
           title="Delete Folder"
           visible={this.modalVisible}
-          onOk={() => this.deleteFolder(id)}
+          onOk={() => this.deleteFolder(folder.id)}
           onCancel={this.cancelDelete}
         >
           <p>you will lost all the data in this folder, continue?</p>
@@ -38,7 +38,7 @@ class FolderDetail extends Component<FolderDetailProps> {
             onClose: this.onDrawerClose,
             title: 'Edit Folder',
           }}
-          folder={{id, describe, name, vaultId}}
+          folder={folder}
         />
         <div className="header">
           <Row>
@@ -54,12 +54,12 @@ class FolderDetail extends Component<FolderDetailProps> {
           <Icon
             type="setting"
             className="setting"
-            onClick={() => this.onDrawerShow(id)}
+            onClick={() => this.onDrawerShow(folder.id)}
           />
           <Icon type="delete" className="delete" onClick={this.showModal} />
         </div>
         <div className="detail">
-          {describe || <Empty description="No description" />}
+          {folder.describe || <Empty description="No description" />}
         </div>
       </div>
     );
