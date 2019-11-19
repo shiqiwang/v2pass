@@ -39,6 +39,7 @@ class VaultDetail extends Component<VaultProps> {
             title: 'Edit Vault',
           }}
           vault={vault}
+          key={Math.random()}
         />
         <div className="header">
           <Row>

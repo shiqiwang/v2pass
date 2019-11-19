@@ -58,10 +58,16 @@ class CreateNew extends Component {
           />
         )}
         {type === 'Folder' && (
-          <NewFolder drawer={{visible, onClose: this.onClose}} />
+          <NewFolder
+            drawer={{visible, onClose: this.onClose}}
+            key={Math.random()}
+          />
         )}
         {type === 'Vault' && (
-          <NewVault drawer={{visible, onClose: this.onClose}} />
+          <NewVault
+            drawer={{visible, onClose: this.onClose}}
+            key={Math.random()}
+          />
         )}
         {type === 'Target' && (
           <NewTarget

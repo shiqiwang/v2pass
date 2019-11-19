@@ -39,6 +39,7 @@ class FolderDetail extends Component<FolderDetailProps> {
             title: 'Edit Folder',
           }}
           folder={folder}
+          key={Math.random()}
         />
         <div className="header">
           <Row>

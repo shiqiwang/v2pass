@@ -1,4 +1,5 @@
 import {Button, Drawer, Form, Input, Radio} from 'antd';
+import lodash from 'lodash';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
@@ -19,7 +20,7 @@ type VaultStateKey = keyof Vault;
 @observer
 export default class NewVault extends Component<VaultFormProps> {
   @observable
-  private data: Vault = {
+  private data: Vault = lodash.cloneDeep(this.props.vault) || {
     name: '',
     type: 'private',
     describe: '',
@@ -86,14 +87,6 @@ export default class NewVault extends Component<VaultFormProps> {
         </Form>
       </Drawer>
     );
-  }
-
-  componentWillMount(): void {
-    const {vault} = this.props;
-
-    if (vault) {
-      this.data = vault;
-    }
   }
 
   @action

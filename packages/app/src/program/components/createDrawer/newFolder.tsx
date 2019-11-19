@@ -1,4 +1,5 @@
 import {Button, Drawer, Form, Input, Select} from 'antd';
+import lodash from 'lodash';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
@@ -20,7 +21,7 @@ const {Option} = Select;
 @observer
 export default class NewFolder extends Component<FolderFormProps> {
   @observable
-  private data: Folder = {
+  private data: Folder = lodash.cloneDeep(this.props.folder) || {
     name: '',
     vaultId: '',
     describe: '',
@@ -104,14 +105,6 @@ export default class NewFolder extends Component<FolderFormProps> {
         </Form>
       </Drawer>
     );
-  }
-
-  componentWillMount(): void {
-    const {folder} = this.props;
-
-    if (folder) {
-      this.data = folder;
-    }
   }
 
   @action
