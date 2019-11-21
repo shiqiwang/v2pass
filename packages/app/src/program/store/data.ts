@@ -3,9 +3,14 @@ import {computed, observable} from 'mobx';
 import React from 'react';
 
 import {encryptData} from '../auth';
-import {ActiveItem} from '../components/passwordList/types/types';
 import {updateDataApi} from '../request';
 import {DataKey, Folder, Password, Target, UsageData, Vault} from '../types';
+
+interface IActive {
+  folderId: Folder['id'];
+  passId: Password['id'];
+  vaultId: Vault['id'];
+}
 
 export class DataProcess {
   @observable private data: UsageData;
@@ -78,27 +83,23 @@ export class DataProcess {
     return undefined;
   }
 
-  findPassword(activeItem: ActiveItem): Password | undefined {
-    const {activeFolder, activePassword, activeVault} = activeItem;
-    const targetVault = this.vaults.filter(
-      vault => vault.id === activeVault,
-    )[0];
+  findPassword(activeItem: IActive): Password | undefined {
+    const {folderId, vaultId, passId} = activeItem;
+    const targetVault = this.vaults.filter(vault => vault.id === vaultId)[0];
 
     if (!targetVault) {
       return undefined;
     }
 
     const targetFolder = targetVault.folders.filter(
-      folder => folder.id === activeFolder,
+      folder => folder.id === folderId,
     )[0];
 
     if (!targetFolder) {
       return undefined;
     }
 
-    return targetFolder.passwords.filter(
-      password => password.id === activePassword,
-    )[0];
+    return targetFolder.passwords.filter(password => password.id === passId)[0];
   }
 
   addVault(vault: Vault): void {
@@ -260,6 +261,7 @@ export class DataProcess {
   private updateStorageAndDatabase(): void {
     const cipherData = encryptData(this.dataKey, this.data);
     chrome.storage.local.set({data: cipherData});
+    console.log('updateStorageAndDatabase', this.data);
     updateDataApi(cipherData)
       .then(result => {
         if (result) {

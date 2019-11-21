@@ -42,9 +42,9 @@ class Detail extends Component {
                         <PasswordDetail
                           password={
                             dataProcess.findPassword({
-                              activeFolder: folder.id,
-                              activePassword: pass.id,
-                              activeVault: vault.id,
+                              folderId: folder.id,
+                              passId: pass.id,
+                              vaultId: vault.id,
                             })!
                           }
                         />

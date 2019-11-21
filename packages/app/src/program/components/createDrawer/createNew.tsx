@@ -72,11 +72,7 @@ class CreateNew extends Component {
         {type === 'Target' && (
           <NewTarget
             drawer={{visible, onClose: this.onClose}}
-            target={{
-              displayName: '',
-              id: uuid(),
-              entries: [{id: uuid(), type: 'website URL', value: ''}],
-            }}
+            key={Math.random()}
           />
         )}
         {type === 'Random Password' && (
