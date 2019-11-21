@@ -5,11 +5,7 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 import uuid from 'uuid';
 
-import NewFolder from './newFolder';
-import NewItem from './newItem';
-import NewRandomPass from './newRandomPass';
-import NewTarget from './newTarget';
-import NewVault from './newVault';
+import {NewFolder, NewItem, NewRandomPass, NewTarget, NewVault} from './index';
 
 const types = ['Folder', 'Vault', 'Password', 'Target', 'Random Password'];
 

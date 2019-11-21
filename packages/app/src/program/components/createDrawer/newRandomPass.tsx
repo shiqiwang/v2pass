@@ -14,7 +14,7 @@ interface NewRandomPassProps {
 }
 
 @observer
-class NewRandomPass extends Component<NewRandomPassProps> {
+export class NewRandomPass extends Component<NewRandomPassProps> {
   render(): ReactNode {
     const {drawer: drawerOptions} = this.props;
 
@@ -32,5 +32,3 @@ class NewRandomPass extends Component<NewRandomPassProps> {
     );
   }
 }
-
-export default NewRandomPass;

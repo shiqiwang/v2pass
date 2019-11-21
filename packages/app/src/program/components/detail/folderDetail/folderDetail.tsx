@@ -4,7 +4,7 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import {Folder} from '../../../types';
-import NewFolder from '../../createDrawer/newFolder';
+import {NewFolder} from '../../createDrawer';
 
 import './folderDetail.less';
 

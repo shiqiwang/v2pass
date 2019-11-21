@@ -8,7 +8,7 @@ import uuid from 'uuid';
 import {DataContext} from '../../store';
 import {Vault} from '../../types';
 
-import {DrawerProps, IValidate} from './types';
+import {DrawerProps, IValidate} from './@types';
 
 interface VaultFormProps {
   vault?: Vault;
@@ -18,7 +18,7 @@ interface VaultFormProps {
 type VaultStateKey = keyof Vault;
 
 @observer
-export default class NewVault extends Component<VaultFormProps> {
+export class NewVault extends Component<VaultFormProps> {
   @observable
   private data: Vault = lodash.cloneDeep(this.props.vault) || {
     name: '',

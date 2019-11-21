@@ -7,7 +7,7 @@ import React, {Component, ReactNode} from 'react';
 import {DELETE, EDIT} from '../../../const';
 import {ActiveContext} from '../../../store';
 import {Password} from '../../../types';
-import NewItem from '../../createDrawer/newItem';
+import {NewItem} from '../../createDrawer';
 
 import InductionContainer from './inductionContainer/inductionContainer';
 

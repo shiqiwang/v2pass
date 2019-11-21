@@ -8,7 +8,7 @@ import uuid from 'uuid';
 import {DataContext} from '../../store';
 import {Folder} from '../../types';
 
-import {DrawerProps, IValidate} from './types';
+import {DrawerProps, IValidate} from './@types';
 
 interface FolderFormProps {
   folder?: Folder;
@@ -19,7 +19,7 @@ const {TextArea} = Input;
 const {Option} = Select;
 
 @observer
-export default class NewFolder extends Component<FolderFormProps> {
+export class NewFolder extends Component<FolderFormProps> {
   @observable
   private data: Folder = lodash.cloneDeep(this.props.folder) || {
     name: '',

@@ -5,7 +5,7 @@ import React, {Component, ReactNode} from 'react';
 
 import {DataContext} from '../../../store';
 import {Vault} from '../../../types';
-import NewVault from '../../createDrawer/newVault';
+import {NewVault} from '../../createDrawer';
 
 import './vaultDetail.less';
 

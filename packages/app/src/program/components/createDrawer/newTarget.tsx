@@ -7,7 +7,7 @@ import uuid from 'uuid';
 import {DataContext} from '../../store';
 import {Target, TargetEntry} from '../../types';
 
-import {DrawerProps, IValidate} from './types';
+import {DrawerProps, IValidate} from './@types';
 
 interface TargetFormProps {
   target?: Target;
@@ -22,7 +22,7 @@ const typeList: TargetStateValue[] = [
 ];
 
 @observer
-export default class NewTarget extends Component<TargetFormProps> {
+export class NewTarget extends Component<TargetFormProps> {
   @observable data: Target = this.props.target || {
     displayName: '',
     entries: [
