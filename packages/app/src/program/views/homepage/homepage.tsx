@@ -3,7 +3,7 @@ import {RouteComponentProps} from 'boring-router-react';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import CreateNew from '../../components/createDrawer/createNew';
+import {CreateNew} from '../../components/createDrawer';
 import Detail from '../../components/detail/detail';
 import PasswordList from '../../components/passwordList/list';
 import Profile from '../../components/profile/profile';

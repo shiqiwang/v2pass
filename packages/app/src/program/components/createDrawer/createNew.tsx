@@ -15,7 +15,7 @@ interface DrawerStates {
 }
 
 @observer
-class CreateNew extends Component {
+export class CreateNew extends Component {
   @observable
   private drawer: DrawerStates = {
     visible: false,
@@ -91,5 +91,3 @@ class CreateNew extends Component {
     this.drawer = states;
   }
 }
-
-export default CreateNew;
