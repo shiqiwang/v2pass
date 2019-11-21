@@ -1,9 +1,9 @@
+import {consume, observer} from '@makeflow/mobx-utils';
 import {Empty, Input} from 'antd';
 import {action, observable} from 'mobx';
-import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {Active, ActiveContext, DataContext} from '../../store';
+import {Active, ActiveContext, DataContext, DataProcess} from '../../store';
 import {Password} from '../../types';
 
 import {FolderItem, PasswordItem, VaultItem} from './item';
@@ -15,6 +15,12 @@ interface ForSearch {
 
 @observer
 class List extends Component {
+  @consume(ActiveContext.Consumer)
+  private activeState!: Active;
+
+  @consume(DataContext.Consumer)
+  private dataState!: DataProcess;
+
   @observable
   private search: ForSearch = {
     text: '',
@@ -28,51 +34,39 @@ class List extends Component {
 
     return (
       <div className="list">
-        <ActiveContext.Consumer>
-          {active => {
-            return (
-              <DataContext.Consumer>
-                {dataProcess => {
-                  return (
-                    <div>
-                      <Input.Search
-                        type="text"
-                        onSearch={value => this.onSearchPassword(value, active)}
-                      />
-                      {text && result.length ? (
-                        result.map(item => (
-                          <PasswordItem
-                            password={item}
-                            asSearch={true}
-                            key={item['pass_name']}
-                          />
-                        ))
-                      ) : (
-                        <div>
-                          {dataProcess.vaults.map(vault => (
-                            <VaultItem vault={vault} key={vault.name}>
-                              {vault.folders.map(folder => (
-                                <FolderItem folder={folder} key={folder.name}>
-                                  {folder.passwords.map(pass => (
-                                    <PasswordItem
-                                      password={pass}
-                                      key={pass['pass_name']}
-                                      asSearch={false}
-                                    />
-                                  ))}
-                                </FolderItem>
-                              ))}
-                            </VaultItem>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                }}
-              </DataContext.Consumer>
-            );
-          }}
-        </ActiveContext.Consumer>
+        <div>
+          <Input.Search
+            type="text"
+            onSearch={value => this.onSearchPassword(value, this.activeState)}
+          />
+          {text && result.length ? (
+            result.map(item => (
+              <PasswordItem
+                password={item}
+                asSearch={true}
+                key={item['pass_name']}
+              />
+            ))
+          ) : (
+            <div>
+              {this.dataState.vaults.map(vault => (
+                <VaultItem vault={vault} key={vault.name}>
+                  {vault.folders.map(folder => (
+                    <FolderItem folder={folder} key={folder.name}>
+                      {folder.passwords.map(pass => (
+                        <PasswordItem
+                          password={pass}
+                          key={pass['pass_name']}
+                          asSearch={false}
+                        />
+                      ))}
+                    </FolderItem>
+                  ))}
+                </VaultItem>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
