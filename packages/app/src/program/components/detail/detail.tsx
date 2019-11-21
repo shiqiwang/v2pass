@@ -1,71 +1,66 @@
-import {computed} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {DataContext} from '../../store';
-import {ActiveItem} from '../passwordList/types/types';
+import {ListItemStatus} from '../../const';
+import {ActiveContext, DataContext} from '../../store';
 
 import FolderDetail from './folderDetail/folderDetail';
 import PasswordDetail from './passwordDetail/passwordDetail';
 import VaultDetail from './vaultDetail/vaultDetail';
 
-interface DetailProps {
-  activeItem: ActiveItem;
-}
-
-interface Select {
-  vaultSelect: boolean;
-  folderSelect: boolean;
-  passwordSelect: boolean;
-}
-
 @observer
-class Detail extends Component<DetailProps> {
-  @computed
-  private get select(): Select {
-    const {activeFolder, activePassword, activeVault} = this.props.activeItem;
-    const vaultSelect = !!(activeVault && !activeFolder && !activePassword);
-    const folderSelect = !!(activeFolder && activeVault && !activePassword);
-    const passwordSelect = !!(activePassword && activeFolder && activeVault);
-
-    return {
-      vaultSelect,
-      folderSelect,
-      passwordSelect,
-    };
-  }
-
-  context!: React.ContextType<typeof DataContext>;
-
+class Detail extends Component {
   render(): ReactNode {
-    const {vaultSelect, folderSelect, passwordSelect} = this.select;
-    const {activeItem} = this.props;
-    const {activeFolder, activeVault} = activeItem;
-
     return (
       <div className="detail">
-        {vaultSelect ? (
-          <VaultDetail vault={this.context.findVault(activeVault)!} />
-        ) : (
-          undefined
-        )}
-        {folderSelect ? (
-          <FolderDetail
-            folder={this.context.findFolder(activeFolder, activeVault)!}
-          />
-        ) : (
-          undefined
-        )}
-        {passwordSelect ? (
-          <PasswordDetail password={this.context.findPassword(activeItem)!} />
-        ) : (
-          undefined
-        )}
+        <DataContext.Consumer>
+          {dataProcess => {
+            return (
+              <ActiveContext.Consumer>
+                {active => {
+                  const vault = active.getVaultStatus;
+                  const folder = active.getFolderStatus;
+                  const pass = active.getPassStatus;
+
+                  return (
+                    <div>
+                      {vault.status === ListItemStatus.active ? (
+                        <VaultDetail vault={dataProcess.findVault(vault.id)!} />
+                      ) : (
+                        undefined
+                      )}
+
+                      {folder.status === ListItemStatus.active ? (
+                        <FolderDetail
+                          folder={dataProcess.findFolder(folder.id, vault.id)!}
+                        />
+                      ) : (
+                        undefined
+                      )}
+
+                      {pass.status === ListItemStatus.active ? (
+                        <PasswordDetail
+                          password={
+                            dataProcess.findPassword({
+                              activeFolder: folder.id,
+                              activePassword: pass.id,
+                              activeVault: vault.id,
+                            })!
+                          }
+                        />
+                      ) : (
+                        undefined
+                      )}
+                    </div>
+                  );
+                }}
+              </ActiveContext.Consumer>
+            );
+          }}
+        </DataContext.Consumer>
       </div>
     );
   }
-
-  static contextType = DataContext;
 }
 
 export default Detail;

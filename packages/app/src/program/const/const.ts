@@ -18,3 +18,13 @@ export const SERVER_ERROR = 'internal server error';
 export const PARAMS_VALIDATE_FAILED = 'params type validate failed';
 export const TIME_OUT = 'time out';
 export const REGISTRATION_HAS_COMPLETED = 'registration has completed';
+
+export const ACTIVE = 'active';
+export const CALM = 'calm';
+export const ASSOCIATED = 'associated';
+
+export enum ListItemStatus {
+  normal,
+  associated,
+  active,
+}

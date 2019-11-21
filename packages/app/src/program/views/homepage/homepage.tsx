@@ -1,13 +1,11 @@
 import {Col, Row} from 'antd';
 import {RouteComponentProps} from 'boring-router-react';
-import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import CreateNew from '../../components/createDrawer/createNew';
 import Detail from '../../components/detail/detail';
 import PasswordList from '../../components/passwordList/list';
-import {ActiveItem} from '../../components/passwordList/types/types';
 import Profile from '../../components/profile/profile';
 import {Router} from '../../router';
 
@@ -18,13 +16,6 @@ export interface HomePageProps
 
 @observer
 class HomePage extends Component<HomePageProps> {
-  @observable
-  private activeItem: ActiveItem = {
-    activePassword: '',
-    activeFolder: '',
-    activeVault: '',
-  };
-
   render(): ReactNode {
     return (
       <div className="homePage">
@@ -38,22 +29,15 @@ class HomePage extends Component<HomePageProps> {
         </Row>
         <Row className="mainBody">
           <Col span={8}>
-            <PasswordList
-              select={activeItem => this.updateActiveItem(activeItem)}
-            />
+            <PasswordList />
           </Col>
           <Col span={16}>
-            <Detail activeItem={this.activeItem} />
+            <Detail />
           </Col>
         </Row>
       </div>
     );
   }
-
-  @action
-  private updateActiveItem = (states: ActiveItem): void => {
-    this.activeItem = states;
-  };
 }
 
 export default HomePage;
