@@ -42,15 +42,7 @@ export class CreateNew extends Component {
         {type === 'Password' && (
           <NewItem
             drawer={{visible, onClose: this.onClose}}
-            password={{
-              id: uuid(),
-              folderId: '',
-              vaultId: '',
-              pass_name: '',
-              items: [{id: uuid(), type: 'text', label: '', value: ''}],
-              collect: false,
-              targetId: '',
-            }}
+            key={Math.random()}
           />
         )}
         {type === 'Folder' && (

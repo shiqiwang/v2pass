@@ -1,20 +1,30 @@
-import {Button, Col, Drawer, Form, Input, Radio, Row, Select} from 'antd';
+import {
+  Button,
+  Col,
+  Drawer,
+  Form,
+  Input,
+  Radio,
+  Row,
+  Select,
+  TreeSelect,
+} from 'antd';
 import {action, computed, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 import uuid from 'uuid';
 
 import {DataContext} from '../../store';
-import {Password, PasswordItem} from '../../types';
+import {Folder, Password, PasswordItem, Vault} from '../../types';
 
-import {DrawerProps} from './@types';
+import './index.less';
+
+import {DrawerProps, IValidate} from './@types';
 
 interface NewItemProps {
   drawer: DrawerProps;
-  password: Password;
+  password?: Password;
 }
-
-type FormDataLabelType = keyof Password;
 
 type ItemTypeValue = PasswordItem['type'];
 const itemType: ItemTypeValue[] = [
@@ -34,34 +44,39 @@ const formItemLayout = {
 
 const {Option} = Select;
 const {TextArea} = Input;
+const {TreeNode} = TreeSelect;
 
 @observer
 export class NewItem extends Component<NewItemProps> {
-  @observable
-  private changedItemId: string | undefined;
-  @observable
-  private changedItemInfo: Partial<Password> | undefined;
-
   @computed
-  get data(): Password {
-    let {password} = this.props;
-
-    if (this.changedItemId !== password.id) {
-      return password;
-    }
-
-    return {
-      ...password,
-      ...this.changedItemInfo,
-    };
+  private get vaults(): Vault[] {
+    return this.context.vaults.filter(vault => !!vault.folders.length);
   }
 
   context!: React.ContextType<typeof DataContext>;
 
+  @observable
+  private data: Password = this.props.password || {
+    pass_name: '',
+    id: uuid(),
+    folderId: this.vaults[0].folders[0].id,
+    vaultId: this.vaults[0].id,
+    collect: false,
+    targetId: this.context.targets[0].id,
+    items: [],
+  };
+
+  @observable
+  private titleValidate: IValidate = {
+    status: undefined,
+    help: '',
+  };
+
   render(): ReactNode {
     const {title, visible, onClose} = this.props.drawer;
-    const {pass_name, folderId, vaultId, targetId, items, collect} = this.data;
-    const {vaults, folders, targets} = this.context;
+    const {pass_name, targetId, items, collect, folderId} = this.data;
+    const {targets} = this.context;
+    const {status, help} = this.titleValidate;
 
     return (
       <Drawer
@@ -73,40 +88,50 @@ export class NewItem extends Component<NewItemProps> {
         visible={visible}
       >
         <Form className="newItemForm" layout="horizontal">
-          <Form.Item label="title" {...formItemLayout}>
+          <Form.Item
+            label="title"
+            {...formItemLayout}
+            validateStatus={status}
+            help={help}
+          >
             <Input
               type="text"
               placeholder="title"
+              value={pass_name}
               onChange={event =>
-                this.onDataChange('pass_name', event.target.value)
+                this.updateData({['pass_name']: event.target.value})
               }
             />
           </Form.Item>
-          <Form.Item label="vault" {...formItemLayout}>
-            <Select
-              onChange={value => this.onDataChange('vaultId', String(value))}
+          <Form.Item label="vault-folder" {...formItemLayout}>
+            <TreeSelect
+              onChange={(value: any) => this.changeFolderId(value)}
+              value={folderId}
             >
-              {vaults.map((vault, index) => (
-                <Option value={vault.id} key={String(index)}>
-                  {vault.name}
-                </Option>
+              {this.vaults.map(vault => (
+                <TreeNode
+                  value={vault.id}
+                  title={vault.name}
+                  key={`vault-${vault.name}`}
+                  selectable={false}
+                >
+                  {vault.folders.map(folder => (
+                    <TreeNode
+                      value={folder.id}
+                      title={folder.name}
+                      key={`folder-${folder.name}`}
+                    />
+                  ))}
+                </TreeNode>
               ))}
-            </Select>
-          </Form.Item>
-          <Form.Item label="folder" {...formItemLayout}>
-            <Select
-              onChange={value => this.onDataChange('folderId', String(value))}
-            >
-              {folders.map((folder, index) => (
-                <Option value={folder.id} key={String(index)}>
-                  {folder.name}
-                </Option>
-              ))}
-            </Select>
+            </TreeSelect>
           </Form.Item>
           <Form.Item label="target" {...formItemLayout}>
             <Select
-              onChange={value => this.onDataChange('targetId', String(value))}
+              defaultValue={targetId}
+              onChange={(value: any) =>
+                this.updateData({targetId: String(value)})
+              }
             >
               {targets.map((target, index) => (
                 <Option value={target.id} key={String(index)}>
@@ -117,25 +142,24 @@ export class NewItem extends Component<NewItemProps> {
           </Form.Item>
           <Form.Item label="collection" {...formItemLayout}>
             <Radio.Group
-              onChange={event =>
-                this.onDataChange('collect', event.target.value)
-              }
+              defaultValue={collect}
+              onChange={event => this.updateData({collect: event.target.value})}
             >
               <Radio value={true}>true</Radio>
               <Radio value={false}>false</Radio>
             </Radio.Group>
           </Form.Item>
-          {items.map((item, index) => {
-            const {id, type, label, value} = item;
+          <h4>Filed</h4>
+          <div className="filedList">
+            {items.map((item, index) => {
+              const {id, type, label, value} = item;
 
-            return (
-              <Row className="item" key={String(index)}>
-                <Col span={5}>
-                  <Form.Item>
+              return (
+                <Row className="filedItem" key={String(index)}>
+                  <Col span={5}>
                     <Select<ItemTypeValue>
-                      onChange={value =>
-                        this.onChangePassItem(id, 'type', value)
-                      }
+                      defaultValue={type}
+                      onChange={value => this.updatePassItem(id, {type: value})}
                     >
                       {itemType.map(item => (
                         <Option value={item} key={item} title={item}>
@@ -143,62 +167,59 @@ export class NewItem extends Component<NewItemProps> {
                         </Option>
                       ))}
                     </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={5} offset={1}>
-                  <Form.Item>
+                  </Col>
+                  <Col span={5} offset={1}>
                     <Input
+                      value={label}
                       type="text"
                       placeholder="label"
                       onChange={event =>
-                        this.onChangePassItem(id, 'label', event.target.value)
+                        this.updatePassItem(id, {label: event.target.value})
                       }
                     />
-                  </Form.Item>
-                </Col>
-                <Col span={9} offset={1}>
-                  <Form.Item>
+                  </Col>
+                  <Col span={9} offset={1}>
                     {type === 'note' ? (
                       <TextArea
                         placeholder="value"
+                        value={value}
                         onChange={event =>
-                          this.onChangePassItem(id, 'value', event.target.value)
+                          this.updatePassItem(id, {value: event.target.value})
                         }
                       />
                     ) : (
                       <Input
+                        value={value}
                         placeholder="value"
                         type={type === 'password' ? 'password' : 'text'}
                         onChange={event =>
-                          this.onChangePassItem(id, 'value', event.target.value)
+                          this.updatePassItem(id, {value: event.target.value})
                         }
                       />
                     )}
-                  </Form.Item>
-                </Col>
-                <Col span={2} offset={1}>
-                  <Form.Item>
+                  </Col>
+                  <Col span={2} offset={1}>
                     <Button
                       icon="minus"
                       shape="circle"
                       size="small"
-                      onClick={event => this.onReducePassItem(id)}
+                      onClick={() => this.onReducePassItem(id)}
                     />
-                  </Form.Item>
-                </Col>
-              </Row>
-            );
-          })}
+                  </Col>
+                </Row>
+              );
+            })}
+          </div>
           <Form.Item>
             <Button
               icon="plus"
               shape="circle"
               size="small"
-              onClick={event => this.onAddPassItem()}
+              onClick={() => this.onAddPassItem()}
             />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" onClick={() => this.onSave()}>
               save
             </Button>
           </Form.Item>
@@ -207,64 +228,95 @@ export class NewItem extends Component<NewItemProps> {
     );
   }
 
-  private onAddPassItem(): void {
-    this.updateData('items', [
-      ...this.data.items,
-      {
-        id: uuid(),
-        type: 'text',
-        label: '',
-        value: '',
-      },
-    ]);
+  onSave(): void {
+    const {pass_name} = this.data;
+    const titleStatus = this.checkTitle(pass_name);
+
+    if (titleStatus) {
+      const data = {
+        ...this.data,
+        items: this.data.items.filter(item => !!item.value),
+      };
+
+      if (this.props.password) {
+        this.context.updatePassword(data);
+      } else {
+        this.context.addPassword(data);
+      }
+    }
+  }
+
+  onAddPassItem(): void {
+    this.updateData({
+      items: [
+        ...this.data.items,
+        {
+          id: uuid(),
+          type: 'text',
+          label: '',
+          value: '',
+        },
+      ],
+    });
+  }
+
+  private checkTitle(value: Password['pass_name']): boolean {
+    if (value) {
+      if (
+        this.context.passwords.findIndex(item => item.pass_name === value) >= 0
+      ) {
+        this.updateValidate({status: 'error', help: 'title is occupied'});
+        return false;
+      } else {
+        this.updateValidate({status: 'success', help: ''});
+        return true;
+      }
+    } else {
+      this.updateValidate({status: 'error', help: 'title is Required'});
+      return false;
+    }
   }
 
   private onReducePassItem(id: PasswordItem['id']): void {
-    this.updateData('items', this.data.items.filter(item => item.id !== id));
+    this.updateData({items: this.data.items.filter(item => item.id !== id)});
   }
 
-  private onChangePassItem<TKey extends 'type' | 'label' | 'value'>(
-    id: PasswordItem['id'],
-    key: TKey,
-    value: PasswordItem[TKey],
-  ): void {
-    this.updateData(
-      'items',
-      this.data.items.map(
-        (item): PasswordItem => {
-          if (item.id === id) {
-            return {
-              ...item,
-              [key]: value,
-            };
-          }
+  private changeFolderId(folderId: Folder['id']): void {
+    const folder = this.context.folders.find(folder => folder.id === folderId);
 
-          return item;
-        },
-      ),
-    );
-  }
-
-  private onDataChange(
-    label: FormDataLabelType,
-    value: string | boolean,
-  ): void {
-    this.updateData(label, value);
+    if (folder) {
+      this.updateData({folderId, vaultId: folder.vaultId});
+    }
   }
 
   @action
-  private updateData<TLabel extends FormDataLabelType>(
-    label: TLabel,
-    value: Password[TLabel],
+  private updateValidate(value: IValidate): void {
+    this.titleValidate = value;
+  }
+
+  @action
+  private updateData(value: Partial<Password>): void {
+    this.data = {
+      ...this.data,
+      ...value,
+    };
+  }
+
+  @action
+  private updatePassItem(
+    id: PasswordItem['id'],
+    value: Partial<PasswordItem>,
   ): void {
-    let {password} = this.props;
-
-    if (this.changedItemId !== password.id) {
-      this.changedItemId = password.id;
-      this.changedItemInfo = {};
-    }
-
-    this.changedItemInfo![label] = value;
+    this.data.items = this.data.items.map(item => {
+      if (item.id === id) {
+        return {
+          ...item,
+          ...value,
+        };
+      } else {
+        return item;
+      }
+    });
   }
 
   static contextType = DataContext;

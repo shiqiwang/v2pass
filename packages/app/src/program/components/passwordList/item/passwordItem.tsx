@@ -53,6 +53,7 @@ export class PasswordItem extends Component<PasswordProps> {
             title: 'Edit Item',
           }}
           password={this.props.password}
+          key={Math.random()}
         />
         <Modal
           title={DELETE}
