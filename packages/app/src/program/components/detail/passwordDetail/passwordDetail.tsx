@@ -43,7 +43,7 @@ class PasswordDetail extends Component<PasswordProps> {
             {password.items.map((item, index) => (
               <CopyableContainer key={String(index)} data={item} />
             ))}
-            <h5>Target：{this.target ? this.target.displayName : null}</h5>
+            <h5>Target：{this.target ? this.target.displayName : undefined}</h5>
             {this.target
               ? this.target.entries.map((item, index) => (
                   <CopyableContainer
@@ -51,7 +51,14 @@ class PasswordDetail extends Component<PasswordProps> {
                     data={{label: item.type, value: item.value}}
                   />
                 ))
-              : null}
+              : undefined}
+            <h5>Field</h5>
+            {password.items.map((item, index) => (
+              <CopyableContainer
+                key={String(index)}
+                data={{label: `${item.label}`, value: item.value}}
+              />
+            ))}
           </div>
         </div>
       </div>
