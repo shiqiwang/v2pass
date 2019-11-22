@@ -3,11 +3,12 @@ import {ClickParam} from 'antd/lib/menu';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
-import uuid from 'uuid';
+
+import {DataContext} from '../../store';
 
 import {NewFolder, NewItem, NewRandomPass, NewTarget, NewVault} from './index';
 
-const types = ['Folder', 'Vault', 'Password', 'Target', 'Random Password'];
+const types = ['Vault', 'Target', 'Random Password'];
 
 interface DrawerStates {
   visible: boolean;
@@ -16,6 +17,8 @@ interface DrawerStates {
 
 @observer
 export class CreateNew extends Component {
+  context!: React.ContextType<typeof DataContext>;
+
   @observable
   private drawer: DrawerStates = {
     visible: false,
@@ -23,8 +26,15 @@ export class CreateNew extends Component {
   };
 
   render(): ReactNode {
+    const {vaults, folders} = this.context;
     const menu = (
       <Menu onClick={(value): void => this.onAddButtonClick(value)}>
+        <Menu.Item key="Password" disabled={!folders.length}>
+          Password
+        </Menu.Item>
+        <Menu.Item key="Folder" disabled={!vaults.length}>
+          Folder
+        </Menu.Item>
         {types.map(type => (
           <Menu.Item key={type}>{type}</Menu.Item>
         ))}
@@ -82,4 +92,6 @@ export class CreateNew extends Component {
   private toggleDrawer(states: DrawerStates): void {
     this.drawer = states;
   }
+
+  static contextType = DataContext;
 }
