@@ -229,8 +229,7 @@ export class NewItem extends Component<NewItemProps> {
   }
 
   onSave(): void {
-    const {pass_name} = this.data;
-    const titleStatus = this.checkTitle(pass_name);
+    const titleStatus = this.checkTitle();
 
     if (titleStatus) {
       const data = {
@@ -260,11 +259,16 @@ export class NewItem extends Component<NewItemProps> {
     });
   }
 
-  private checkTitle(value: Password['pass_name']): boolean {
-    if (value) {
-      if (
-        this.context.passwords.findIndex(item => item.pass_name === value) >= 0
-      ) {
+  private checkTitle(): boolean {
+    const {id, pass_name} = this.data;
+
+    if (pass_name) {
+      const {passwords} = this.context;
+      const password = passwords.find(item => {
+        return item.pass_name === pass_name && item.id !== id;
+      });
+
+      if (password) {
         this.updateValidate({status: 'error', help: 'title is occupied'});
         return false;
       } else {

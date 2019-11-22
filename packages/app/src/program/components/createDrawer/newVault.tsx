@@ -91,8 +91,7 @@ export class NewVault extends Component<VaultFormProps> {
 
   @action
   private onSave(): void {
-    const {name} = this.data;
-    const nameStatus = this.onCheckName(name);
+    const nameStatus = this.onCheckName();
 
     if (nameStatus) {
       if (this.props.vault) {
@@ -114,11 +113,16 @@ export class NewVault extends Component<VaultFormProps> {
   }
 
   @action
-  private onCheckName(value: Vault['name']): boolean {
-    if (value) {
-      const {vaults} = this.context;
+  private onCheckName(): boolean {
+    const {name, id} = this.data;
+    const {vaults} = this.context;
 
-      if (vaults.findIndex(item => item.name === value) >= 0) {
+    if (name) {
+      const vault = vaults.find(vault => {
+        return vault.name === name && vault.id !== id;
+      });
+
+      if (vault) {
         this.updateNameValidate({status: 'error', help: 'name occupied'});
         return false;
       } else {

@@ -23,7 +23,7 @@ export class NewFolder extends Component<FolderFormProps> {
   @observable
   private data: Folder = lodash.cloneDeep(this.props.folder) || {
     name: '',
-    vaultId: '',
+    vaultId: this.context.vaults[0].id,
     describe: '',
     passwords: [],
     id: uuid(),
@@ -109,11 +109,9 @@ export class NewFolder extends Component<FolderFormProps> {
 
   @action
   private onSave(): void {
-    const {name, vaultId} = this.data;
-    const nameStatus = this.onValidateName(name);
-    const vaultStatus = this.onValidateVault(vaultId);
+    const nameStatus = this.onValidateName();
 
-    if (nameStatus && vaultStatus) {
+    if (nameStatus) {
       if (this.props.folder) {
         this.context.updateFolder(this.data);
       } else {
@@ -123,35 +121,21 @@ export class NewFolder extends Component<FolderFormProps> {
   }
 
   @action
-  private updateVaultValidate(value: IValidate): void {
-    this.vaultValidate = value;
-  }
-
-  @action
   private updateNameValidate(value: IValidate): void {
     this.nameValidate = value;
   }
 
   @action
-  private onValidateVault(value: Folder['vaultId']): boolean {
-    if (!value) {
-      this.updateVaultValidate({
-        status: 'error',
-        help: 'folder should be in vault',
-      });
-      return false;
-    } else {
-      this.updateVaultValidate({status: 'success', help: ''});
-      return true;
-    }
-  }
-
-  @action
-  private onValidateName(value: Folder['name']): boolean {
+  private onValidateName(): boolean {
     const {folders} = this.context;
+    const {id, name} = this.data;
 
-    if (value) {
-      if (folders.findIndex(item => item.name === value) >= 0) {
+    if (name) {
+      const folder = folders.find(item => {
+        return item.name === name && item.id !== id;
+      });
+
+      if (folder) {
         this.updateNameValidate({status: 'error', help: 'name is occupied'});
         return false;
       } else {
