@@ -1,9 +1,9 @@
+import {consume, observer} from '@makeflow/mobx-utils';
 import {Col, Empty, Icon, Modal, Row} from 'antd';
 import {action, observable} from 'mobx';
-import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import {DataContext} from '../../../store';
+import {Active, ActiveContext, DataContext, DataProcess} from '../../../store';
 import {Vault} from '../../../types';
 import {NewVault} from '../../createDrawer';
 
@@ -15,12 +15,16 @@ interface VaultProps {
 
 @observer
 class VaultDetail extends Component<VaultProps> {
+  @consume(ActiveContext.Consumer)
+  private acitveState!: Active;
+
+  @consume(DataContext.Consumer)
+  private dataState!: DataProcess;
+
   @observable
   private drawerVisible = false;
   @observable
   private modalVisible = false;
-
-  context!: React.ContextType<typeof DataContext>;
 
   render(): ReactNode {
     const {vault} = this.props;
@@ -30,7 +34,9 @@ class VaultDetail extends Component<VaultProps> {
         <Modal
           title="Delete Vault"
           visible={this.modalVisible}
-          onOk={() => this.deleteVault(vault.id)}
+          onOk={() =>
+            this.deleteVault(vault.id, this.dataState, this.acitveState)
+          }
           onCancel={this.cancelDelete}
         >
           <p>you will lost all the data in this vault, continue?</p>
@@ -67,8 +73,17 @@ class VaultDetail extends Component<VaultProps> {
     );
   }
 
-  private deleteVault = (id: string): void => {
-    this.context.deleteVault(id);
+  private deleteVault = (
+    id: string,
+    dataState: DataProcess,
+    activeState: Active,
+  ): void => {
+    activeState.setActive({
+      vault: '',
+      folder: '',
+      pass: '',
+    });
+    dataState.deleteVault(id);
     this.updateModalVisible(false);
   };
 
@@ -97,8 +112,6 @@ class VaultDetail extends Component<VaultProps> {
   private updateDrawerVisible(status: boolean): void {
     this.drawerVisible = status;
   }
-
-  static contextType = DataContext;
 }
 
 export default VaultDetail;
