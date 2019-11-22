@@ -34,14 +34,7 @@ class FolderDetail extends Component<FolderDetailProps> {
         <Modal
           title="Delete Folder"
           visible={this.modalVisible}
-          onOk={() =>
-            this.deleteFolder(
-              folder.id,
-              folder.vaultId,
-              this.dataState,
-              this.activeState,
-            )
-          }
+          onOk={() => this.deleteFolder(folder.id, folder.vaultId)}
           onCancel={this.cancelDelete}
         >
           <p>you will lost all the data in this folder, continue?</p>
@@ -91,15 +84,13 @@ class FolderDetail extends Component<FolderDetailProps> {
   private deleteFolder = (
     id: Folder['id'],
     vaultId: Folder['vaultId'],
-    dataState: DataProcess,
-    activeState: Active,
   ): void => {
-    activeState.setActive({
+    this.activeState.setActive({
       vault: '',
       folder: '',
       pass: '',
     });
-    dataState.deleteFolder(id, vaultId);
+    this.dataState.deleteFolder(id, vaultId);
     this.updateModalVisible(false);
   };
 

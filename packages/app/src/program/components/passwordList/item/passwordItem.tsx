@@ -1,11 +1,11 @@
+import {consume, observer} from '@makeflow/mobx-utils';
 import {Col, Dropdown, Icon, Menu, Modal, Row} from 'antd';
 import {ClickParam} from 'antd/lib/menu';
 import {action, observable} from 'mobx';
-import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import {DELETE, EDIT} from '../../../const';
-import {ActiveContext} from '../../../store';
+import {Active, ActiveContext, DataContext, DataProcess} from '../../../store';
 import {Password} from '../../../types';
 import {NewItem} from '../../createDrawer';
 
@@ -18,14 +18,16 @@ interface PasswordProps {
 
 @observer
 export class PasswordItem extends Component<PasswordProps> {
+  @consume(DataContext.Consumer)
+  private dataState!: DataProcess;
+  @consume(ActiveContext.Consumer)
+  private activeState!: Active;
   @observable
   private editItemDrawerVisible = false;
   @observable
   private collectStatus = this.props.password.collect;
   @observable
   private showDeleteModal = false;
-
-  context!: React.ContextType<typeof ActiveContext>;
 
   render(): ReactNode {
     const menu = (
@@ -36,7 +38,7 @@ export class PasswordItem extends Component<PasswordProps> {
     );
     const {asSearch} = this.props;
     const {pass_name, id, folderId, vaultId} = this.props.password;
-    const active = this.context.getActive();
+    const active = this.activeState.getActive();
     const isShow =
       asSearch || (active.folder === folderId && active.vault === vaultId);
     const isActive =
@@ -58,7 +60,7 @@ export class PasswordItem extends Component<PasswordProps> {
         <Modal
           title={DELETE}
           visible={this.showDeleteModal}
-          onOk={this.deleteItem}
+          onOk={() => this.deleteItem(id, folderId, vaultId)}
           onCancel={this.cancelDelete}
         >
           <p>if delete, you will lost the data forever, continue?</p>
@@ -104,15 +106,24 @@ export class PasswordItem extends Component<PasswordProps> {
 
   private clickItem = (): void => {
     const {id, vaultId, folderId} = this.props.password;
-    this.context.setActive({
+    this.activeState.setActive({
       folder: folderId,
       vault: vaultId,
       pass: id,
     });
   };
 
-  private deleteItem = (): void => {
-    console.log('delete item');
+  private deleteItem = (
+    id: Password['id'],
+    folderId: Password['folderId'],
+    vaultId: Password['vaultId'],
+  ): void => {
+    this.activeState.setActive({
+      vault: '',
+      folder: '',
+      pass: '',
+    });
+    this.dataState.deletePassword(id, folderId, vaultId);
     this.updateShowDeleteModal(false);
   };
 
@@ -147,6 +158,4 @@ export class PasswordItem extends Component<PasswordProps> {
     name: 'New Item',
     collect: false,
   };
-
-  static contextType = ActiveContext;
 }

@@ -34,9 +34,7 @@ class VaultDetail extends Component<VaultProps> {
         <Modal
           title="Delete Vault"
           visible={this.modalVisible}
-          onOk={() =>
-            this.deleteVault(vault.id, this.dataState, this.activeState)
-          }
+          onOk={() => this.deleteVault(vault.id)}
           onCancel={this.cancelDelete}
         >
           <p>you will lost all the data in this vault, continue?</p>
@@ -73,17 +71,13 @@ class VaultDetail extends Component<VaultProps> {
     );
   }
 
-  private deleteVault = (
-    id: string,
-    dataState: DataProcess,
-    activeState: Active,
-  ): void => {
-    activeState.setActive({
+  private deleteVault = (id: string): void => {
+    this.activeState.setActive({
       vault: '',
       folder: '',
       pass: '',
     });
-    dataState.deleteVault(id);
+    this.dataState.deleteVault(id);
     this.updateModalVisible(false);
   };
 
