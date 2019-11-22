@@ -1,8 +1,9 @@
+import {consume, observer} from '@makeflow/mobx-utils';
 import {Col, Empty, Icon, Modal, Row} from 'antd';
 import {action, observable} from 'mobx';
-import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import {Active, ActiveContext, DataContext, DataProcess} from '../../../store';
 import {Folder} from '../../../types';
 import {NewFolder} from '../../createDrawer';
 
@@ -14,6 +15,12 @@ interface FolderDetailProps {
 
 @observer
 class FolderDetail extends Component<FolderDetailProps> {
+  @consume(ActiveContext.Consumer)
+  private activeState!: Active;
+
+  @consume(DataContext.Consumer)
+  private dataState!: DataProcess;
+
   @observable
   private drawerVisible = false;
   @observable
@@ -27,7 +34,14 @@ class FolderDetail extends Component<FolderDetailProps> {
         <Modal
           title="Delete Folder"
           visible={this.modalVisible}
-          onOk={() => this.deleteFolder(folder.id)}
+          onOk={() =>
+            this.deleteFolder(
+              folder.id,
+              folder.vaultId,
+              this.dataState,
+              this.activeState,
+            )
+          }
           onCancel={this.cancelDelete}
         >
           <p>you will lost all the data in this folder, continue?</p>
@@ -55,7 +69,7 @@ class FolderDetail extends Component<FolderDetailProps> {
           <Icon
             type="setting"
             className="setting"
-            onClick={() => this.onDrawerShow(folder.id)}
+            onClick={() => this.onDrawerShow()}
           />
           <Icon type="delete" className="delete" onClick={this.showModal} />
         </div>
@@ -70,13 +84,22 @@ class FolderDetail extends Component<FolderDetailProps> {
     this.updateDrawerVisible(false);
   };
 
-  private onDrawerShow = (folderId: Folder['id']): void => {
-    console.log(folderId);
+  private onDrawerShow = (): void => {
     this.updateDrawerVisible(true);
   };
 
-  private deleteFolder = (folderId: Folder['id']): void => {
-    console.log('delete folder', folderId);
+  private deleteFolder = (
+    id: Folder['id'],
+    vaultId: Folder['vaultId'],
+    dataState: DataProcess,
+    activeState: Active,
+  ): void => {
+    activeState.setActive({
+      vault: '',
+      folder: '',
+      pass: '',
+    });
+    dataState.deleteFolder(id, vaultId);
     this.updateModalVisible(false);
   };
 

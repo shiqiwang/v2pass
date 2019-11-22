@@ -16,7 +16,7 @@ interface VaultProps {
 @observer
 class VaultDetail extends Component<VaultProps> {
   @consume(ActiveContext.Consumer)
-  private acitveState!: Active;
+  private activeState!: Active;
 
   @consume(DataContext.Consumer)
   private dataState!: DataProcess;
@@ -35,7 +35,7 @@ class VaultDetail extends Component<VaultProps> {
           title="Delete Vault"
           visible={this.modalVisible}
           onOk={() =>
-            this.deleteVault(vault.id, this.dataState, this.acitveState)
+            this.deleteVault(vault.id, this.dataState, this.activeState)
           }
           onCancel={this.cancelDelete}
         >
