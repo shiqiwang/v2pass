@@ -30,7 +30,7 @@ type ItemTypeValue = PasswordItem['type'];
 const itemType: ItemTypeValue[] = [
   'text',
   'password',
-  'userName',
+  'username',
   'email',
   'phone',
   'date',

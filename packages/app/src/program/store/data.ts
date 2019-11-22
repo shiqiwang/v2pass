@@ -256,12 +256,12 @@ export class DataProcess {
         return vault;
       }
     });
+    this.updateStorageAndDatabase();
   }
 
   private updateStorageAndDatabase(): void {
     const cipherData = encryptData(this.dataKey, this.data);
     chrome.storage.local.set({data: cipherData});
-    console.log('updateStorageAndDatabase', this.data);
     updateDataApi(cipherData)
       .then(result => {
         if (result) {

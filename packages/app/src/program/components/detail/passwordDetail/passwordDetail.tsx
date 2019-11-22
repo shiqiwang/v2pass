@@ -56,7 +56,7 @@ class PasswordDetail extends Component<PasswordProps> {
             {password.items.map((item, index) => (
               <CopyableContainer
                 key={String(index)}
-                data={{label: `${item.label}`, value: item.value}}
+                data={{label: `${item.type}-${item.label}`, value: item.value}}
               />
             ))}
           </div>

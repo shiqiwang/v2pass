@@ -19,7 +19,7 @@ export type PasswordItem =
 
 interface NameInfoItem {
   id: string;
-  type: 'userName';
+  type: 'username';
   label: string;
   value: string;
 }
