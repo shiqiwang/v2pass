@@ -1,19 +1,8 @@
-import {computed, observable} from 'mobx';
+import {observable} from 'mobx';
 import React from 'react';
 
 import {ListItemStatus} from '../const';
-import {Folder, Password, Vault} from '../types';
-
-interface IActive {
-  vault: Vault['id'];
-  folder: Folder['id'];
-  pass: Password['id'];
-}
-
-interface IStatus {
-  status: number;
-  id: string;
-}
+import {Folder, IActive, IStatus, Password, Vault} from '../types';
 
 export class Active {
   @observable private active: IActive = {
@@ -26,11 +15,11 @@ export class Active {
     return this.active;
   }
 
-  @computed get getVaultStatus(): IStatus {
+  getVaultStatus(vaultId: Vault['id']): IStatus {
     const {folder, vault} = this.active;
     let status: IStatus['status'];
 
-    if (vault) {
+    if (vault === vaultId) {
       if (folder) {
         status = ListItemStatus.associated;
       } else {
@@ -46,11 +35,11 @@ export class Active {
     };
   }
 
-  @computed get getFolderStatus(): IStatus {
+  getFolderStatus(id: Folder['id']): IStatus {
     const {folder, pass} = this.active;
     let status: IStatus['status'];
 
-    if (folder) {
+    if (folder === id) {
       if (pass) {
         status = ListItemStatus.associated;
       } else {
@@ -66,11 +55,11 @@ export class Active {
     };
   }
 
-  @computed get getPassStatus(): IStatus {
+  getPassStatus(id: Password['id']): IStatus {
     const {pass} = this.active;
     let status: IStatus['status'];
 
-    if (pass) {
+    if (pass === id) {
       status = ListItemStatus.active;
     } else {
       status = ListItemStatus.normal;

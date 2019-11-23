@@ -1,10 +1,11 @@
 import {Col, Icon, Row} from 'antd';
-import {action} from 'mobx';
+import {action, computed} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import {ListItemStatus} from '../../../const';
 import {ActiveContext} from '../../../store';
-import {Vault} from '../../../types';
+import {IStatus, Vault} from '../../../types';
 
 import InductionContainer from './inductionContainer/inductionContainer';
 
@@ -16,23 +17,28 @@ interface VaultProps {
 export class VaultItem extends Component<VaultProps> {
   context!: React.ContextType<typeof ActiveContext>;
 
+  @computed
+  get isActive(): IStatus {
+    return this.context.getVaultStatus(this.props.vault.id);
+  }
+
   render(): ReactNode {
-    const {name, id} = this.props.vault;
-    const active = this.context.getActive();
-    const isActive = active.vault === id;
+    const {name} = this.props.vault;
+    const {status} = this.isActive;
+    const vaultUiStatus = status === ListItemStatus.normal;
 
     return (
       <div className="vaultItem">
-        <InductionContainer isActive={isActive} isShow>
+        <InductionContainer status={status} isShow>
           <Row onClick={() => this.clickItem()}>
             <Col span={2}>
-              <Icon type={isActive ? 'menu-unfold' : 'menu-fold'} />
+              <Icon type={vaultUiStatus ? 'menu-fold' : 'menu-unfold'} />
             </Col>
             <Col span={20} className="name">
               {name}
             </Col>
             <Col span={2}>
-              <Icon type={isActive ? 'down' : 'right'} />
+              <Icon type={vaultUiStatus ? 'right' : 'down'} />
             </Col>
           </Row>
         </InductionContainer>

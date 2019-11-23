@@ -1,19 +1,18 @@
 import {consume, observer} from '@makeflow/mobx-utils';
 import {Col, Dropdown, Icon, Menu, Modal, Row} from 'antd';
 import {ClickParam} from 'antd/lib/menu';
-import {action, observable} from 'mobx';
+import {action, computed, observable} from 'mobx';
 import React, {Component, ReactNode} from 'react';
 
 import {DELETE, EDIT} from '../../../const';
 import {Active, ActiveContext, DataContext, DataProcess} from '../../../store';
-import {Password} from '../../../types';
+import {IStatus, Password} from '../../../types';
 import {NewItem} from '../../createDrawer';
 
 import InductionContainer from './inductionContainer/inductionContainer';
 
 interface PasswordProps {
   password: Password;
-  asSearch: boolean;
 }
 
 @observer
@@ -29,6 +28,11 @@ export class PasswordItem extends Component<PasswordProps> {
   @observable
   private showDeleteModal = false;
 
+  @computed
+  get isActive(): IStatus {
+    return this.activeState.getPassStatus(this.props.password.id);
+  }
+
   render(): ReactNode {
     const menu = (
       <Menu onClick={(value): void => this.onMoreButtonClick(value)}>
@@ -36,18 +40,13 @@ export class PasswordItem extends Component<PasswordProps> {
         <Menu.Item key={DELETE}>Delete</Menu.Item>
       </Menu>
     );
-    const {asSearch} = this.props;
     const {pass_name, id, folderId, vaultId} = this.props.password;
     const active = this.activeState.getActive();
-    const isShow =
-      asSearch || (active.folder === folderId && active.vault === vaultId);
-    const isActive =
-      active.pass === id &&
-      active.folder === folderId &&
-      active.vault === vaultId;
+    const isShow = active.folder === folderId && active.vault === vaultId;
+    const {status} = this.isActive;
 
     return (
-      <InductionContainer isActive={isActive} isShow={isShow}>
+      <InductionContainer status={status} isShow={isShow}>
         <NewItem
           drawer={{
             visible: this.editItemDrawerVisible,

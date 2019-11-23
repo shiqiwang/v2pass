@@ -1,10 +1,11 @@
 import {Col, Icon, Row} from 'antd';
-import {action} from 'mobx';
+import {action, computed} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
+import {ListItemStatus} from '../../../const';
 import {ActiveContext} from '../../../store';
-import {Folder} from '../../../types';
+import {Folder, IStatus} from '../../../types';
 
 import InductionContainer from './inductionContainer/inductionContainer';
 
@@ -16,25 +17,31 @@ interface FolderProps {
 export class FolderItem extends Component<FolderProps> {
   context!: React.ContextType<typeof ActiveContext>;
 
+  @computed
+  get isActive(): IStatus {
+    return this.context.getFolderStatus(this.props.folder.id);
+  }
+
   render(): ReactNode {
     const {folder} = this.props;
-    const {id, vaultId} = folder;
+    const {vaultId} = folder;
     const active = this.context.getActive();
     const isShow = vaultId === active.vault;
-    const isActive = id === active.folder && isShow;
+    const {status} = this.isActive;
+    const folderUiStatus = status === ListItemStatus.normal;
 
     return (
       <div className="folderItem">
-        <InductionContainer isActive={isActive} isShow={isShow}>
+        <InductionContainer status={status} isShow={isShow}>
           <Row onClick={() => this.clickItem()}>
             <Col span={2}>
-              <Icon type={isActive ? 'folder-open' : 'folder'} />
+              <Icon type={!folderUiStatus ? 'folder-open' : 'folder'} />
             </Col>
             <Col span={20} className="folderName">
               {folder.name}
             </Col>
             <Col span={2}>
-              <Icon type={isActive ? 'down' : 'right'} />
+              <Icon type={!folderUiStatus ? 'down' : 'right'} />
             </Col>
           </Row>
         </InductionContainer>
