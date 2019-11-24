@@ -63,7 +63,20 @@ export class NewItem extends Component<NewItemProps> {
     vaultId: this.vaults[0].id,
     collect: false,
     targetId: this.context.targets[0].id,
-    items: [],
+    items: [
+      {
+        id: uuid(),
+        type: 'username',
+        label: 'username',
+        value: '',
+      },
+      {
+        id: uuid(),
+        type: 'password',
+        label: 'password',
+        value: '',
+      },
+    ],
   };
 
   @observable
@@ -155,69 +168,73 @@ export class NewItem extends Component<NewItemProps> {
               const {id, type, label, value} = item;
 
               return (
-                <Row className="filedItem" key={String(index)}>
-                  <Col span={5}>
-                    <Select<ItemTypeValue>
-                      defaultValue={type}
-                      onChange={value => this.updatePassItem(id, {type: value})}
-                    >
-                      {itemType.map(item => (
-                        <Option value={item} key={item} title={item}>
-                          {item}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Col>
-                  <Col span={5} offset={1}>
-                    <Input
-                      value={label}
-                      type="text"
-                      placeholder="label"
-                      onChange={event =>
-                        this.updatePassItem(id, {label: event.target.value})
-                      }
-                    />
-                  </Col>
-                  <Col span={9} offset={1}>
-                    {type === 'note' ? (
-                      <TextArea
-                        placeholder="value"
-                        value={value}
-                        onChange={event =>
-                          this.updatePassItem(id, {value: event.target.value})
+                <div className="filedItem" key={String(index)}>
+                  <Row className="filedItemRow">
+                    <Col span={10}>
+                      <Select<ItemTypeValue>
+                        defaultValue={type}
+                        onChange={value =>
+                          this.updatePassItem(id, {type: value})
                         }
-                      />
-                    ) : (
+                      >
+                        {itemType.map(item => (
+                          <Option value={item} key={item} title={item}>
+                            {item}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Col>
+                    <Col span={13} offset={1}>
                       <Input
-                        value={value}
-                        placeholder="value"
-                        type={type === 'password' ? 'password' : 'text'}
+                        value={label}
+                        type="text"
+                        placeholder="label"
                         onChange={event =>
-                          this.updatePassItem(id, {value: event.target.value})
+                          this.updatePassItem(id, {label: event.target.value})
                         }
                       />
-                    )}
-                  </Col>
-                  <Col span={2} offset={1}>
-                    <Button
-                      icon="minus"
-                      shape="circle"
-                      size="small"
-                      onClick={() => this.onReducePassItem(id)}
-                    />
-                  </Col>
-                </Row>
+                    </Col>
+                  </Row>
+                  <Row className="filedItemRow">
+                    <Col span={21}>
+                      {type === 'note' ? (
+                        <TextArea
+                          placeholder="value"
+                          value={value}
+                          onChange={event =>
+                            this.updatePassItem(id, {value: event.target.value})
+                          }
+                        />
+                      ) : (
+                        <Input
+                          value={value}
+                          placeholder="value"
+                          type={type === 'password' ? 'password' : 'text'}
+                          onChange={event =>
+                            this.updatePassItem(id, {value: event.target.value})
+                          }
+                        />
+                      )}
+                    </Col>
+                    <Col span={2} offset={1}>
+                      <Button
+                        icon="minus"
+                        shape="circle"
+                        size="small"
+                        onClick={() => this.onReducePassItem(id)}
+                      />
+                    </Col>
+                  </Row>
+                </div>
               );
             })}
           </div>
-          <Form.Item>
-            <Button
-              icon="plus"
-              shape="circle"
-              size="small"
-              onClick={() => this.onAddPassItem()}
-            />
-          </Form.Item>
+          <Button
+            icon="plus"
+            shape="circle"
+            size="small"
+            onClick={() => this.onAddPassItem()}
+          />
           <Form.Item>
             <Button type="primary" onClick={() => this.onSave()}>
               save
