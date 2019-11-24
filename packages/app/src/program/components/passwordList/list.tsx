@@ -41,11 +41,7 @@ class List extends Component {
           />
           {text && result.length ? (
             result.map(item => (
-              <PasswordItem
-                password={item}
-                asSearch={true}
-                key={item['pass_name']}
-              />
+              <PasswordItem password={item} key={item['pass_name']} />
             ))
           ) : (
             <div>
@@ -54,11 +50,7 @@ class List extends Component {
                   {vault.folders.map(folder => (
                     <FolderItem folder={folder} key={folder.name}>
                       {folder.passwords.map(pass => (
-                        <PasswordItem
-                          password={pass}
-                          key={pass['pass_name']}
-                          asSearch={false}
-                        />
+                        <PasswordItem password={pass} key={pass['pass_name']} />
                       ))}
                     </FolderItem>
                   ))}
