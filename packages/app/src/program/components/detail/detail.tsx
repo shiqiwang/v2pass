@@ -1,7 +1,6 @@
 import {consume, observer} from '@makeflow/mobx-utils';
 import React, {Component, ReactNode} from 'react';
 
-import {ListItemStatus} from '../../const';
 import {Active, ActiveContext, DataContext, DataProcess} from '../../store';
 
 import FolderDetail from './folderDetail/folderDetail';
@@ -17,33 +16,30 @@ class Detail extends Component {
   private dataState!: DataProcess;
 
   render(): ReactNode {
-    const vault = this.activeState.getVaultStatus;
-    const folder = this.activeState.getFolderStatus;
-    const pass = this.activeState.getPassStatus;
+    const active = this.activeState.getActive();
+    const {folder, vault, pass} = active;
 
     return (
       <div className="detail">
-        {vault.status === ListItemStatus.active ? (
-          <VaultDetail vault={this.dataState.findVault(vault.id)!} />
+        {vault && !folder ? (
+          <VaultDetail vault={this.dataState.findVault(vault)!} />
         ) : (
           undefined
         )}
 
-        {folder.status === ListItemStatus.active ? (
-          <FolderDetail
-            folder={this.dataState.findFolder(folder.id, vault.id)!}
-          />
+        {folder && !pass ? (
+          <FolderDetail folder={this.dataState.findFolder(folder, vault)!} />
         ) : (
           undefined
         )}
 
-        {pass.status === ListItemStatus.active ? (
+        {pass ? (
           <PasswordDetail
             password={
               this.dataState.findPassword({
-                folderId: folder.id,
-                passId: pass.id,
-                vaultId: vault.id,
+                folderId: folder,
+                passId: pass,
+                vaultId: vault,
               })!
             }
           />
