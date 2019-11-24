@@ -24,8 +24,6 @@ export class PasswordItem extends Component<PasswordProps> {
   @observable
   private editItemDrawerVisible = false;
   @observable
-  private collectStatus = this.props.password.collect;
-  @observable
   private showDeleteModal = false;
 
   @computed
@@ -40,7 +38,7 @@ export class PasswordItem extends Component<PasswordProps> {
         <Menu.Item key={DELETE}>Delete</Menu.Item>
       </Menu>
     );
-    const {pass_name, id, folderId, vaultId} = this.props.password;
+    const {pass_name, id, folderId, vaultId, collect} = this.props.password;
     const active = this.activeState.getActive();
     const isShow = active.folder === folderId && active.vault === vaultId;
     const {status} = this.isActive;
@@ -66,7 +64,7 @@ export class PasswordItem extends Component<PasswordProps> {
         </Modal>
         <Row onClick={() => this.clickItem()}>
           <Col span={2} offset={2}>
-            {this.collectStatus ? (
+            {collect ? (
               <Icon
                 type="heart"
                 theme="twoTone"
@@ -135,18 +133,16 @@ export class PasswordItem extends Component<PasswordProps> {
   };
 
   private onCollectIconClick = (value: boolean): void => {
-    this.updateCollectStatus(value);
+    this.dataState.updatePassword({
+      ...this.props.password,
+      collect: value,
+    });
   };
 
   @action
   private toggleDrawer = (value: boolean): void => {
     this.editItemDrawerVisible = value;
   };
-
-  @action
-  private updateCollectStatus(status: boolean): void {
-    this.collectStatus = status;
-  }
 
   @action
   private updateShowDeleteModal(status: boolean): void {
