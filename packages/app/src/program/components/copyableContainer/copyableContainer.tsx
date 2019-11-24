@@ -1,14 +1,15 @@
-import {Button} from 'antd';
+import {Button, message} from 'antd';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 import './copyableContainer.less';
 
 interface CopyableContainerProps {
   data: {
     label: string;
-    value: string | number | Date;
+    value: string;
     secure?: boolean;
   };
 }
@@ -22,16 +23,19 @@ export class CopyableContainer extends Component<CopyableContainerProps> {
     const {label, value, secure} = this.props.data;
 
     return (
-      <div className="copyableContainer" onClick={this.copyValue}>
+      <div className="copyableContainer">
         <div className="label">{label}</div>
         <div className="value">
           {!secure || this.passwordVisible ? value : '..........'}
         </div>
         <div className="operations">
           <Button.Group size="large">
-            <Button type="primary" onClick={this.copyValue}>
-              Copy
-            </Button>
+            <CopyToClipboard
+              text={this.props.data.value}
+              onCopy={() => this.copyValue()}
+            >
+              <Button type="primary">Copy</Button>
+            </CopyToClipboard>
             {secure && (
               <Button
                 type="primary"
@@ -51,7 +55,9 @@ export class CopyableContainer extends Component<CopyableContainerProps> {
     this.passwordVisible = status;
   }
 
-  private copyValue(): void {}
+  private copyValue(): void {
+    message.success('copy successful');
+  }
 
   private showPassword(status: boolean): void {
     this.updatePasswordVisible(status);
