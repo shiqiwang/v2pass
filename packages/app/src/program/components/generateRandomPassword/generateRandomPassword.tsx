@@ -20,8 +20,12 @@ import './generateRandomPassword.less';
 import {Factor, generatePassword} from './index';
 type FactorLabel = keyof Factor;
 
+interface IProps {
+  onPassChange?(value: string): void;
+}
+
 @observer
-export class GenerateRandomPassword extends Component {
+export class GenerateRandomPassword extends Component<IProps> {
   @observable
   private passwordComplexity = 0;
   @observable
@@ -150,5 +154,9 @@ export class GenerateRandomPassword extends Component {
   @action
   private updatePassword(value: string): void {
     this.password = value;
+
+    if (this.props.onPassChange) {
+      this.props.onPassChange(value);
+    }
   }
 }

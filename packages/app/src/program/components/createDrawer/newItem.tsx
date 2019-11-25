@@ -16,6 +16,7 @@ import uuid from 'uuid';
 
 import {DataContext} from '../../store';
 import {Folder, Password, PasswordItem, Vault} from '../../types';
+import {GenerateRandomPassword} from '../generateRandomPassword';
 
 import './index.less';
 
@@ -67,13 +68,13 @@ export class NewItem extends Component<NewItemProps> {
       {
         id: uuid(),
         type: 'username',
-        label: 'username',
+        label: '',
         value: '',
       },
       {
         id: uuid(),
         type: 'password',
-        label: 'password',
+        label: '',
         value: '',
       },
     ],
@@ -206,14 +207,26 @@ export class NewItem extends Component<NewItemProps> {
                           }
                         />
                       ) : (
-                        <Input
-                          value={value}
-                          placeholder="value"
-                          type={type === 'password' ? 'password' : 'text'}
-                          onChange={event =>
-                            this.updatePassItem(id, {value: event.target.value})
-                          }
-                        />
+                        <div>
+                          {type === 'password' ? (
+                            <GenerateRandomPassword
+                              onPassChange={value =>
+                                this.updatePassItem(id, {value})
+                              }
+                            />
+                          ) : (
+                            <Input
+                              value={value}
+                              placeholder="value"
+                              type="text"
+                              onChange={event =>
+                                this.updatePassItem(id, {
+                                  value: event.target.value,
+                                })
+                              }
+                            />
+                          )}
+                        </div>
                       )}
                     </Col>
                     <Col span={2} offset={1}>
