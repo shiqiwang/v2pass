@@ -8,10 +8,12 @@ import {
   Rate,
   Row,
   Switch,
+  message,
 } from 'antd';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 import './generateRandomPassword.less';
 
@@ -46,7 +48,12 @@ class GenerateRandomPassword extends Component {
             />
           </Col>
           <Col span={5} offset={1}>
-            <Button type="primary">copy</Button>
+            <CopyToClipboard
+              text={this.password}
+              onCopy={() => this.copyValue()}
+            >
+              <Button type="primary">copy</Button>
+            </CopyToClipboard>
           </Col>
         </Row>
         <Card style={{width: 300}}>
@@ -73,11 +80,13 @@ class GenerateRandomPassword extends Component {
             <Switch
               checked={useNumber}
               onChange={value => this.onChangeFactor('useNumber', value)}
+              className="numberSwitch"
             />
             <span className="label">使用符号</span>
             <Switch
               checked={useSymbol}
               onChange={value => this.onChangeFactor('useSymbol', value)}
+              className="symbolSwitch"
             />
           </div>
         </Card>
@@ -109,7 +118,6 @@ class GenerateRandomPassword extends Component {
   }
 
   private onChangePassComplex(): void {
-    // 后续可能需要优化，需要有概率支撑，防止暴露破解
     let complex: number = 0;
     const {length, useLetter, useNumber, useSymbol} = this.factor;
     const diverse = [useLetter, useNumber, useSymbol].filter(item => !!item)
@@ -126,6 +134,10 @@ class GenerateRandomPassword extends Component {
     }
 
     this.updatePasswordComplexity(complex);
+  }
+
+  private copyValue(): void {
+    message.success('copied');
   }
 
   @action

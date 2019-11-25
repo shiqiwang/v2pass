@@ -56,7 +56,7 @@ export class CopyableContainer extends Component<CopyableContainerProps> {
   }
 
   private copyValue(): void {
-    message.success('copy successful');
+    message.success('copied');
   }
 
   private showPassword(status: boolean): void {
