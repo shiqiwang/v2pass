@@ -1,4 +1,4 @@
-import {Factor} from './types';
+import {Factor} from './index';
 
 const letters = (() => {
   let tempArray: string[] = [];

@@ -17,12 +17,11 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 
 import './generateRandomPassword.less';
 
-import {generatePassword} from './generatePass';
-import {Factor} from './types';
+import {Factor, generatePassword} from './index';
 type FactorLabel = keyof Factor;
 
 @observer
-class GenerateRandomPassword extends Component {
+export class GenerateRandomPassword extends Component {
   @observable
   private passwordComplexity = 0;
   @observable
@@ -153,5 +152,3 @@ class GenerateRandomPassword extends Component {
     this.password = value;
   }
 }
-
-export default GenerateRandomPassword;

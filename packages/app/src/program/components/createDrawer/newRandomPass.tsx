@@ -2,7 +2,7 @@ import {Drawer} from 'antd';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
-import GenerateRandomPassword from '../generateRandomPassword/generateRandomPassword';
+import {GenerateRandomPassword} from '../generateRandomPassword';
 
 interface NewRandomPassDrawerOptions {
   visible: boolean;
