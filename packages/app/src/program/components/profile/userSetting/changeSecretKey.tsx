@@ -20,7 +20,7 @@ interface IProps {
 }
 
 @observer
-export default class ChangeSecretKey extends Component<IProps> {
+export class ChangeSecretKey extends Component<IProps> {
   @observable
   private data: IChangeSecretKey = {
     value: '',
@@ -45,8 +45,9 @@ export default class ChangeSecretKey extends Component<IProps> {
               value={value}
               placeholder="confirm password"
               type="password"
-              onChange={event => this.onPasswordInput(event.target.value)}
-              onBlur={event => this.onTestPassword(event.target.value)}
+              onChange={event =>
+                this.updatePassword({value: event.target.value})
+              }
             />
           </Form.Item>
           <div className="newSecretKeyBox">{this.data.value}</div>
@@ -59,7 +60,7 @@ export default class ChangeSecretKey extends Component<IProps> {
             >
               create secret key
             </Button>
-            <Button type="primary" onClick={() => this.onUpdateVerify()}>
+            <Button type="primary" onClick={() => this.onSave()}>
               save
             </Button>
           </Form.Item>
@@ -68,11 +69,7 @@ export default class ChangeSecretKey extends Component<IProps> {
     );
   }
 
-  private onPasswordInput(value: MasterPassword): void {
-    this.updatePassword({value});
-  }
-
-  private onTestPassword(value: MasterPassword): void {
+  private onTestPassword(value: MasterPassword): boolean {
     const pattern = /^\S{10,30}$/;
 
     if (!pattern.test(value)) {
@@ -80,8 +77,10 @@ export default class ChangeSecretKey extends Component<IProps> {
         validateStatus: 'error',
         help: 'length 10-30',
       });
+      return false;
     } else {
-      this.updatePassword({validateStatus: 'success'});
+      this.updatePassword({validateStatus: 'success', help: ''});
+      return true;
     }
   }
 
@@ -89,11 +88,12 @@ export default class ChangeSecretKey extends Component<IProps> {
     this.updateSecretKey(createSecretKey());
   }
 
-  private onUpdateVerify(): void {
+  private onSave(): void {
     this.updateDisable(true);
     const {password, value} = this.data;
+    const passwordTestResult = this.onTestPassword(password.value);
 
-    if (password.validateStatus === 'success' && value) {
+    if (passwordTestResult && value) {
       chrome.storage.local.get(items => {
         const {id, email, secretKey, data} = items;
         const oldKeyGenerator = new KeyGenerator({
@@ -117,7 +117,7 @@ export default class ChangeSecretKey extends Component<IProps> {
         updateVerify(unlockKey, newVerify, newData)
           .then(result => {
             if (result) {
-              // 如果成功了要下载该secret key让用户保存
+              // 如果成功了要下载该secret key让用户保存!!!
               chrome.storage.local.set({secretKey: value, data: newData});
               this.props.refresh();
               message.success('update successfully');
@@ -127,6 +127,8 @@ export default class ChangeSecretKey extends Component<IProps> {
           .finally(() => this.updateDisable(false))
           .catch();
       });
+    } else {
+      this.updateDisable(false);
     }
   }
 

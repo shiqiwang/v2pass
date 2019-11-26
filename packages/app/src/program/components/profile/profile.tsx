@@ -1,4 +1,4 @@
-import {Button, Drawer} from 'antd';
+import {Button, Collapse, Drawer} from 'antd';
 import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
@@ -8,7 +8,14 @@ import {CopyableContainer} from '../copyableContainer';
 
 import './index.less';
 
-import UserSetting from './userSetting/userSetting';
+import {
+  ChangeEmail,
+  ChangePassword,
+  ChangeSecretKey,
+  ChangeUsername,
+} from './userSetting';
+
+const {Panel} = Collapse;
 
 @observer
 export default class Profile extends Component {
@@ -42,36 +49,46 @@ export default class Profile extends Component {
             <CopyableContainer data={{label: 'email', value: email}} />
             <CopyableContainer data={{label: 'secretKey', value: secretKey}} />
           </div>
-          <UserSetting
-            canChange={{username, email, secretKey}}
-            refresh={() => this.refresh()}
-          />
+          <Collapse accordion>
+            <Panel header="change username" key="1">
+              <ChangeUsername refresh={this.onRefresh} />
+            </Panel>
+            <Panel header="change email" key="2">
+              <ChangeEmail refresh={this.onRefresh} />
+            </Panel>
+            <Panel header="change password" key="3">
+              <ChangePassword />
+            </Panel>
+            <Panel header="change secret key" key="4">
+              <ChangeSecretKey refresh={this.onRefresh} />
+            </Panel>
+          </Collapse>
         </Drawer>
       </div>
     );
   }
 
   componentWillMount(): void {
-    this.getData();
+    this.getUserInfo();
   }
 
-  private refresh(): void {
-    this.getData();
-  }
-
-  private getData(): void {
-    chrome.storage.local.get(items => {
-      const {username, email, id, secretKey} = items;
-      this.updateUserInfo({username, email, id, secretKey});
-    });
-  }
-
-  private onShow = (): void => {
+  private onShow(): void {
     this.updateVisible(true);
+  }
+
+  private onRefresh = (): void => {
+    this.getUserInfo();
   };
 
   private onClose = (): void => {
     this.updateVisible(false);
+  };
+
+  private getUserInfo = (): void => {
+    chrome.storage.local.get(items => {
+      const {username, email, id, secretKey} = items;
+      this.updateUserInfo({username, email, id, secretKey});
+    });
   };
 
   @action
@@ -80,10 +97,10 @@ export default class Profile extends Component {
   };
 
   @action
-  private updateUserInfo = (value: Partial<UserBaseInfo>): void => {
+  private updateUserInfo(value: Partial<UserBaseInfo>): void {
     this.userInfo = {
       ...this.userInfo,
       ...value,
     };
-  };
+  }
 }

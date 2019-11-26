@@ -1,5 +1,5 @@
 import {Button, Form, Input, message} from 'antd';
-import {action, computed, observable} from 'mobx';
+import {action, observable} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
@@ -7,44 +7,32 @@ import {testUsernameApi, updateUsernameApi} from '../../../request';
 import {Username} from '../../../types';
 import {IChangeUsername} from '../type';
 
-interface OldName {
-  oldUsername: Username;
+interface IProps {
   refresh(): void;
 }
 
 @observer
-export default class ChangeUsername extends Component<OldName> {
+export class ChangeUsername extends Component<IProps> {
   @observable
   private username: IChangeUsername = {
     value: '',
     validateStatus: undefined,
     help: '',
   };
-  @observable
-  private isChanged: boolean = false;
-
-  @computed
-  get value(): string {
-    const {oldUsername} = this.props;
-
-    if (this.isChanged) {
-      return this.username.value;
-    }
-
-    return oldUsername;
-  }
 
   render(): ReactNode {
-    const {validateStatus, help} = this.username;
+    const {validateStatus, help, value} = this.username;
 
     return (
       <div className="changeUsername">
         <Form>
           <Form.Item hasFeedback validateStatus={validateStatus} help={help}>
             <Input
-              value={this.value}
-              onChange={event => this.onUsernameChange(event.target.value)}
-              onBlur={event => this.onTestUsername(event.target.value)}
+              placeholder="new username"
+              value={value}
+              onChange={event =>
+                this.updateUsername({value: event.target.value})
+              }
             />
           </Form.Item>
           <Form.Item>
@@ -57,49 +45,41 @@ export default class ChangeUsername extends Component<OldName> {
     );
   }
 
-  private onUsernameChange = (value: Username): void => {
+  private onTestUsername = async (value: Username): Promise<boolean> => {
     const pattern = /^\w{5,30}$/;
 
     if (!pattern.test(value)) {
       this.updateUsername({
-        value,
         validateStatus: 'error',
         help: 'length 5~30, contain a-z A-Z _',
       });
+      return false;
     } else {
-      this.updateUsername({
-        value,
-        validateStatus: 'success',
-        help: '',
-      });
+      const result = await testUsernameApi(value);
+      const {code, data} = result;
+
+      if (code) {
+        this.updateUsername({validateStatus: 'success', help: ''});
+        return true;
+      } else {
+        this.updateUsername({validateStatus: 'error', help: data});
+        return false;
+      }
     }
   };
 
-  private onTestUsername = (value: Username): void => {
-    testUsernameApi(value)
-      .then(result => {
-        const {code, data} = result;
+  private onSave = async (): Promise<void> => {
+    const {value} = this.username;
+    const testResult = await this.onTestUsername(value);
 
-        if (code) {
-          this.updateUsername({validateStatus: 'success', help: ''});
-        } else {
-          this.updateUsername({validateStatus: 'error', help: data});
-        }
-      })
-      .catch(error => message.error(error.message));
-  };
-
-  private onSave = (): void => {
-    const {validateStatus, value} = this.username;
-
-    if (validateStatus === 'success') {
+    if (testResult) {
       updateUsernameApi(value)
         .then(result => {
           if (result) {
             chrome.storage.local.set({username: value});
             this.updateUsername({validateStatus: undefined});
-            message.success('update username successfully');
             this.props.refresh();
+            message.success('update username successfully');
           }
         })
         .catch(error => message.error(error.message));
@@ -108,7 +88,6 @@ export default class ChangeUsername extends Component<OldName> {
 
   @action
   private updateUsername = (value: Partial<IChangeUsername>): void => {
-    this.isChanged = true;
     this.username = {
       ...this.username,
       ...value,

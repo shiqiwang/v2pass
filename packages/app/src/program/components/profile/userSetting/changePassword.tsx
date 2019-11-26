@@ -4,14 +4,14 @@ import {observer} from 'mobx-react';
 import React, {Component, ReactNode} from 'react';
 
 import {KeyGenerator, decryptData, encryptData} from '../../../auth';
-import {updateDataApi, updateVerify} from '../../../request';
+import {updateVerify} from '../../../request';
 import {MasterPassword, UsageData} from '../../../types';
 import {IChangePassword} from '../type';
 
 type IChangePasswordLabel = keyof IChangePassword;
 
 @observer
-export default class ChangePassword extends Component {
+export class ChangePassword extends Component {
   @observable
   private data: IChangePassword = {
     old: {
@@ -42,8 +42,9 @@ export default class ChangePassword extends Component {
               type="password"
               placeholder="current password"
               value={old.value}
-              onChange={event => this.onDataChange('old', event.target.value)}
-              onBlur={event => this.onTestPassword('old', event.target.value)}
+              onChange={event =>
+                this.updateData('old', {value: event.target.value})
+              }
             />
           </Form.Item>
           <Form.Item
@@ -56,10 +57,7 @@ export default class ChangePassword extends Component {
               placeholder="new password"
               type="password"
               onChange={event =>
-                this.onDataChange('password', event.target.value)
-              }
-              onBlur={event =>
-                this.onTestPassword('password', event.target.value)
+                this.updateData('password', {value: event.target.value})
               }
             />
           </Form.Item>
@@ -73,9 +71,8 @@ export default class ChangePassword extends Component {
               placeholder="check password"
               type="password"
               onChange={event =>
-                this.onDataChange('repeat', event.target.value)
+                this.updateData('repeat', {value: event.target.value})
               }
-              onBlur={event => this.onCheckPassword(event.target.value)}
             />
           </Form.Item>
           <Form.Item>
@@ -90,12 +87,11 @@ export default class ChangePassword extends Component {
 
   private onSave(): void {
     const {old, password, repeat} = this.data;
+    const oldStatus = this.onTestPassword('old', old.value);
+    const passStatus = this.onTestPassword('password', password.value);
+    const repeatStatus = this.onCheckPassword(repeat.value);
 
-    if (
-      old.validateStatus === 'success' &&
-      password.validateStatus === 'success' &&
-      repeat.validateStatus === 'success'
-    ) {
+    if (oldStatus && passStatus && repeatStatus) {
       chrome.storage.local.get(items => {
         const {id, email, secretKey, data} = items;
         const oldKeyGenerator = new KeyGenerator({
@@ -128,17 +124,10 @@ export default class ChangePassword extends Component {
     }
   }
 
-  private onDataChange = (
-    label: IChangePasswordLabel,
-    value: MasterPassword,
-  ): void => {
-    this.updateData(label, {value});
-  };
-
   private onTestPassword = (
     label: 'password' | 'old',
     value: MasterPassword,
-  ): void => {
+  ): boolean => {
     const pattern = /^\S{10,30}$/;
 
     if (!pattern.test(value)) {
@@ -146,19 +135,23 @@ export default class ChangePassword extends Component {
         validateStatus: 'error',
         help: 'length 10-30',
       });
+      return false;
     } else {
       this.updateData(label, {validateStatus: 'success', help: ''});
+      return true;
     }
   };
 
-  private onCheckPassword = (value: MasterPassword): void => {
+  private onCheckPassword = (value: MasterPassword): boolean => {
     if (value === this.data.password.value) {
       this.updateData('repeat', {validateStatus: 'success', help: ''});
+      return true;
     } else {
       this.updateData('repeat', {
         validateStatus: 'error',
         help: 'different from the password',
       });
+      return false;
     }
   };
 
