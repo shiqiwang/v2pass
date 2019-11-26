@@ -10,12 +10,17 @@ export function decryptData(
   dataKey: DataKey,
   cipherData: StoreData,
 ): UsageData | false {
-  const bytes = CryptoJS.AES.decrypt(cipherData, dataKey);
-  const json = bytes.toString(CryptoJS.enc.Utf8);
+  try {
+    const bytes = CryptoJS.AES.decrypt(cipherData, dataKey);
+    const data = CryptoJS.enc.Utf8;
+    const json = bytes.toString(data);
 
-  if (json) {
-    return JSON.parse(json);
+    if (json) {
+      return JSON.parse(json);
+    } else {
+      return false;
+    }
+  } catch (error) {
+    return false;
   }
-
-  return false;
 }
